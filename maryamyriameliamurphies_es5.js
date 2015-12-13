@@ -22,7 +22,7 @@ var Eq = (function () {
     value: function _typeCheck(a, b) {
       if (a.eq === undefined) throw new Error(EXC + '\'' + a + '\' is not a member of the \'Eq\' type class.');
       if (b.eq === undefined) throw new Error(EXC + '\'' + b + '\' is not a member of the \'Eq\' type class.');
-      if (a.constructor !== b.constructor) throw new Error('${EXC}Arguments to Eq must be the same type.');
+      if (a.constructor !== b.constructor) throw new Error(EXC + 'Arguments to \'Eq\' must be the same type.');
       return true;
     }
   }, {
@@ -30,10 +30,12 @@ var Eq = (function () {
     value: function is(a, b) {
       return this._typeCheck(a, b) && a.eq(b) ? true : false;
     }
+    // static isNot(a, b) { return this._typeCheck(a, b) && a.eq(b) ? false : true; }
+
   }, {
     key: 'isNot',
     value: function isNot(a, b) {
-      return this._typeCheck(a, b) && a.eq(b) ? false : true;
+      return !this.is(a, b);
     }
   }]);
 
@@ -105,8 +107,13 @@ var Tuple = (function () {
       var aType = this.typeOf();
       var bType = b.typeOf();
       if (aType === bType) {
-        return this.values().every(function (v, i) {
-          return v === b.values()[i];
+        return this.values().every(function (av, i) {
+          var bv = b.values()[i];
+          if ((typeof av === 'undefined' ? 'undefined' : _typeof(av)) === 'object' || (typeof bv === 'undefined' ? 'undefined' : _typeof(bv)) === 'object') {
+            throw new Error('Objects cannot be compared.');
+          } else {
+            return av === b.values()[i];
+          }
         });
       } else {
         throw new Error('' + EXC + aType + ' is not the same type as ' + bType + '.');

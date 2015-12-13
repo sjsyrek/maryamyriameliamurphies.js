@@ -3,7 +3,15 @@
 
 # maryamyriameliamurphies.js
 
-maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org) data types, type classes, and morphisms translated into [JavaScript ES2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Because if you don't practice morphic programming, you are more subject to [Murphy's Law](https://en.wikipedia.org/wiki/Murphy%27s_law).
+maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org) data types, type classes, and morphisms translated into [JavaScript ES2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Because if you don't practice morphic programming, you are more subject to [Murphy's Law](https://en.wikipedia.org/wiki/Murphy%27s_law). I developed this code using [Babel](http://babeljs.io/) and tested the transpiled ES5 output in Chrome.
 
 These functions use the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) object and therefore require the [`babel-polyfill`](http://babeljs.io/docs/usage/polyfill/) in order to work in [node](https://nodejs.org/en/) or the browser.
+
+## Eq
+
+
+## Ord
+
+
+## Tuple
 
