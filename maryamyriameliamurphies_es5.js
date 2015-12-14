@@ -1,6 +1,29 @@
+/*
+ * @name maryamyriameliamurphies.js
+ *
+ * @fileOverview
+ * maryamyriameliamurphies.js is a library of Haskell morphisms ported to JavaScript
+ * using ECMAScript2015 syntax.
+ *
+ * See also:
+ *
+ * - [casualjs](https://github.com/casualjs/f)
+ * - [pointfree-fantasy](https://github.com/DrBoolean/pointfree-fantasy)
+ *
+ * Guide to reading the code
+ * -------------------------
+ * I defined each Haskell type as an ES2015 class, hewing as closely as I could to the
+ * Haskell original but with many concessions to JavaScript and probably a few too many
+ * attempts to implement functions as one-liners.
+ */
+
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
@@ -12,25 +35,64 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var EXC = '*** Exception: ';
 
-var Eq = (function () {
+/**
+ * A Type class for determining equality. Implement on an object by defining a
+ * function `eq(b)` that returns `true` if that object is equal to `b` and false
+ * otherwise. Throws exceptions on invalid arguments.
+ * class Eq a where
+ *  (==), (/=) :: a -> a -> Bool
+ */
+
+var Eq = exports.Eq = (function () {
   function Eq() {
     _classCallCheck(this, Eq);
   }
 
   _createClass(Eq, null, [{
+    key: '_classCheck',
+
+    /**
+    	* Check whether an object is a member of the Eq type class.
+    	* @param {*} a - Any value.
+    	* @return {this} If `a` implements an `eq` function, return `this` for chaining.
+    	* @private
+    	*/
+    value: function _classCheck(a) {
+      if (typeof a.eq !== 'function') throw new Error(EXC + '\'' + a + '\' is not a member of the \'Eq\' type class.');
+      return this;
+    }
+    /**
+    	* Check whether two objects are the same type.
+    	* @param {*} a - Any value.
+    	* @param {*} b - Any value.
+    	* @return {boolean} True if `a` and `b` both have the same constructor.
+    	* @private
+    	*/
+
+  }, {
     key: '_typeCheck',
     value: function _typeCheck(a, b) {
-      if (a.eq === undefined) throw new Error(EXC + '\'' + a + '\' is not a member of the \'Eq\' type class.');
-      if (b.eq === undefined) throw new Error(EXC + '\'' + b + '\' is not a member of the \'Eq\' type class.');
       if (a.constructor !== b.constructor) throw new Error(EXC + 'Arguments to \'Eq\' must be the same type.');
       return true;
     }
+    /**
+    	* Check whether two objects that implement Eq are equal. Equivalent to `a === b`.
+    	* @param {*} a - Any value.
+    	* @param {*} b - Any value.
+    	* @return {boolean} True if `a` and `b` are equal.
+    	*/
+
   }, {
     key: 'is',
     value: function is(a, b) {
-      return this._typeCheck(a, b) && a.eq(b) ? true : false;
+      return this._classCheck(a)._classCheck(b)._typeCheck(a, b) && a.eq(b) ? true : false;
     }
-    // static isNot(a, b) { return this._typeCheck(a, b) && a.eq(b) ? false : true; }
+    /**
+    	* The opposite of `is`. Equivalent to `a !== b`.
+    	* @param {*} a - Any value.
+    	* @param {*} b - Any value.
+    	* @return {boolean} True if `a` and `b` are not equal.
+    	*/
 
   }, {
     key: 'isNot',
@@ -42,7 +104,7 @@ var Eq = (function () {
   return Eq;
 })();
 
-var Ord = (function (_Eq) {
+var Ord = exports.Ord = (function (_Eq) {
   _inherits(Ord, _Eq);
 
   function Ord() {
@@ -82,7 +144,7 @@ class  (Eq a) => Ord a  where
          | otherwise =  y
 */
 
-var Tuple = (function () {
+var Tuple = exports.Tuple = (function () {
   function Tuple() {
     var _this2 = this;
 
@@ -234,6 +296,9 @@ var Tuple = (function () {
 
   return Tuple;
 })();
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests
 
 // Tuple tests
 

@@ -1,18 +1,72 @@
+/*
+ * @name maryamyriameliamurphies.js
+ *
+ * @fileOverview
+ * maryamyriameliamurphies.js is a library of Haskell morphisms ported to JavaScript
+ * using ECMAScript2015 syntax.
+ *
+ * See also:
+ *
+ * - [casualjs](https://github.com/casualjs/f)
+ * - [pointfree-fantasy](https://github.com/DrBoolean/pointfree-fantasy)
+ *
+ * Guide to reading the code
+ * -------------------------
+ * I defined each Haskell type as an ES2015 class, hewing as closely as I could to the
+ * Haskell original but with many concessions to JavaScript and probably a few too many
+ * attempts to implement functions as one-liners.
+ */
+
+'use strict';
+
 let EXC = '*** Exception: ';
 
-class Eq {
+/**
+ * A Type class for determining equality. Implement on an object by defining a
+ * function `eq(b)` that returns `true` if that object is equal to `b` and false
+ * otherwise. Throws exceptions on invalid arguments.
+ * class Eq a where
+ *  (==), (/=) :: a -> a -> Bool
+ */
+export class Eq {
+		/**
+			* Check whether an object is a member of the Eq type class.
+			* @param {*} a - Any value.
+			* @return {this} If `a` implements an `eq` function, return `this` for chaining.
+			* @private
+			*/
+  static _classCheck(a) {
+    if (typeof a.eq !== 'function') throw new Error(`${EXC}'${a}' is not a member of the 'Eq' type class.`);
+    return this;
+  }
+		/**
+			* Check whether two objects are the same type.
+			* @param {*} a - Any value.
+			* @param {*} b - Any value.
+			* @return {boolean} True if `a` and `b` both have the same constructor.
+			* @private
+			*/
   static _typeCheck(a, b) {
-    if (a.eq === undefined) throw new Error(`${EXC}'${a}' is not a member of the 'Eq' type class.`);
-    if (b.eq === undefined) throw new Error(`${EXC}'${b}' is not a member of the 'Eq' type class.`);
     if (a.constructor !== b.constructor) throw new Error(`${EXC}Arguments to 'Eq' must be the same type.`);
     return true;
   }
-  static is(a, b) { return this._typeCheck(a, b) && a.eq(b) ? true : false; }
-  // static isNot(a, b) { return this._typeCheck(a, b) && a.eq(b) ? false : true; }
+		/**
+			* Check whether two objects that implement Eq are equal. Equivalent to `a === b`.
+			* @param {*} a - Any value.
+			* @param {*} b - Any value.
+			* @return {boolean} True if `a` and `b` are equal.
+			*/
+  static is(a, b) { return this._classCheck(a)._classCheck(b)._typeCheck(a, b) && a.eq(b) ? true : false; }
+		/**
+			* The opposite of `is`. Equivalent to `a !== b`.
+			* @param {*} a - Any value.
+			* @param {*} b - Any value.
+			* @return {boolean} True if `a` and `b` are not equal.
+			*/
   static isNot(a, b) { return !this.is(a, b) }
 }
 
-class Ord extends Eq {
+export class Ord extends Eq {
 
 }
 
@@ -44,7 +98,7 @@ class  (Eq a) => Ord a  where
          | otherwise =  y
 */
 
-class Tuple {
+export class Tuple {
   constructor(...values) {
     if (values.length < 2) {
       throw new Error('${EXC}Tuples must be defined with at least two values.');
@@ -109,6 +163,9 @@ class Tuple {
 
   valueOf() { return `(${Reflect.ownKeys(this).map(key => typeof this[key] === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests
 
 // Tuple tests
 var p1 = new Tuple(1, 2);
