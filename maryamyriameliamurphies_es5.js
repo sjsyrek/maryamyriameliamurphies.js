@@ -14,16 +14,14 @@
  * -------------------------
  * I defined each Haskell type as an ES2015 class, hewing as closely as I could to the
  * Haskell original but with many concessions to JavaScript and probably a few too many
- * attempts to implement functions as one-liners.
+ * attempts to implement functions as one-liners. I introduce each class with the syntax
+ * of its Haskell original and, otherwise, my hope is that most of the functions are
+ * self-documenting.
  */
 
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
@@ -43,7 +41,7 @@ var EXC = '*** Exception: ';
  *  (==), (/=) :: a -> a -> Bool
  */
 
-var Eq = exports.Eq = (function () {
+var Eq = (function () {
   function Eq() {
     _classCallCheck(this, Eq);
   }
@@ -104,7 +102,7 @@ var Eq = exports.Eq = (function () {
   return Eq;
 })();
 
-var Ord = exports.Ord = (function (_Eq) {
+var Ord = (function (_Eq) {
   _inherits(Ord, _Eq);
 
   function Ord() {
@@ -144,7 +142,7 @@ class  (Eq a) => Ord a  where
          | otherwise =  y
 */
 
-var Tuple = exports.Tuple = (function () {
+var Tuple = (function () {
   function Tuple() {
     var _this2 = this;
 

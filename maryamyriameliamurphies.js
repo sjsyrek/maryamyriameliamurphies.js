@@ -14,12 +14,14 @@
  * -------------------------
  * I defined each Haskell type as an ES2015 class, hewing as closely as I could to the
  * Haskell original but with many concessions to JavaScript and probably a few too many
- * attempts to implement functions as one-liners.
+ * attempts to implement functions as one-liners. I introduce each class with the syntax
+ * of its Haskell original and, otherwise, my hope is that most of the functions are
+ * self-documenting.
  */
 
 'use strict';
 
-let EXC = '*** Exception: ';
+const EXC = '*** Exception: ';
 
 /**
  * A Type class for determining equality. Implement on an object by defining a
@@ -28,7 +30,7 @@ let EXC = '*** Exception: ';
  * class Eq a where
  *  (==), (/=) :: a -> a -> Bool
  */
-export class Eq {
+class Eq {
 		/**
 			* Check whether an object is a member of the Eq type class.
 			* @param {*} a - Any value.
@@ -66,7 +68,7 @@ export class Eq {
   static isNot(a, b) { return !this.is(a, b) }
 }
 
-export class Ord extends Eq {
+class Ord extends Eq {
 
 }
 
@@ -98,7 +100,7 @@ class  (Eq a) => Ord a  where
          | otherwise =  y
 */
 
-export class Tuple {
+class Tuple {
   constructor(...values) {
     if (values.length < 2) {
       throw new Error('${EXC}Tuples must be defined with at least two values.');
