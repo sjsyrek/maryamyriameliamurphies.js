@@ -23,6 +23,19 @@
 
 const EXC = '*** Exception: ';
 
+class Type {
+  static _type(a) {
+    return a.constructor;
+  }
+}
+
+class TypeClass {
+  static _classCheck(a, f) { return a[f] !== undefined && a.f === 'function' ? true : false; }
+  static _classMatch(a, b) { return this._classCheck(a) && this._classCheck(b); }
+  static _typeCheck(a) { return a.typeOf() || a.constructor; }
+  static _typeMatch(a, b) { return this._typeCheck(a) && this._typeCheck(b); }
+}
+
 /**
  * A Type class for determining equality. Implement on an object by defining a
  * function `eq(b)` that returns `true` if that object is equal to `b` and false
@@ -37,9 +50,8 @@ class Eq {
 			* @return {this} If `a` implements an `eq` function, return `this` for chaining.
 			* @private
 			*/
-  static _classCheck(a) {
-    if (typeof a.eq !== 'function') throw new Error(`${EXC}'${a}' is not a member of the 'Eq' type class.`);
-    return this;
+  static _classCheck(a, f) {
+    if (super._classCheck(a, f) === false) throw new Error(`${EXC}'${a}' is not a member of the '${this.name}' type class.`);
   }
 		/**
 			* Check whether two objects are the same type.
@@ -48,9 +60,15 @@ class Eq {
 			* @return {boolean} True if `a` and `b` both have the same constructor.
 			* @private
 			*/
-  static _typeCheck(a, b) {
-    if (a.constructor !== b.constructor) throw new Error(`${EXC}Arguments to 'Eq' must be the same type.`);
-    return true;
+  static _eq(a, b) {
+    let f = 'eq';
+    this._classCheck(a, f);
+    this._classCheck(b, f);
+    this._typeMatch(a, b);
+    return this;
+  }
+  static _typeMatch(a, b) {
+    if (super._typeMatch(a, b) === false) throw new Error(`${EXC}Arguments to '${this.name}' must be the same type.`);
   }
 		/**
 			* Check whether two objects that implement Eq are equal. Equivalent to `a === b`.
@@ -58,7 +76,7 @@ class Eq {
 			* @param {*} b - Any value.
 			* @return {boolean} True if `a` and `b` are equal.
 			*/
-  static is(a, b) { return this._classCheck(a)._classCheck(b)._typeCheck(a, b) && a.eq(b) ? true : false; }
+  static is(a, b) { return this._eq(a, b).a.eq(b) ? true : false; }
 		/**
 			* The opposite of `is`. Equivalent to `a !== b`.
 			* @param {*} a - Any value.
@@ -69,41 +87,35 @@ class Eq {
 }
 
 class Ord extends Eq {
-
+  static _ord(a, b) {
+    let f = 'compare';
+    super._classCheck(a, f);
+    super._classCheck(b, f);
+    super._eq(a, b);
+    return this
+  }
+  static compare(a, b) { return this._ord(a, b).a.compare(a, b); }
+  static lessThanOrEqual(a, b) { return this.compare(a, b) !== Ordering.GT; }
+  static lessThan(a, b) { return this.compare(a, b) === Ordering.LT; }
+  static greaterThanOrEqual(a, b) { return this.compare(a, b) !== Ordering.LT; }
+  static greaterThan(a, b) { return this.compare(a, b) === Ordering.GT; }
+  static max(a, b) { return this.lessThanOrEqual(a, b) ? y : x; }
+  static min(a, b) { return this.lessThanOrEqual(a, b) ? x : y; }
 }
 
-/*
-class  (Eq a) => Ord a  where
-    compare              :: a -> a -> Ordering
-    (<), (<=), (>=), (>) :: a -> a -> Bool
-    max, min             :: a -> a -> a
+const Ordering = {
+  EQ: 'EQ',
+  LT: 'LT',
+  GT: 'GT'
+}
 
-        -- Minimal complete definition:
-        --      (<=) or compare
-        -- Using compare can be more efficient for complex types.
-    compare x y
-         | x == y    =  EQ
-         | x <= y    =  LT
-         | otherwise =  GT
+Object.freeze(Ordering);
 
-    x <= y           =  compare x y /= GT
-    x <  y           =  compare x y == LT
-    x >= y           =  compare x y /= LT
-    x >  y           =  compare x y == GT
-
--- note that (min x y, max x y) = (x,y) or (y,x)
-    max x y
-         | x <= y    =  y
-         | otherwise =  x
-    min x y
-         | x <= y    =  x
-         | otherwise =  y
-*/
-
-class Tuple {
+class Tuple extends Type {
   constructor(...values) {
+    super();
     if (values.length < 2) {
-      throw new Error('${EXC}Tuples must be defined with at least two values.');
+      throw new Error(`${EXC}Tuples must be defined with at least two values.`);
     } else {
       values.forEach( (value, i) => this[i + 1] = value);
     }
@@ -113,7 +125,7 @@ class Tuple {
 
   static eq(a, b) { return Eq.is(a, b); };
 
-  static isTuple(o) { return o.constructor === Tuple ? true : false; };
+  static isTuple(o) { return super._type(o) === Tuple ? true : false; };
 
   static from(arrayLike) { return Reflect.construct(this, Array.from(...arguments)); };
 
@@ -130,17 +142,42 @@ class Tuple {
   static typeOf(p) { if (this.isTuple(p)) return p.typeOf(); else this._error('typeOf'); };
 
   eq(b) {
+    if (!Tuple.isTuple(b)) Tuple._error('eq');
     let aType = this.typeOf();
     let bType = b.typeOf();
     if (aType === bType) {
       return this.values().every( (av, i) => {
         let bv = b.values()[i];
         if (typeof av === 'object' || typeof bv === 'object') {
-          throw new Error(`Objects cannot be compared.`);
+          throw new Error(`${EXC}Objects cannot be compared.`);
         } else {
           return av === b.values()[i];
         }
       });
+    } else {
+      throw new Error(`${EXC}${aType} is not the same type as ${bType}.`);
+    }
+  };
+
+  compare(b) {
+    if (this.eq(b)) return new Ordering(EQ);
+    let aType = this.typeOf();
+    let bType = b.typeOf();
+    if (aType === bType) {
+      let avalues = this.values();
+      let bvalues = b.values();
+      for (i = 0; i < avalues.length(); i += 1) {
+        let av = avalues[i];
+        let bv = bvalues[i];
+        if (typeof av === 'object' || typeof bv === 'object') {
+          throw new Error(`${EXC}Objects cannot be compared.`);
+        } else if (av < bv) {
+          return Ordering.LT;
+        } else if (av > bv) {
+          return Ordering.GT;
+        }
+      }
+      return Ordering.EQ;
     } else {
       throw new Error(`${EXC}${aType} is not the same type as ${bType}.`);
     }
@@ -166,28 +203,8 @@ class Tuple {
   valueOf() { return `(${Reflect.ownKeys(this).map(key => typeof this[key] === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Tests
-
-// Tuple tests
-var p1 = new Tuple(1, 2);
-var p2 = new Tuple(3, 4);
-var p3 = Tuple.from([1, 2]);
-var p4 = Tuple.swap(p2);
-var p5 = new Tuple(10, 20, 30, 40, 50);
-var subtract = (a, b) => a - b;
-var curried = Tuple.curry(subtract, 100, 98);
-var uncurried = Tuple.uncurry(curried, p2);
-
-console.log(`Tuples:
-             p1.typeOf():       ${p1.typeOf()} // (number, number)
-             p1.fst:            ${p1.fst} // 1
-             p1.snd:            ${p1.snd} // 2
-             p3.valueOf():      ${p3.valueOf()} // (1, 2)
-             Tuple.isTuple(p4): ${Tuple.isTuple(p4)} // true
-             Eq(p1, p3):        ${Eq.is(p1, p3)} // true
-             Eq(p1, p2):        ${Eq.is(p1, p2)}`); // false
-
-// console.log(`Eq(p1, p5):       ${Eq.is(p1, p5)}`); *** Exception: (number, number) is not the same type as (number, number, number, number, number).
-
-console.log(uncurried()); // 2
+export default {
+  Eq,
+  Ord,
+  Tuple
+};

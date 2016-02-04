@@ -153,7 +153,7 @@ var Tuple = (function () {
     }
 
     if (values.length < 2) {
-      throw new Error('${EXC}Tuples must be defined with at least two values.');
+      throw new Error(EXC + 'Tuples must be defined with at least two values.');
     } else {
       values.forEach(function (value, i) {
         return _this2[i + 1] = value;
@@ -164,13 +164,33 @@ var Tuple = (function () {
   _createClass(Tuple, [{
     key: 'eq',
     value: function eq(b) {
+      if (!Tuple.isTuple(b)) Tuple._error('eq');
       var aType = this.typeOf();
       var bType = b.typeOf();
       if (aType === bType) {
         return this.values().every(function (av, i) {
           var bv = b.values()[i];
           if ((typeof av === 'undefined' ? 'undefined' : _typeof(av)) === 'object' || (typeof bv === 'undefined' ? 'undefined' : _typeof(bv)) === 'object') {
-            throw new Error('Objects cannot be compared.');
+            throw new Error(EXC + 'Objects cannot be compared.');
+          } else {
+            return av === b.values()[i];
+          }
+        });
+      } else {
+        throw new Error('' + EXC + aType + ' is not the same type as ' + bType + '.');
+      }
+    }
+  }, {
+    key: 'compare',
+    value: function compare(b) {
+      if (this.eq(b)) return new Ordering(EQ);
+      var aType = this.typeOf();
+      var bType = b.typeOf();
+      if (aType === bType) {
+        return this.values().forEach(function (av, i) {
+          var bv = b.values()[i];
+          if ((typeof av === 'undefined' ? 'undefined' : _typeof(av)) === 'object' || (typeof bv === 'undefined' ? 'undefined' : _typeof(bv)) === 'object') {
+            throw new Error(EXC + 'Objects cannot be compared.');
           } else {
             return av === b.values()[i];
           }
