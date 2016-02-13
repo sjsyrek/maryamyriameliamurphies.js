@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-import * as should from '/usr/local/lib/node_modules/should';
 import murphies from '../distribution/index';
 
 let unit = murphies.unit;
