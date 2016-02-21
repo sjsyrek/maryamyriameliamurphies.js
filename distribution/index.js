@@ -418,9 +418,57 @@ var unit = new Tuple();
 
 // List (from Data.List)
 
-var List = function List() {
+var List = function List(a, b) {
   _classCallCheck(this, List);
+
+  this.head = a || null;
+  this.tail = b || null;
 };
+
+function fromArrayToList(array) {
+  if (array === undefined || Array.isArray(array) === false) {
+    return new List();
+  }
+  var head = array.shift();
+  var tail = array;
+  return tail.length === 0 ? new List(head) : new List(head, fromArrayToList(tail));
+}
+
+function fromStringToList(str) {
+  return fromArrayToList(str.split(''));
+}
+
+function fromListToString(a) {
+  if (isList(a)) {
+    return listToArray(a).join('');
+  }
+  _typeError('List', a);
+}
+
+function isEmpty(a) {
+  if (isList(a)) {
+    return a.head === null;
+  }
+  if (isTuple(a)) {
+    return false;
+  }
+  if (a === unit) {
+    return true;
+  }
+  _typeError('List or Tuple', a);
+}
+
+function isList(a) {
+  return a instanceof List ? true : false;
+}
+
+function list() {
+  for (var _len3 = arguments.length, values = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    values[_key3] = arguments[_key3];
+  }
+
+  return fromArrayToList.apply(this, values);
+}
 
 // API
 
@@ -444,5 +492,6 @@ exports.default = {
   tuple: tuple,
   typeOf: typeOf,
   uncurry: uncurry,
-  unit: unit
+  unit: unit,
+  isEmpty: isEmpty
 };

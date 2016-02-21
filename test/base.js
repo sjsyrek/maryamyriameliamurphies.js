@@ -1,6 +1,24 @@
 import murphies from '../distribution/index';
 
 describe('Base', function() {
+  describe('#$()', function() {
+    it('should compose two functions and return the result.', function() {
+      let addTen = x =>  x + 10;
+      let multHund = x => x * 100;
+      let addTwenty = x => addTen(10);
+      murphies.$(addTen)(multHund)(10).should.equal(1010);
+      murphies.$(addTen)(multHund, 10).should.equal(1010);
+      murphies.$(multHund)(addTen)(10).should.equal(2000);
+      murphies.$(multHund)(addTen, 10).should.equal(2000);
+      murphies.$(addTen)(addTwenty)().should.equal(30);
+    });
+  });
+  describe('#id()', function() {
+    it('should return whatever is passed as an argument.', function() {
+      murphies.id(1).should.equal(1);
+      murphies.id(`A`).should.equal(`A`);
+    });
+  });
   describe('#typeOf()', function() {
     it('should return the type of an object.', function() {
       let a = murphies.tuple(1, 2);

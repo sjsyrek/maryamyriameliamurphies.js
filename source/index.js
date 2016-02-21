@@ -30,6 +30,32 @@
 // Base
 
 /**
+ * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions,
+ * f and g is the same as applying the result of g to f, or f(g(x)) for a given argument x.
+ * This pattern can't exactly be reproduced in JavaScript, since the dot operator denotes
+ * namespace membership, and custom operators are not available. However, Haskell also provides
+ * the $ operator, which simply binds functions right to left, allowing parentheses to be
+ * omitted: f $ g $ h x = f (g (h x)). We still can't do this in JavaScript, but why not borrow
+ * the $ for semantic consistency? Sorry, jQuery. Note that an argument need not be supplied
+ * to the rightmost function, in which case $ returns a new function to which you can bind an
+ * argument later. The leftmost function, however, must be a pure function, as its argument is
+ * the value returned by the rightmost function. Example:
+ * {@code let addTen = x => x + 10;
+ *        let multHund = x => x * 100;
+ *        let addTwenty = x => addTen(10);
+ *        $(addTen)(multHund)(10)           // 1010
+ *        $(addTen)(multHund, 10)           // 1010
+ *        $(multHund)(addTen)(10)           // 2000
+ *        $(multHund)(addTen, 10)           // 2000
+ *        $(addTen)(addTwenty)()            // 30
+ * }
+ * @param {function()} f - The outermost function to compose.
+ * @return {function()} - The composed function, called only if a value is bound to f.
+ */
+function $(f) { return f === undefined ? $ : (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
+// rewrite to check for function type maybe
+
+/**
  * Determine whether two objects are the same type, returning true if they are and false otherwise.
  * This is a limited form of type checking for this library.
  * @param {*} a - Any object.
@@ -50,6 +76,20 @@ function _typeCheck(a, b) {
  * @private
  */
 function _typeError(exp, got) { throw TypeError(`I expected a value of type '${exp}' but I got ${got}.`); }
+
+/**
+ * The identity function.
+ * @param {*} a - Any value.
+ * @return {*} a - The same value;
+ */
+function id(a) { return a; }
+
+/**
+ * Display the value of an object as a string.
+ * @param {*} a - The object to show.
+ * @return {string} - The value as a string.
+ */
+ function show(a) { return a.valueOf(); }
 
 /**
  * Return the type of any object as specified by this library or its primitive type.
@@ -161,6 +201,19 @@ class Tuple {
 }
 
 /**
+ * Create a new tuple from any number of values. A single value will be returned unaltered,
+ * and {@code unit}, the empty tuple, will be returned if no arguments are passed.
+ * @param {...*} values - The values to put into a tuple.
+ * @return {Tuple} - A new tuple.
+ */
+function tuple(...values) {
+  let [a, b] = values;
+  if (a === undefined) return unit;
+  if (b === undefined) return a;
+  return new Tuple(...values);
+}
+
+/**
  * Convert an uncurried function to a curried function. For example, a function that expects
  * a tuple as an argument can be curried into a function that binds one value and returns another
  * function that binds the other value. This function can then be called with or without arguments
@@ -245,19 +298,6 @@ function swap(p) {
 }
 
 /**
- * Create a new tuple from any number of values. A single value will be returned unaltered,
- * and {@code unit}, the empty tuple, will be returned if no arguments are passed.
- * @param {...*} values - The values to put into a tuple.
- * @return {Tuple} - A new tuple.
- */
-function tuple(...values) {
-  let [a, b] = values;
-  if (a === undefined) return unit;
-  if (b === undefined) return a;
-  return new Tuple(...values);
-}
-
-/**
  * Convert a curried function to a single function that takes a tuple as an argument.
  * Mostly useful for uncurrying functions previously curried with the {@code curry()}
  * function from this library. This will not work if any arguments are bound to the
@@ -288,16 +328,187 @@ const unit = new Tuple();
 
 // List (from Data.List)
 
-class List {
-  constructor() {
+// Basic functions
 
+class List {
+  constructor(head, tail) {
+    this.head = null;
+    this.tail = null;
+    if (head) { this.head = head; }
+    if (tail) { this.tail = tail; }
   }
+  static type(a) { return `[List]`; }
+  static eq(a, b) { return fromListToArray(a).every((a, i) => a === fromListToArray(b)[i]); }
+  static ord(a, b) {
+    if (isEmpty(a) && isEmpty(b)) { return Ordering.EQ; }
+    if (isEmpty(a) && isEmpty(b) === false) { return Ordering.LT; }
+    if (isEmpty(a) === false && isEmpty(b)) { return Ordering.GT; }
+    if (compare(a.head, b.head) === Ordering.EQ) { return compare(a.tail, b.tail)}
+    return compare(a.head, b.head);
+  }
+  toString() { return `[Object List]`; }
+  valueOf() { return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`; }
 }
+
+function list(...as) {
+  if (isEmpty(as)) { return new List(); }
+  return new List(as.shift(), list(...as));
+}
+
+function cons(a) {
+  return function(x, xs) {
+    if (x === undefined) { return x => Reflect.construct(List, x); }
+    if (xs === undefined) { return Reflect.construct(List, [x, new List()]); }
+    if (xs instanceof List === false) { _typeError(`List`, xs); }
+    if (isEmpty(xs) === false && typeof x !== typeof head(xs)) { _typeError(head(xs), x); }
+    return new List(x, xs);
+  }.bind(this, a);
+}
+
+function fromArrayToList(array) {
+  if (array === undefined || Array.isArray(array) === false) { return new List(); }
+  return list(...array);
+}
+
+function fromListToArray(a) { return isEmpty(a) ? [] : [a.head].concat(fromListToArray(a.tail)); }
+
+function fromListToString(a) {
+  if (isList(a)) { return fromListToArray(a).join(``); }
+  _typeError(`List`, a);
+}
+
+function fromStringToList(str) { return fromArrayToList(str.split(``)); }
+
+function head(a) {
+  if (isList(a) && isEmpty(a) === false) { return a.head; }
+  _typeError(`List`, a);
+}
+
+function init(a) {
+  if (isList(a) && isEmpty(a) === false) { return isEmpty(a.tail) ? list() : cons(a.head)(init(a.tail)); }
+  _typeError(`List`, a);
+}
+
+function isEmpty(a) {
+  if (isList(a)) { return a.head === null; }
+  if (isTuple(a)) { return false; }
+  if (a === unit) { return true; }
+  if (Array.isArray(a)) { return a.length === 0; }
+  _typeError(`List, Tuple, or Array`, a);
+}
+
+function isList(a) { return a instanceof List ? true : false; }
+
+function last(a) {
+  if (isList(a) && isEmpty(a) === false) { return isEmpty(a.tail) ? a.head : last(a.tail); }
+  _typeError(`List`, a);
+}
+
+function length(a) {
+  if (isList(a)) { return lenAcc(a, 0); }
+  _typeError(`List`, a);
+  function lenAcc(xs, n) { return isEmpty(xs) ? n : lenAcc(xs.tail, n + 1); }
+}
+
+function listAppend(a) {
+  if (a === undefined) { return append; }
+  return function(a, b) {
+    if (isList(a) === false ) { _typeError(`List`, a); }
+    if (isList(b) === false ) { _typeError(`List`, b); }
+    if (isEmpty(a)) { return b; }
+    if (isEmpty(b)) { return a; }
+    if (typeof head(a) !== typeof head(b)) { _typeError(`[${typeof head(a)}]`, `[${typeof head(b)}]`); }
+    return cons(a.head)(listAppend(a.tail)(b));
+  }.bind(this, a);
+}
+
+function tail(a) {
+  if (isList(a) && isEmpty(a) === false) { return a.tail; }
+  _typeError(`List`, a);
+}
+
+//uncons
+
+// List transformations
+
+// this function is in the style I should use for all other functions. Arrow
+// functions with bindings and let expressions to make head and tail clear.
+function map(f) {
+  if (f === undefined) { return map; } // why do I do this?
+  return (f, a) => {
+    if (isList(a) === false ) { _typeError(`List`, a); }
+    if (isEmpty(a)) { return list(); }
+    let x = a.head;
+    let xs = a.tail;
+    return cons(f(x))(map(f)(xs));
+  }.bind(this, f);
+}
+
+// I can probably fix my list problem by creating an "empty list" value the same way I have
+// an empty tuple since they're all the same, anyway
+
+// Sublists
+
+function drop(n) {
+  return function(n, a) {
+    if (isList(a) === false) { _typeError(`List`, a); }
+    if (n <= 0) { return a; }
+    if (isEmpty(a)) { return list(); }
+    let x = a.head;
+    let xs = a.tail;
+    return drop(n - 1)(xs);
+  }.bind(this, n);
+}
+
+function take(n) {
+  return function(n, a) {
+    if (isList(a) === false) { _typeError(`List`, a); }
+    if (n <= 0) { return list(); }
+    if (isEmpty(a)) { return list(); }
+    let x = a.head;
+    let xs = a.tail;
+    return cons(x)(take(n - 1)(xs));
+  }.bind(this, n);
+}
+
+// Indexing functions
+
+function index(a) {
+  if (a === undefined) { return index; }
+  return function(a, n) {
+    if (isList(a) === false ) { _typeError(`List`, a); }
+    if (n < 0) { throw RangeError(`Negative index given for ${a.name}.`); }
+    if (isEmpty(a)) { throw RangeError(`Index too large given for ${a.name}.`); }
+    if (n === 0) { return a.head; }
+    return index(a.tail)(n - 1);
+  }.bind(this, a)
+  _typeError(`List`, a);
+}
+
+// Zipping and unzipping lists
+
+function zip(a) {
+  if (a === undefined) { return zip; }
+  return function(a, b) {
+    if (isList(a) === false) { _typeError(`List`, a); }
+    if (isList(b) === false) { _typeError(`List`, b); }
+    if (isEmpty(a)) { return list(); }
+    if (isEmpty(b)) { return list(); }
+    return cons(tuple(a.head, b.head))(zip(a.tail)(b.tail));
+  }.bind(this, a);
+}
+
+// Ordered lists
+
+
 
 // API
 
 export default {
+  $: $,
+  id: id,
   compare: compare,
+  tuple: tuple,
   curry: curry,
   fromArrayToTuple: fromArrayToTuple,
   fromTupleToArray: fromTupleToArray,
@@ -313,8 +524,8 @@ export default {
   min: min,
   snd: snd,
   swap: swap,
-  tuple: tuple,
   typeOf: typeOf,
   uncurry: uncurry,
-  unit: unit
+  unit: unit,
+  isEmpty: isEmpty
 }

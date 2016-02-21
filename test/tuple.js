@@ -78,6 +78,14 @@ describe('Tuple', function() {
       murphies.fst.bind(null).should.throw();
     });
   });
+  describe('#isEmpty(Tuple)', function() {
+    it('should return true if the tuple is unit, the empty tuple.', function() {
+      let p1 = murphies.tuple();
+      let p2 = murphies.tuple(1, 2);
+      murphies.isEmpty(p1).should.be.true;
+      murphies.isEmpty(p2).should.be.false;
+    });
+  });
   describe('#isTuple()', function() {
     it('should return true when the value is a tuple.', function() {
       let p = murphies.tuple(1, 2);
@@ -87,7 +95,7 @@ describe('Tuple', function() {
       let p = [1, 2];
       murphies.isTuple(p).should.be.false;
     });
-    it('should return false when the vaue is unit, the empty tuple.', function() {
+    it('should return false when the value is unit, the empty tuple.', function() {
       murphies.isTuple(unit).should.be.false;
     });
   });
