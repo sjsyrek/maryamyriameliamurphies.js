@@ -1,5 +1,5 @@
-archive
-source
-test
-node_modules
+archive/
+source/
+test/
+node_modules/
 npm-debug.log
