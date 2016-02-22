@@ -29,6 +29,13 @@
 
 // Base
 
+class Type {
+  static _type(a) {
+    if (a.constructor !== this) { _typeError(this.name, a.constructor.name); }
+    return this.name;
+  }
+}
+
 /**
  * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions,
  * f and g is the same as applying the result of g to f, or f(g(x)) for a given argument x.
@@ -52,8 +59,7 @@
  * @param {function()} f - The outermost function to compose.
  * @return {function()} - The composed function, called only if a value is bound to f.
  */
-function $(f) { return f === undefined ? $ : (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
-// rewrite to check for function type maybe
+function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
 /**
  * Determine whether two objects are the same type, returning true if they are and false otherwise.
@@ -64,7 +70,7 @@ function $(f) { return f === undefined ? $ : (g, x) => x === undefined ? x => f(
  * @private
  */
 function _typeCheck(a, b) {
-  if (a.constructor.type !== undefined && b.constructor.type !== undefined) { return a.constructor.type(a) === b.constructor.type(b); }
+  if (a instanceof Type && b instanceof Type) { return a.constructor._type(a) === b.constructor._type(b); }
   if (a.constructor === b.constructor) { return true; }
   return false;
 }
@@ -96,7 +102,7 @@ function id(a) { return a; }
  * @param {*} a - Any object.
  * @return {string}
  */
-function typeOf(a) { return a.constructor.type !== undefined ? a.constructor.type(a) : typeof a; }
+function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
 
 // Eq (from Prelude)
 
@@ -180,12 +186,17 @@ Object.freeze(Ordering);
  * @class
  * @param {*} values - The values to put into the tuple.
  */
-class Tuple {
-  constructor(...values) {
-    if (values.length === 0) { this[0] = null; }
-    values.forEach((v, i) => this[i + 1] = v );
+class Tuple extends Type {
+  constructor(...as) {
+    super();
+    if (as.length === 0) { this[0] = null; }
+    as.forEach((v, i) => this[i + 1] = v );
   }
-  static type(a) { return `(${Reflect.ownKeys(a).map(key => typeof a[key]).join(', ')})`; }
+  static _type(a) {
+    if (a.constructor !== this) { _typeError(this.name, a.constructor.name); }
+    return a.typeOf();
+    }
+  }
   static eq(a, b) { return fromTupleToArray(a).every((a, i) => a === fromTupleToArray(b)[i]); }
   static ord(a, b) {
     if (this.eq(a, b)) { return Ordering.EQ; }
@@ -197,20 +208,22 @@ class Tuple {
     }
   }
   toString() { return `[Object Tuple]`; }
+  typeOf() { return `(${Reflect.ownKeys(a).map(key => typeof a[key]).join(', ')})`; }
   valueOf() { return `(${Reflect.ownKeys(this).map(key => typeof this[key] === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
 }
 
 /**
  * Create a new tuple from any number of values. A single value will be returned unaltered,
  * and {@code unit}, the empty tuple, will be returned if no arguments are passed.
+ * Usage: tuple(10, 20) -> {"1": 10, "2": 20}
  * @param {...*} values - The values to put into a tuple.
  * @return {Tuple} - A new tuple.
  */
-function tuple(...values) {
-  let [a, b] = values;
-  if (a === undefined) return unit;
-  if (b === undefined) return a;
-  return new Tuple(...values);
+function tuple(...as) {
+  let [x, y] = as;
+  if (x === undefined) return unit;
+  if (y === undefined) return x;
+  return new Tuple(...as);
 }
 
 /**
@@ -233,7 +246,6 @@ function tuple(...values) {
  * @return {function()} - The curried function.
  */
  function curry(f, x, y) {
-   if (f === undefined) { return curry; }
    if (x === undefined) { return x => y => f.call(f, tuple(x, y)); }
    if (y === undefined) { return curry(f)(x); }
    return curry(f)(x)(y);
@@ -245,9 +257,9 @@ function tuple(...values) {
  * @param {Array<*>} array - The array to convert.
  * @return {Tuple} - The new tuple.
  */
-function fromArrayToTuple(array) {
-  if (array === undefined || Array.isArray(array) === false) { return unit; }
-  return Reflect.construct(Tuple, Array.from(array));
+function fromArrayToTuple(a) {
+  if (a === undefined || Array.isArray(a) === false) { _typeError(`Array`, a); }
+  return Reflect.construct(Tuple, Array.from(a));
 }
 
 /**
@@ -315,7 +327,6 @@ function swap(p) {
  * @return {function()} - The uncurried function.
  */
 function uncurry(f, p) {
-  if (f === undefined) { return uncurry; }
   if (p === undefined) { return p => f.call(f, fst(p)).call(f, snd(p)); }
   return f.call(f, fst(p)).call(f, snd(p));
 }
@@ -350,19 +361,16 @@ class List {
   valueOf() { return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`; }
 }
 
-function list(...as) {
-  if (isEmpty(as)) { return new List(); }
-  return new List(as.shift(), list(...as));
-}
+function list(...as) { return isEmpty(as) ? Reflect.construct(List) : Reflect.construct(List, [as.shift(), list(...as)]); }
 
-function cons(a) {
+function cons(x) {
   return function(x, xs) {
     if (x === undefined) { return x => Reflect.construct(List, x); }
     if (xs === undefined) { return Reflect.construct(List, [x, new List()]); }
     if (xs instanceof List === false) { _typeError(`List`, xs); }
     if (isEmpty(xs) === false && typeof x !== typeof head(xs)) { _typeError(head(xs), x); }
     return new List(x, xs);
-  }.bind(this, a);
+  }.bind(this, x);
 }
 
 function fromArrayToList(array) {
