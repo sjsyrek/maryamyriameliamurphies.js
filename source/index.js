@@ -37,6 +37,28 @@ class Type {
 }
 
 /**
+ * Determine whether two objects are the same type, returning true if they are and false otherwise.
+ * This is a limited form of type checking for this library.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean}
+ * @private
+ */
+function _typeCheck(a, b) {
+  if (a instanceof Type && b instanceof Type) { return a.constructor._type(a) === b.constructor._type(b); }
+  if (a.constructor === b.constructor) { return true; }
+  return false;
+}
+
+/**
+ * Throw an exception in the event of a type error.
+ * @param {string} exp - The type the calling function was expecting.
+ * @param {*} got - The value that it got instead.
+ * @private
+ */
+function _typeError(exp, got) { throw TypeError(`I expected a value of type '${exp}' but I got ${got}.`); }
+
+/**
  * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions,
  * f and g is the same as applying the result of g to f, or f(g(x)) for a given argument x.
  * This pattern can't exactly be reproduced in JavaScript, since the dot operator denotes
@@ -62,33 +84,19 @@ class Type {
 function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
 /**
- * Determine whether two objects are the same type, returning true if they are and false otherwise.
- * This is a limited form of type checking for this library.
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @return {boolean}
- * @private
- */
-function _typeCheck(a, b) {
-  if (a instanceof Type && b instanceof Type) { return a.constructor._type(a) === b.constructor._type(b); }
-  if (a.constructor === b.constructor) { return true; }
-  return false;
-}
-
-/**
- * Throw an exception in the event of a type error.
- * @param {string} exp - The type the calling function was expecting.
- * @param {*} got - The value that it got instead.
- * @private
- */
-function _typeError(exp, got) { throw TypeError(`I expected a value of type '${exp}' but I got ${got}.`); }
-
-/**
  * The identity function.
  * @param {*} a - Any value.
  * @return {*} a - The same value;
  */
 function id(a) { return a; }
+
+function isEmpty(a) {
+  if (isList(a)) { return a === emptyList; } // a.head === null
+  if (isTuple(a)) { return false; }
+  if (a === unit) { return true; }
+  if (Array.isArray(a)) { return a.length === 0; }
+  _typeError(`List, Tuple, or Array`, a);
+}
 
 /**
  * Display the value of an object as a string.
@@ -208,9 +216,15 @@ class Tuple extends Type {
     }
   }
   toString() { return `[Object Tuple]`; }
-  typeOf() { return `(${Reflect.ownKeys(a).map(key => typeof a[key]).join(', ')})`; }
-  valueOf() { return `(${Reflect.ownKeys(this).map(key => typeof this[key] === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
+  typeOf() { return `(${Reflect.ownKeys(a).map(key => type(a[key])).join(', ')})`; }
+  valueOf() { return `(${Reflect.ownKeys(this).map(key => type(this[key]) === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
 }
+
+/**
+ * The {@code unit} object: an empty tuple. Note that {@code isTuple(unit) === false}.
+ * @const {Tuple}
+ */
+const unit = new Tuple();
 
 /**
  * Create a new tuple from any number of values. A single value will be returned unaltered,
@@ -258,8 +272,8 @@ function tuple(...as) {
  * @return {Tuple} - The new tuple.
  */
 function fromArrayToTuple(a) {
-  if (a === undefined || Array.isArray(a) === false) { _typeError(`Array`, a); }
-  return Reflect.construct(Tuple, Array.from(a));
+  if (Array.isArray(a)) { return Reflect.construct(Tuple, Array.from(a)); }
+  _typeError(`Array`, a); }
 }
 
 /**
@@ -331,24 +345,18 @@ function uncurry(f, p) {
   return f.call(f, fst(p)).call(f, snd(p));
 }
 
-/**
- * The {@code unit} object: an empty tuple. Note that {@code isTuple(unit) === false}.
- * @const {Tuple}
- */
-const unit = new Tuple();
-
 // List (from Data.List)
 
 // Basic functions
 
-class List {
+class List extends Type {
   constructor(head, tail) {
+    super();
     this.head = null;
     this.tail = null;
     if (head) { this.head = head; }
     if (tail) { this.tail = tail; }
   }
-  static type(a) { return `[List]`; }
   static eq(a, b) { return fromListToArray(a).every((a, i) => a === fromListToArray(b)[i]); }
   static ord(a, b) {
     if (isEmpty(a) && isEmpty(b)) { return Ordering.EQ; }
@@ -358,81 +366,79 @@ class List {
     return compare(a.head, b.head);
   }
   toString() { return `[Object List]`; }
+  typeOf() { return `[${isEmpty(this) ? '' : type(this.head)}]`; }
   valueOf() { return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`; }
 }
 
-function list(...as) { return isEmpty(as) ? Reflect.construct(List) : Reflect.construct(List, [as.shift(), list(...as)]); }
+const emptyList = new List();
 
-function cons(x) {
-  return function(x, xs) {
-    if (x === undefined) { return x => Reflect.construct(List, x); }
-    if (xs === undefined) { return Reflect.construct(List, [x, new List()]); }
+function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct(List, [as.shift(), list(...as)]); }
+
+function cons(x, xs) {
+  let cons = (x, xs) => {
+    if (xs === undefined || isEmpty(xs)) { return Reflect.construct(List, [x, emptyList]); }
     if (xs instanceof List === false) { _typeError(`List`, xs); }
-    if (isEmpty(xs) === false && typeof x !== typeof head(xs)) { _typeError(head(xs), x); }
-    return new List(x, xs);
-  }.bind(this, x);
+    if (_typeCheck(x, head(xs))) { return new List(x, xs); }
+    _typeError(type(head(xs)), x);
+  }
+  return xs === undefined ? cons.bind(this, x) : cons.call(this, x, xs);
 }
 
-function fromArrayToList(array) {
-  if (array === undefined || Array.isArray(array) === false) { return new List(); }
-  return list(...array);
+function fromArrayToList(a) {
+  if (Array.isArray(a)) { return list(...array); }
+  _typeError(`Array`, a);
 }
 
-function fromListToArray(a) { return isEmpty(a) ? [] : [a.head].concat(fromListToArray(a.tail)); }
+function fromListToArray(as) { return isEmpty(as) ? [] : [as.head].concat(fromListToArray(as.tail)); }
 
-function fromListToString(a) {
-  if (isList(a)) { return fromListToArray(a).join(``); }
-  _typeError(`List`, a);
+function fromListToString(as) {
+  if (isList(as)) { return fromListToArray(as).join(``); }
+  _typeError(`List`, as);
 }
 
-function fromStringToList(str) { return fromArrayToList(str.split(``)); }
-
-function head(a) {
-  if (isList(a) && isEmpty(a) === false) { return a.head; }
-  _typeError(`List`, a);
+function fromStringToList(str) {
+  if (typeof str === 'string') { return fromArrayToList(str.split(``)); }
+  _typeError(`string`, a);
 }
 
-function init(a) {
-  if (isList(a) && isEmpty(a) === false) { return isEmpty(a.tail) ? list() : cons(a.head)(init(a.tail)); }
-  _typeError(`List`, a);
+function head(as) {
+  if (isList(as) && isEmpty(as) === false) { return as.head; }
+  _typeError(`List`, as);
 }
 
-function isEmpty(a) {
-  if (isList(a)) { return a.head === null; }
-  if (isTuple(a)) { return false; }
-  if (a === unit) { return true; }
-  if (Array.isArray(a)) { return a.length === 0; }
-  _typeError(`List, Tuple, or Array`, a);
+function init(as) {
+  if (isList(as) && isEmpty(as) === false) { return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail)); }
+  _typeError(`List`, as);
 }
 
 function isList(a) { return a instanceof List ? true : false; }
 
-function last(a) {
-  if (isList(a) && isEmpty(a) === false) { return isEmpty(a.tail) ? a.head : last(a.tail); }
-  _typeError(`List`, a);
+function last(as) {
+  if (isList(as) && isEmpty(as) === false) { return isEmpty(as.tail) ? as.head : last(as.tail); }
+  _typeError(`List`, as);
 }
 
-function length(a) {
-  if (isList(a)) { return lenAcc(a, 0); }
-  _typeError(`List`, a);
-  function lenAcc(xs, n) { return isEmpty(xs) ? n : lenAcc(xs.tail, n + 1); }
+function length(as) {
+  let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
+  if (isList(as)) { return lenAcc(as, 0); }
+  _typeError(`List`, as);
 }
 
-function listAppend(a) {
-  if (a === undefined) { return append; }
-  return function(a, b) {
-    if (isList(a) === false ) { _typeError(`List`, a); }
-    if (isList(b) === false ) { _typeError(`List`, b); }
-    if (isEmpty(a)) { return b; }
-    if (isEmpty(b)) { return a; }
-    if (typeof head(a) !== typeof head(b)) { _typeError(`[${typeof head(a)}]`, `[${typeof head(b)}]`); }
-    return cons(a.head)(listAppend(a.tail)(b));
-  }.bind(this, a);
+function listAppend(as, bs) {
+  let append = (as, bs) => {
+    if (isList(as) === false ) { _typeError(`List`, as); }
+    if (isList(bs) === false ) { _typeError(`List`, bs); }
+    if (isEmpty(as)) { return bs; }
+    if (isEmpty(bs)) { return as; }
+    if (type(head(as)) === type(head(bs))) { return cons(as.head)(listAppend(as.tail)(bs)); }
+    _typeError(`[${type(head(as))}]`, `[${type(head(bs))}]`);
+  }
+  return bs === undefined ? append.bind(this, as) : append.call(this, as, bs);
 }
 
-function tail(a) {
-  if (isList(a) && isEmpty(a) === false) { return a.tail; }
-  _typeError(`List`, a);
+function tail(as) {
+  if (isList(as) && isEmpty(as) === false) { return as.tail; }
+  _typeError(`List`, as);
 }
 
 //uncons
@@ -441,69 +447,73 @@ function tail(a) {
 
 // this function is in the style I should use for all other functions. Arrow
 // functions with bindings and let expressions to make head and tail clear.
-function map(f) {
-  if (f === undefined) { return map; } // why do I do this?
-  return (f, a) => {
-    if (isList(a) === false ) { _typeError(`List`, a); }
-    if (isEmpty(a)) { return list(); }
-    let x = a.head;
-    let xs = a.tail;
+function map(f, as) {
+  let m = (f, as) => {
+    if (isList(as) === false ) { _typeError(`List`, as); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
     return cons(f(x))(map(f)(xs));
-  }.bind(this, f);
+  }
+  return as === undefined ? m.bind(this, f) : m.call(this, f, as);
 }
-
-// I can probably fix my list problem by creating an "empty list" value the same way I have
-// an empty tuple since they're all the same, anyway
 
 // Sublists
 
-function drop(n) {
-  return function(n, a) {
-    if (isList(a) === false) { _typeError(`List`, a); }
-    if (n <= 0) { return a; }
-    if (isEmpty(a)) { return list(); }
-    let x = a.head;
-    let xs = a.tail;
+function drop(n, as) {
+  let d = (n, as) => {
+    if (isList(as) === false) { _typeError(`List`, as); }
+    if (n <= 0) { return as; }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
     return drop(n - 1)(xs);
-  }.bind(this, n);
+  }
+  return as === undefined ? d.bind(this, n) : d.call(this, n, as);
 }
 
-function take(n) {
-  return function(n, a) {
-    if (isList(a) === false) { _typeError(`List`, a); }
-    if (n <= 0) { return list(); }
-    if (isEmpty(a)) { return list(); }
-    let x = a.head;
-    let xs = a.tail;
+function take(n, as) {
+  let t = (n, as) => {
+    if (isList(as) === false) { _typeError(`List`, as); }
+    if (n <= 0) { return emptyList; }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
     return cons(x)(take(n - 1)(xs));
-  }.bind(this, n);
+  }
+  return as === undefined ? t.bind(this, n) : t.call(this, n, as);
 }
 
 // Indexing functions
 
-function index(a) {
-  if (a === undefined) { return index; }
-  return function(a, n) {
-    if (isList(a) === false ) { _typeError(`List`, a); }
-    if (n < 0) { throw RangeError(`Negative index given for ${a.name}.`); }
-    if (isEmpty(a)) { throw RangeError(`Index too large given for ${a.name}.`); }
-    if (n === 0) { return a.head; }
-    return index(a.tail)(n - 1);
-  }.bind(this, a)
-  _typeError(`List`, a);
+function index(as, n) {
+  let i = (as, n) => {
+    if (isList(as) === false ) { _typeError(`List`, as); }
+    if (n < 0) { throw RangeError(`Negative index given for ${as.name}.`); }
+    if (isEmpty(as)) { throw RangeError(`Index too large given for ${as.name}.`); }
+    let x = as.head;
+    let xs = as.tail;
+    if (n === 0) { return x; }
+    return index(xs)(n - 1);
+  }
+  return n === undefined ? i.bind(this, as) : i.call(this, as, n);
 }
 
 // Zipping and unzipping lists
 
-function zip(a) {
-  if (a === undefined) { return zip; }
-  return function(a, b) {
-    if (isList(a) === false) { _typeError(`List`, a); }
-    if (isList(b) === false) { _typeError(`List`, b); }
-    if (isEmpty(a)) { return list(); }
-    if (isEmpty(b)) { return list(); }
-    return cons(tuple(a.head, b.head))(zip(a.tail)(b.tail));
-  }.bind(this, a);
+function zip(as, bs) {
+  let z = (as, bs) => {
+    if (isList(as) === false) { _typeError(`List`, as); }
+    if (isList(bs) === false) { _typeError(`List`, bs); }
+    if (isEmpty(as)) { return emptyList; }
+    if (isEmpty(bs)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    let y = bs.head;
+    let ys = bs.tail;
+    return cons(tuple(x, y))(zip(xs)(ys));
+  }
+  return bs === undefined ? z.bind(this, as) : z.call(this, as, bs);
 }
 
 // Ordered lists
@@ -515,25 +525,45 @@ function zip(a) {
 export default {
   $: $,
   id: id,
+  isEmpty: isEmpty,
+  show: show,
+  type: type,
+  isEq: isEq,
+  isNotEq: isNotEq,
   compare: compare,
+  lessThan: lessThan,
+  lessThanOrEqual: lessThanOrEqual,
+  greaterThan: greaterThan,
+  greaterThanOrEqual: greaterThanOrEqual,
+  max: max,
+  min: min,
+  unit: unit,
   tuple: tuple,
   curry: curry,
   fromArrayToTuple: fromArrayToTuple,
   fromTupleToArray: fromTupleToArray,
   fst: fst,
-  greaterThan: greaterThan,
-  greaterThanOrEqual: greaterThanOrEqual,
-  isEq: isEq,
-  isNotEq: isNotEq,
   isTuple: isTuple,
-  lessThan: lessThan,
-  lessThanOrEqual: lessThanOrEqual,
-  max: max,
-  min: min,
   snd: snd,
   swap: swap,
-  typeOf: typeOf,
   uncurry: uncurry,
-  unit: unit,
-  isEmpty: isEmpty
+  emptyList: emptyList,
+  list: list,
+  cons: cons,
+  fromArrayToList: fromArrayToList,
+  fromListToArray: fromListToArray,
+  fromListToString: fromListToString,
+  fromStringToList: fromStringToList,
+  head: head,
+  init: init,
+  isList: isList,
+  last: last,
+  length: length,
+  listAppend: listAppend,
+  tail: tail,
+  map: map,
+  drop: drop,
+  take: take,
+  index: index,
+  zip: zip
 }
