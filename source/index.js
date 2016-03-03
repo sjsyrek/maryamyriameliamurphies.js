@@ -1,3 +1,41 @@
+function subsequences(as) {
+  if (isList(as) === false) { return error.listError(as, subsequences); }
+  function nonEmptySubsequences(as) {
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    let f = ys => cons(ys)(cons(cons(x)(ys)))(r);
+    return cons(list(x))(foldr(f, emptyList, nonEmptySubsequences(xs)));
+  }
+  return cons(emptyList)(nonEmptySubsequences(as));
+}
+
+let abc = fromStringToList('abc');
+//console.log(show(subsequences(abc)))
+
+// -- > subsequences "abc" == ["","a","b","ab","c","ac","bc","abc"]
+// subsequences            :: [a] -> [[a]]
+// subsequences xs         =  [] : nonEmptySubsequences xs
+
+// -- | The 'nonEmptySubsequences' function returns the list of all subsequences of the argument,
+// --   except for the empty list.
+// --
+// -- > nonEmptySubsequences "abc" == ["a","b","ab","c","ac","bc","abc"]
+
+// nonEmptySubsequences         :: [a] -> [[a]]
+// nonEmptySubsequences []      =  []
+// nonEmptySubsequences (x:xs)  =  [x] : foldr f [] (nonEmptySubsequences xs)
+//   where f ys r = ys : (x : ys) : r
+f = cons(ys)(cons(cons(x)(ys)))(r)
+
+
+
+
+// TODO: reimplement Ordering as a Monoid
+// TODO: replace (where possible) class property values with closures
+// TODO: replace pseudo-list comprehensions with maps and filters
+// TODO: implement error checking for lazy functions that don't do it, because it's hard to track down errors otherwise
+
 /*
  * maryamyriameliamurphies.js
  *
@@ -25,16 +63,52 @@
  * bottom of this file.
  */
 
-`use strict`;
-
 // Base
 
+let defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
+
+const error = {
+  emptyList: (a, f) => throwError(`'${a}' is an empty list, but '${f.name}' expects a non-empty list.`),
+  listError: (a, f) => throwError(`'${a}' is type '${a.constructor.name}' but function '${f.name}' expects a list.`),
+  nothing: (a, f) => throwError(`'${f}' returned Nothing from argument '${a}'`),
+  rangeError: (n, f) => throwError(`Index '${n}' is out of range in function '${f.name}'.`),
+  returnError: (f1, f2) => throwError(`Unexpected return value from function '${f1.name}' called by function '${f2.name}'.`),
+  tupleError: (p, f) => throwError(`'${p}' is type '${p.constructor.name}' but function '${f.name}' expects a tuple.`),
+  typeError: (a, f) => throwError(`'${type(a) === 'function' ? `${type(a)} ${a.name}` : a}' is not a valid argument to function '${f.name}'.`),
+  typeMismatch: (a, b, f) => throwError(`Arguments '${a}' and '${b}' to function '${f.name}' are not the same type.`)
+};
+
+function throwError(e) { throw Error(`*** Error: ${e}`); }
+
 class Type {
-  static _type(a) {
-    if (a.constructor !== this) { _typeError(this.name, a.constructor.name); }
-    return this.name;
-  }
+  static type(a) { return dataType(a) === this ? this.name : error.typeError(a, this.type); }
+  toString() { return this.valueOf(); }
+  typeOf() { return dataType(this).name; }
+  valueOf() { return this; }
 }
+
+// function partial(f, x, y) {
+//   if (x === undefined) { return error.noArguments(f); }
+//   if (y === undefined) { return f.bind(f, x); }
+//   return f.call(f, x, y)
+// }
+
+function partial(f, ...as) {
+  if (isEmpty(as)) { return f.call(); }
+  let a = as.shift();
+  if (a === undefined) { return f; }
+  let p = f.bind(f, a);
+  return partial(p, ...as);
+}
+
+function print(a) { return console.log(show(a)); }
+
+function constant(a, b) {
+  let p = (a, b) => a;
+  return partial(p, a, b);
+}
+
+function dataType(a) { return a.constructor; }
 
 /**
  * Determine whether two objects are the same type, returning true if they are and false otherwise.
@@ -44,19 +118,14 @@ class Type {
  * @return {boolean}
  * @private
  */
-function _typeCheck(a, b) {
-  if (a instanceof Type && b instanceof Type) { return a.constructor._type(a) === b.constructor._type(b); }
-  if (a.constructor === b.constructor) { return true; }
-  return false;
+function typeCheck(a, b) {
+  let p = (a, b) => {
+    if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
+    if (dataType(a) === dataType(b)) { return true; }
+    return false;
+  }
+  return partial(a, b);
 }
-
-/**
- * Throw an exception in the event of a type error.
- * @param {string} exp - The type the calling function was expecting.
- * @param {*} got - The value that it got instead.
- * @private
- */
-function _typeError(exp, got) { throw TypeError(`I expected a value of type '${exp}' but I got ${got}.`); }
 
 /**
  * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions,
@@ -83,6 +152,8 @@ function _typeError(exp, got) { throw TypeError(`I expected a value of type '${e
  */
 function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
+function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
+
 /**
  * The identity function.
  * @param {*} a - Any value.
@@ -95,7 +166,7 @@ function isEmpty(a) {
   if (isTuple(a)) { return false; }
   if (a === unit) { return true; }
   if (Array.isArray(a)) { return a.length === 0; }
-  _typeError(`List, Tuple, or Array`, a);
+  return error.typeError(a, isEmpty);
 }
 
 /**
@@ -103,7 +174,7 @@ function isEmpty(a) {
  * @param {*} a - The object to show.
  * @return {string} - The value as a string.
  */
- function show(a) { return a.valueOf(); }
+function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
 
 /**
  * Return the type of any object as specified by this library or its primitive type.
@@ -112,7 +183,38 @@ function isEmpty(a) {
  */
 function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
 
+function until(pred, f, x) {
+  let p = (pred, f, a) => pred(x) ? x : until(pred, f, f(x));
+  return partial(p, pred, f, x);
+}
+
+function and(a, b) {
+  let p = (a, b) => {
+    if (type(a) !== `boolean`) { return error.typeError(a, and); }
+    if (type(b) !== `boolean`) { return error.typeError(b, and); }
+    return true && b ? b : false;
+  }
+  return partial(p, a, b);
+}
+
+function or(a, b) {
+  let p = (a, b) => {
+    if (type(a) !== `boolean`) { return error.typeError(a, or); }
+    if (type(b) !== `boolean`) { return error.typeError(b, or); }
+    return a ? true : b;
+  }
+  return partial(p, a, b);
+}
+
+function not(a) {
+  if (a === true) { return false; }
+  if (a === false) { return true; }
+  return error.typeError(a, not);
+}
+
 // Eq (from Prelude)
+
+let Eq = defines(`isEq`);
 
 /**
  * Compare two objects for equality. Both objects must be instances of a class that implements
@@ -123,12 +225,21 @@ function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
  * @return {boolean}
  */
 function isEq(a, b) {
-  if (_typeCheck(a, b)) { return a.constructor.eq !== undefined && b.constructor.eq !== undefined ? a.constructor.eq(a, b) : a === b; }
-  _typeError(typeOf(a), b);
+  let p = (a, b) => {
+    if (typeCheck(a, b)) { return Eq(a) ? dataType(a).isEq(a, b) : a === b; }
+    return error.typeMismatch(a, b, isEq);
+  }
+  return partial(p, a, b);
 }
-function isNotEq(a, b) { return !isEq(a, b); }
+
+function isNotEq(a, b) {
+  let p = (a, b) => !isEq(a, b);
+  return partial(p, a, b);
+}
 
 // Ord (from Prelude)
+
+let Ord = defines(`isEq`, `compare`);
 
 /**
  * Compare two objects for ordering. Both values must be instances of a class that implements
@@ -140,13 +251,16 @@ function isNotEq(a, b) { return !isEq(a, b); }
  * @return {string} - Ordering.
  */
 function compare(a, b) {
-  if (_typeCheck(a, b)) {
-    if (a.constructor.ord !== undefined && b.constructor.ord !== undefined) { return a.constructor.ord(a, b); }
-    if (isEq(a, b)) { return Ordering.EQ; }
-    if (a < b) { return Ordering.LT; }
-    if (a > b) { return Ordering.GT; }
+  let p = (a, b) => {
+    if (typeCheck(a, b)) {
+      if (Ord(a)) { return dataType(a).compare(a, b); }
+      if (isEq(a, b)) { return Ordering.EQ; }
+      if (a < b) { return Ordering.LT; }
+      if (a > b) { return Ordering.GT; }
+    }
+    return error.typeMismatch(a, b, compare);
   }
-  _typeError(typeOf(a), b);
+  return partial(p, a, b);
 }
 
 /**
@@ -155,10 +269,25 @@ function compare(a, b) {
  * @param {*} b - Any object.
  * @return {boolean}
  */
-function lessThan(a, b) { return compare(a, b) === Ordering.LT; }
-function lessThanOrEqual(a, b) { return compare(a, b) !== Ordering.GT; }
-function greaterThan(a, b) { return compare(a, b) === Ordering.GT; }
-function greaterThanOrEqual(a, b) { return compare(a, b) !== Ordering.LT; }
+function lessThan(a, b) {
+  let p = (a, b) => compare(a, b) === Ordering.LT;
+  return partial(p, a, b);
+}
+
+function lessThanOrEqual(a, b) {
+  let p = (a, b) => compare(a, b) !== Ordering.GT;
+  return partial(p, a, b);
+}
+
+function greaterThan(a, b) {
+  let p = (a, b) => compare(a, b) === Ordering.GT;
+  return partial(p, a, b);
+}
+
+function greaterThanOrEqual(a, b) {
+  let p = (a, b) => compare(a, b) !== Ordering.LT;
+  return partial(p, a, b);
+}
 
 /**
  * Return the higher or lower in value of two objects.
@@ -167,8 +296,15 @@ function greaterThanOrEqual(a, b) { return compare(a, b) !== Ordering.LT; }
  * @param {*} b - Any object.
  * @return {Object} - a or b.
  */
-function max(a, b) { return lessThanOrEqual(a, b) ? b : a; }
-function min(a, b) { return lessThanOrEqual(a, b) ? a : b; }
+function max(a, b) {
+  let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
+  return partial(p, a, b);
+}
+
+function min(a, b) {
+  let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
+  return partial(p, a, b);
+}
 
 /**
  * A data type for representing the relationship of two values.
@@ -180,6 +316,322 @@ const Ordering = {
   GT: 'GT'  // a > b
 }
 Object.freeze(Ordering);
+
+// instance Monoid Ordering where
+//         mempty         = EQ
+//         LT `mappend` _ = LT
+//         EQ `mappend` y = y
+//         GT `mappend` _ = GT
+
+// Monoid (from Prelude)
+
+let Monoid = defines(`mempty`, `mappend`);
+
+function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(a, mempty); }
+
+function mappend(a, b) {
+  let p = (a, b) => {
+    if (typeCheck(a, b)) { return Monoid(a) ? dataType(a).mappend(a, b) : error.typeError(a, mappend); }
+    return error.typeMismatch(a, b, mappend);
+  }
+  return partial(p, a, b);
+}
+
+function mconcat(a) { return foldr(mappend, mempty(a), a); }
+
+// Functor
+
+let Functor = defines(`fmap`);
+
+// fmap id  ==  id
+// fmap (f . g)  ==  fmap f . fmap g
+
+// function f(x) { return x * 11; }
+// function g(x) { return x * 100; }
+// let g1 = fmap(g, t1)
+// let f1 = fmap(f, g1)
+// let m = fmap(f(fmap(g, t1)))
+// function $$(f) { return (g, x) => partial(f, g, x); }
+// let f2 = fmap(f);
+// let g2 = fmap(g);
+// let mm = $(f2)(g2)(t1)
+
+function fmap(f, a) {
+  let p = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
+  return partial(p, f, a);
+}
+
+function fmapReplaceBy(a, b) {
+  let p = (a, b) => fmap(constant(a), b);
+  return partial(p, a, b);
+}
+
+// Applicative (let p all these multiparameter functions)
+
+let Applicative = defines(`fmap`, `pure`, `ap`);
+
+function pure(f, a) {
+  let p = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
+  return partial(p, f, a);
+}
+
+function ap(f, a) { // <*>
+  let p = (f, a) => {
+    if (Applicative(f) === false) { error.typeError(f, ap); }
+    if (Applicative(a) === false) { error.typeError(a, ap); }
+    return dataType(a).ap(f, a);
+  }
+  return partial(p, f, a);
+}
+
+function apFlip(f, a, b) { // <**>
+  let p = (f, a, b) => liftA2(flip(f), a, b);
+  return partial(p, f, a, b);
+}
+
+function then(a1, a2) { // *>
+  let p = (a1, a2) => liftA2(constant(id), a1, a2);
+  return partial(p, a1, a2);
+}
+
+function skip(a1, a2) { // <*
+  let p = (a1, a2) => liftA2(constant, a1, a2);
+  return partial(p, a1, a2);
+}
+
+function liftA(f, a) {
+  let p = (f, a) => ap(dataType(a).pure(f))(a);
+  return partial(p, f, a);
+}
+
+function liftA2(f, a, b) {
+  let p = (f, a, b) => ap(fmap(f, a))(b);
+  return partial(p, f, a, b);
+}
+
+function liftA3(f, a, b, c) {
+  let p = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
+  return partial(p, f, a, b, c);
+}
+
+// Monad
+
+let Monad = defines(`fmap`, `pure`, `ap`, `bind`);
+
+function inject(m, a) { // return
+  let p = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
+  return partial(p, m, a);
+}
+
+function bind(m, f) { // >>=
+  let p = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
+  return partial(p, m, f);
+}
+
+function chain(m, f) {  // >>
+  let p = (m, f) => return Monad(m) ? then(f, m) : error.typeError(m, chain);
+  return partial(p, m, f);
+}
+
+function bindFlip(f, m) { // =<<
+  let p = (f, m) => bind(m, f);
+  return partial(p, f, m);
+}
+
+function join(m) { return Monad(m) ? bind(m, id) : error.typeError(m, join); }
+
+function liftM(f, m) {
+  let p = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
+  return partial(p, f, m)
+}
+
+class DoBlock {
+  constructor(m) { this.m = m; }
+  inject(a) { return Do(dataType(this.m).pure(a)); }
+  bind(f) { return Do(bind(this.m, f)); }
+  then(a) { return Do(chain(this.m, a)); }
+  valueOf() { return `${dataType(this.m).name} >>= ${this.m.valueOf()}`; }
+}
+
+function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
+
+// Foldable
+
+let Foldable = defines(`foldr`);
+
+function fold(a) { return foldMap(id, a); }
+
+function foldMap(f, a) {
+  let p = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
+  return partial(p, f, a);
+}
+
+function foldr(f, z, t) {
+  let p = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
+  return partial(p, f, z, t);
+}
+
+// Traversable
+
+let Traversable = defines(`fmap`, `foldr`, `traverse`);
+
+function traverse(f, a) {
+  let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
+  return partial(p, f, a);
+}
+
+// I think these are wrong, because the functions should take traversable types that contain monads, no just monads?:
+
+function mapM(f, m) {
+  let p = (f, m) => Monad(m) ? traverse(f, dataType(m).bind(f)) : error.typeError(m, mapM);
+  return partial(p, f, m);
+}
+
+function mapM_(f, m) {
+  let p = (f, m) => Monad(m) ? foldr(chain(m, f), inject(m, unit), m); : error.typeError(m, mapM_);
+  return partial(p, f, m);
+}
+
+function sequence(m) { return Monad(m) ? traverse(id, a) : error.typeError(a, sequence); }
+
+function sequence_(m) { return Monad(m) ? foldr(chain(m, f), inject(m, unit), m) : error.typeError(m, sequence_); }
+
+// Morphism (fix)
+
+class Morphism extends Type {
+  constructor(f) {
+    super();
+    this.bind = f;
+  }
+  static mempty(a) { return this.mempty; }
+  static mappend(f, g, x) { return x => mappend(f.bind(x), g.bind(x)); }
+  static fmap(g, m) { return x => $(m.bind)(g)(x); } // might be backward
+  static pure(a) { return constant(a); }
+  static ap(f, g) { return x => f(x).g.bind(g, x); } // I have no idea
+  toString() { return this.bind; }
+  typeOf() { return `morphism`; }
+  valueOf() { return this.toString(); }
+}
+
+// instance Applicative ((->) a) where
+//     pure = const
+//     (<*>) f g x = f x (g x)
+
+function functor(f) { return new Morphism(f); }
+
+// Maybe
+// derives Eq and Ord
+class Maybe extends Type {
+  constructor(a) {
+    super();
+    if (a !== undefined) { this.value = a; }
+  }
+  // Eq
+  static isEq(a, b) {
+    if (isNothing(a) && isNothing(b)) { return true; }
+    if (isNothing(a) || isNothing(b)) { return false; }
+    return isEq(a.value, b.value);
+  }
+  // Ord
+  static compare(a, b) {
+    if (isEq(a, b)) { return Ordering.EQ; }
+    if (isNothing(a)) { return Ordering.LT; }
+    if (isNothing(b)) { return Ordering.GT; }
+    return compare(a.value, b.value);
+  }
+  // Monoid
+  static mempty(a) { return Nothing; }
+  static mappend(m1, m2) {
+    if (isNothing(m1)) { return m2; }
+    if (isNothing(m2)) { return m1; }
+    return Reflect.construct(Maybe, [mappend(m1.value, m2.value)]);
+  }
+  // Foldable
+  static foldr(f, z, m) { return isNothing(m) ? z : f(m.value, z); }
+  // Traversable
+  static traverse(f, m) { return isNothing(m) ? pure(this, Nothing) : fmap(maybe, f(x)); }
+  // Functor
+  static fmap(f, m) { return isNothing(m) ? Nothing : Reflect.construct(Maybe, [f(m.value)]); }
+  // Applicative
+  static pure(m) { return just(m); }
+  static ap(f, m) { return isNothing(f) ? Nothing : fmap(f.value, m); }
+  // Monad
+  static bind(m, f) { return isNothing(m) ? Nothing : f(m.value); }
+  // Prototype
+  toString() { return this.toString(); }
+  typeOf() { return `Maybe ${this.value === undefined ? 'Nothing' : type(this.value)}`; }
+  valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value}`; }
+}
+
+let Nothing = new Maybe();
+
+function just(a) { return new Maybe(a); }
+
+function maybe(n, f, m) {
+  let p = (n, f, m) => {
+    if (isMaybe(m) === false) { return error.typeError(m, maybe); }
+    isNothing(m) ? n : f(x.value);
+  }
+  return partial(p, n, f, m);
+}
+
+function isMaybe(a) { return dataType(m) === Maybe; }
+
+function isJust(m) {
+  if (isMaybe(m) === false) { return error.typeError(m, isJust); }
+  return isNothing(m) ? false : true;
+}
+
+function isNothing(m) {
+  if (isMaybe(m) === false) { return error.typeError(m, isNothing); }
+  return m === Nothing ? true : false;
+}
+
+function fromJust(m) {
+  if (isMaybe(m) === false) { return error.typeError(m, fromJust); }
+  return isNothing(m) ? error.nothing(m, fromJust) : m.value; // yuck
+}
+
+function fromMaybe(d, m) {
+  let p = (d, m) => {
+    if (isMaybe(m) === false) { return error.typeError(m, fromMaybe); }
+    return isNothing(m) ? d : m.value;
+  }
+  return partial(p, d, m);
+}
+
+function maybeToList(m) {
+  if (isMaybe(m) === false) { return error.typeError(m, maybeToList); }
+  return isNothing(m) ? emptyList : list(m.value);
+}
+
+function listToMaybe(as) {
+  if (isList(as) === false) { return error.listError(as, listToMaybe); }
+  return isEmpty(as) ? Nothing : just(as.head);
+}
+
+function catMaybes(as) {
+  if (isList(as) === false) { return error.listError(as, catMaybes); }
+  if (isMaybe(as.head) === false) { return error.typeError(m, catMaybes); }
+  let pred = as => isJust(x);
+  return filter(pred, as);
+}
+
+function mapMaybe(f, as) {
+  let p = (f, as) => {
+    if (isList(as) === false) { return error.listError(as, mapMaybe); }
+    if (isEmpty(as)) { return emptyList; }
+    if (isMaybe(as.head) === false) { return error.typeError(m, mapMaybe); }
+    let x = as.head;
+    let xs = as.tail;
+    let r = f(x);
+    let rs = mapMaybe.bind(this, f, xs);
+    if (isNothing(r)) { return rs(); }
+    if (isJust(r)) { return cons(r)(rs); }
+    return error.returnError(f, mapMaybe);
+  }
+  return partial(p, f, as);
+}
 
 // Tuple (from Data.Tuple)
 
@@ -200,13 +652,12 @@ class Tuple extends Type {
     if (as.length === 0) { this[0] = null; }
     as.forEach((v, i) => this[i + 1] = v );
   }
-  static _type(a) {
-    if (a.constructor !== this) { _typeError(this.name, a.constructor.name); }
-    return a.typeOf();
-  }
-  static eq(a, b) { return fromTupleToArray(a).every((a, i) => a === fromTupleToArray(b)[i]); }
-  static ord(a, b) {
-    if (this.eq(a, b)) { return Ordering.EQ; }
+  static type(a) { return dataType(a) === this ? a.typeOf() : error.typeError(a, this.type); }
+  // Eq
+  static isEq(a, b) { return fromTupleToArray(a).every((a, i) => a === fromTupleToArray(b)[i]); }
+  // Ord
+  static compare(a, b) {
+    if (this.isEq(a, b)) { return Ordering.EQ; }
     let i = 1;
     while (Reflect.has(a, i)) {
       if (a[i] < b[i]) { return Ordering.LT; }
@@ -214,9 +665,25 @@ class Tuple extends Type {
       i += 1;
     }
   }
+  // Monoid
+  static mempty(a) { return unit; }
+  static mappend(a, b) { return Reflect.construct(Tuple, [mappend(fst(a), fst(b)), mappend(snd(a), snd(b))]); }
+  // Foldable
+  static foldr(f, acc, p) { return f(snd(p), acc); }
+  // Traversable
+  static traverse(f, p) { return fmap(tuple.bind(this, fst(p)), f(snd(p))); }
+  // Functor
+  static fmap(f, p) { return Reflect.construct(Tuple, [fst(p), f(snd(p))]); }
+  // Applicative
+  static pure(p) { return Reflect.construct(Tuple, [mempty(p), snd(p)]); }
+  static ap(uf, vx) { return Reflect.construct(Tuple, [mappend(fst(uf), fst(vx)), snd(uf)(snd(vx))]); }
+  // Prototype
   toString() { return `[Object Tuple]`; }
-  typeOf() { return `(${Reflect.ownKeys(a).map(key => type(a[key])).join(', ')})`; }
-  valueOf() { return `(${Reflect.ownKeys(this).map(key => type(this[key]) === 'string' ? `'${this[key]}'` : this[key]).join(', ')})`; }
+  typeOf() { return `(${Reflect.ownKeys(this).map(key => type(this[key])).join(',')})`; }
+  valueOf() {
+    if (this === unit) { return `()`; }
+    return `(${Reflect.ownKeys(this).map(key => type(this[key]) === 'string' ? `'${this[key]}'` : this[key].valueOf()).join(',')})`;
+  }
 }
 
 /**
@@ -258,11 +725,11 @@ function tuple(...as) {
  * @param {*} y - Any value, the second value of the new tuple argument.
  * @return {function()} - The curried function.
  */
- function curry(f, x, y) {
-   if (x === undefined) { return x => y => f.call(f, tuple(x, y)); }
-   if (y === undefined) { return curry(f)(x); }
-   return curry(f)(x)(y);
- }
+function curry(f, x, y) {
+  if (x === undefined) { return x => y => f.call(f, tuple(x, y)); }
+  if (y === undefined) { return curry(f)(x); }
+  return curry(f)(x)(y);
+}
 
 /**
  * Convert an array into a tuple. Returns {@code unit}, the empty tuple, if no arguments or
@@ -271,8 +738,7 @@ function tuple(...as) {
  * @return {Tuple} - The new tuple.
  */
 function fromArrayToTuple(a) {
-  if (Array.isArray(a)) { return Reflect.construct(Tuple, Array.from(a)); }
-  _typeError(`Array`, a);
+  return Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
 }
 
 /**
@@ -281,8 +747,7 @@ function fromArrayToTuple(a) {
  * @return {Array<*>} - The new array.
  */
 function fromTupleToArray(p) {
-  if (isTuple(p)) { return Reflect.ownKeys(p).map(key => p[key]); }
-  _typeError(`Tuple`, p);
+  return isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
 }
 
 /**
@@ -290,10 +755,7 @@ function fromTupleToArray(p) {
  * @param {Tuple} p - A tuple.
  * @return {*} - The first value of the tuple.
  */
-function fst(p) {
-  if (isTuple(p)) { return p[1]; }
-  _typeError(`Tuple`, p);
-}
+function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
 
 /**
  * Determine whether an object is a tuple. The {@code unit}, or empty tuple, returns false.
@@ -307,20 +769,14 @@ function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
  * @param {Tuple} p - A tuple.
  * @return {*} - The second value of the tuple.
  */
-function snd(p) {
-  if (isTuple(p)) { return p[2]; }
-  _typeError(`Tuple`, p);
-}
+function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
 
 /**
  * Swap the values of a tuple. This function does not modify the original tuple.
  * @param {Tuple} p - A tuple.
  * @return {Tuple} - A new tuple, with the values of the first tuple swapped.
  */
-function swap(p) {
-  if (isTuple(p)) { return Reflect.construct(Tuple, [snd(p), fst(p)]); }
-  _typeError(`Tuple`, p);
-}
+function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
 
 /**
  * Convert a curried function to a single function that takes a tuple as an argument.
@@ -340,170 +796,313 @@ function swap(p) {
  * @return {function()} - The uncurried function.
  */
 function uncurry(f, p) {
-  if (p === undefined) { return p => f.call(f, fst(p)).call(f, snd(p)); }
-  return f.call(f, fst(p)).call(f, snd(p));
+  if (p === undefined) { return p => isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry); }
+  return isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry);
 }
 
 // List (from Data.List)
 
 // Basic functions
 
+// need to type check lists in static functions
+
 class List extends Type {
   constructor(head, tail) {
     super();
     this.head = null;
     this.tail = null;
-    if (head) { this.head = head; }
-    if (tail) { this.tail = tail; }
+    if (head !== undefined) { this.head = head; }
+    if (tail !== undefined) { this.tail = tail; }
   }
-  static eq(a, b) { return fromListToArray(a).every((a, i) => a === fromListToArray(b)[i]); }
-  static ord(a, b) {
+  // Eq
+  static isEq(a, b) {
+    return typeCheck(a.head, b.head) ? fromListToArray(a).every((a, i) =>
+    a === fromListToArray(b)[i]) : error.typeMismatch(a.head, b.head, this.isEq);
+  }
+  // Ord
+  static compare(a, b) {
     if (isEmpty(a) && isEmpty(b)) { return Ordering.EQ; }
     if (isEmpty(a) && isEmpty(b) === false) { return Ordering.LT; }
     if (isEmpty(a) === false && isEmpty(b)) { return Ordering.GT; }
     if (compare(a.head, b.head) === Ordering.EQ) { return compare(a.tail, b.tail)}
     return compare(a.head, b.head);
   }
+  // Monoid
+  static mempty(a) { return emptyList; }
+  static mappend(a, b) { return listAppend(a, b); }
+  // Foldable
+  static foldr(f, acc, as) {
+    if (isList(as) === false ) { return error.listError(as, map); }
+    if (isEmpty(as)) { return acc; }
+    if (typeCheck(acc, as.head) === false) { return error.typeMismatch(acc, as.head, foldr); }
+    let x = as.head;
+    let xs = as.tail;
+    return f(x, foldr(f, acc, xs));
+  }
+  // Traversable
+  static traverse(f, as) { return isEmpty(as) ? pure(this, emptyList) : ap(fmap(cons)(f(as.head)))(traverse(f, as.tail)); }
+  // Functor
+  static fmap(f, as) { return map(f, as); }
+  // Applicative
+  static pure(a) { return list(a); }
+  static ap(fs, as) { return isEmpty(fs) ? emptyList : listAppend(fmap(fs.head, as))(ap(fs.tail, as)); }
+  // Monad
+  static bind(xs, f) { return concat(map(f, xs)); }
+  // Prototype
   toString() { return `[Object List]`; }
   typeOf() { return `[${isEmpty(this) ? '' : type(this.head)}]`; }
-  valueOf() { return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`; }
+  valueOf() { //return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`;
+    let value = list => isEmpty(list) ? `[]` : `${list.head}:${value(list.tail)}`;
+    return `[${type(this) === `[string]` ? fromListToString(this) : value(this)}]`;
+  }
 }
 
 const emptyList = new List();
 
 function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct(List, [as.shift(), list(...as)]); }
 
-function cons(x, xs) {
-  let cons = (x, xs) => {
-    if (xs === undefined || isEmpty(xs)) { return Reflect.construct(List, [x, emptyList]); }
-    if (xs instanceof List === false) { _typeError(`List`, xs); }
-    if (_typeCheck(x, head(xs))) { return new List(x, xs); }
-    _typeError(type(head(xs)), x);
+function concat(xss) {
+  if (isList(xss)) {
+    if (isEmpty(xss)) { return emptyList; }
+    let x = xss.head;
+    let xs = xss.tail;
+    return isList(x) ? listAppend(x, concat(xs)) : error.listError(x, concat);
   }
-  return xs === undefined ? cons.bind(this, x) : cons.call(this, x, xs);
+  return error.listError(xss, concat);
 }
 
-function fromArrayToList(a) {
-  if (Array.isArray(a)) { return list(...array); }
-  _typeError(`Array`, a);
+function cons(x, xs) {
+  let p = (x, xs) => {
+    if (xs === undefined || isEmpty(xs)) { return Reflect.construct(List, [x, emptyList]); }
+    if (xs instanceof List === false) { return error.listError(xs, cons); }
+    if (typeCheck(x, head(xs))) { return new List(x, xs); }
+    return error.typeError(head(xs), cons);
+  }
+  return partial(p, x, xs);
 }
 
-function fromListToArray(as) { return isEmpty(as) ? [] : [as.head].concat(fromListToArray(as.tail)); }
+function fromArrayToList(a) { return Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList); }
+
+function fromListToArray(as) {
+  if (isList(as)) { return isEmpty(as) ? [] : [as.head].concat(fromListToArray(as.tail)); }
+  return error.listError(as, fromListToArray);
+}
 
 function fromListToString(as) {
   if (isList(as)) { return fromListToArray(as).join(``); }
-  _typeError(`List`, as);
+  return error.listError(as, fromListToString);
 }
 
 function fromStringToList(str) {
   if (typeof str === 'string') { return fromArrayToList(str.split(``)); }
-  _typeError(`string`, a);
+  return error.typeError(as, fromStringToList);
 }
 
 function head(as) {
-  if (isList(as) && isEmpty(as) === false) { return as.head; }
-  _typeError(`List`, as);
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
+  return error.listError(as, head);
 }
 
 function init(as) {
-  if (isList(as) && isEmpty(as) === false) { return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail)); }
-  _typeError(`List`, as);
+  if (isList(as)) {
+    if (isEmpty(as)) { return error.emptyList(as, init); }
+    return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail));
+  }
+  return error.listError(as, init);
 }
 
 function isList(a) { return a instanceof List ? true : false; }
 
 function last(as) {
-  if (isList(as) && isEmpty(as) === false) { return isEmpty(as.tail) ? as.head : last(as.tail); }
-  _typeError(`List`, as);
+  if (isList(as)) {
+    if (isEmpty(as)) { return error.emptyList(as, last); }
+    return isEmpty(as.tail) ? as.head : last(as.tail);
+  }
+  return error.listError(as, last);
 }
 
 function length(as) {
   let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
-  if (isList(as)) { return lenAcc(as, 0); }
-  _typeError(`List`, as);
+  return isList(as) ? lenAcc(as, 0) : error.listError(as, length);
 }
 
 function listAppend(as, bs) {
-  let append = (as, bs) => {
-    if (isList(as) === false ) { _typeError(`List`, as); }
-    if (isList(bs) === false ) { _typeError(`List`, bs); }
+  let p = (as, bs) => {
+    if (isList(as) === false ) { return error.listError(as, listAppend); }
+    if (isList(bs) === false ) { return error.listError(bs, listAppend); }
     if (isEmpty(as)) { return bs; }
     if (isEmpty(bs)) { return as; }
     if (type(head(as)) === type(head(bs))) { return cons(as.head)(listAppend(as.tail)(bs)); }
-    _typeError(`[${type(head(as))}]`, `[${type(head(bs))}]`);
+    return error.typeMismatch(type(head(as)), type(head(bs)), listAppend);
   }
-  return bs === undefined ? append.bind(this, as) : append.call(this, as, bs);
+  return partial(p, as, bs);
+}
+
+function head(as) {
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
+  return error.listError(as, head);
 }
 
 function tail(as) {
-  if (isList(as) && isEmpty(as) === false) { return as.tail; }
-  _typeError(`List`, as);
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail; }
+  return error.listError(as, tail);
+}
+
+function reverse(as) {
+  let rev = (as, a) => isEmpty(as) ? a : rev(as.tail, cons(as.head)(a));
+  return rev(as, emptyList);
+}
+
+function splitAt(n, as) {
+  let p = (n, as) => tuple(take(n, as), drop(n, as));
+  return partial(p, n, as);
+}
+
+function takeWhile(pred, as) {
+  let p = (pred, as) => {
+    if (isList(as) === false) { return error.listError(as, takeWhile); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    let test = pred(x);
+    if (test === true) { return cons(x)(takeWhile(pred, xs)); }
+    if (test === false) { return emptyList; }
+    return error.listError(as, takeWhile);
+  }
+  return partial(p, pred, as);
+}
+
+function dropWhile(pred, as) {
+  let p = (pred, as) => {
+    if (isList(as) === false) { return error.listError(as, dropWhile); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    let test = pred(x);
+    if (test === true) { return dropWhile(pred, xs); }
+    if (test === false) { return as; }
+    return error.listError(as, dropWhile);
+  }
+  return partial(p, pred, as);
+}
+
+function span(pred, as) {
+  let p = (pred, as) => tuple(takeWhile(pred, as), dropWhile(pred, as));
+  return partial(p, pred, as);
+}
+
+function spanNot(pred, as) {
+  let p = (pred, as) => span($(not)(pred), as);
+  return partial(p, pred, as);
 }
 
 //uncons
 
 // List transformations
 
-// this function is in the style I should use for all other functions. Arrow
-// functions with bindings and let expressions to make head and tail clear.
 function map(f, as) {
-  let m = (f, as) => {
-    if (isList(as) === false ) { _typeError(`List`, as); }
+  let p = (f, as) => {
+    if (isList(as) === false ) { return error.listError(as, map); }
+    if (isEmpty(as)) { return emptyList; }
+    //let x = as.head;
+    let x = !f(as.head) ? f.bind(f, as.head) : f(as.head);
+    let xs = as.tail;
+    //return cons(f(x))(map(f)(xs));
+    return cons(x)(map(f)(xs));
+  }
+  return partial(p, f, as);
+}
+
+// use this in places where I'm mimicking list comprehensions
+function filter(f, as) {
+  let p = (f, as) => {
+    if (isList(as) === false ) { return error.listError(as, filter); }
     if (isEmpty(as)) { return emptyList; }
     let x = as.head;
     let xs = as.tail;
-    return cons(f(x))(map(f)(xs));
+    if (f(x) === true) { return cons(x)(filter(f, xs)); }
+    if (f(x) === false) { return filter(f, xs); }
+    return error.returnError(f, filter);
   }
-  return as === undefined ? m.bind(this, f) : m.call(this, f, as);
+  return partial(p, f, as);
+}
+
+function intersperse(sep, as) {
+  let p = (sep, as) => {
+    if (isList(as) === false) { return error.listError(as, intersperse); }
+    if (typeCheck(sep, as.head) === false) { return error.typeMismatch(sep, as.head, intersperse); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    return cons(x)(prependToAll(sep, xs));
+  }
+  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(xs.head)(prependToAll(sep, xs.tail))); }
+  return partial(p, sep, as);
+}
+
+function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
+
+function transpose(xss) {
+  if (isList(xss) === false) { return error.listError(xss, transpose); }
+  if (isEmpty(xss)) { return emptyList; }
+  let head = xss.head;
+  let tail = xss.tail;
+  if (isList(head) === false) { return error.listError(head, transpose); }
+  if (isEmpty(head)) { return transpose(tail); }
+  let x = head.head;
+  let xs = head.tail;
+  let headComp = fromArrayToList(fromListToArray(tail).map(xs => xs.head));
+  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => xs.tail));
+  return cons(cons(x)(headComp))(transpose(cons(xs)(tailComp)));
 }
 
 // Sublists
 
 function drop(n, as) {
-  let d = (n, as) => {
-    if (isList(as) === false) { _typeError(`List`, as); }
+  let p = (n, as) => {
+    if (isList(as) === false) { return error.listError(as, drop); }
     if (n <= 0) { return as; }
     if (isEmpty(as)) { return emptyList; }
     let x = as.head;
     let xs = as.tail;
     return drop(n - 1)(xs);
   }
-  return as === undefined ? d.bind(this, n) : d.call(this, n, as);
+  return partial(p, n, as);
 }
 
 function take(n, as) {
-  let t = (n, as) => {
-    if (isList(as) === false) { _typeError(`List`, as); }
+  let p = (n, as) => {
+    if (isList(as) === false) { return error.listError(as, take); }
     if (n <= 0) { return emptyList; }
     if (isEmpty(as)) { return emptyList; }
     let x = as.head;
     let xs = as.tail;
     return cons(x)(take(n - 1)(xs));
   }
-  return as === undefined ? t.bind(this, n) : t.call(this, n, as);
+  return partial(p, n, as);
 }
 
 // Indexing functions
 
 function index(as, n) {
-  let i = (as, n) => {
-    if (isList(as) === false ) { _typeError(`List`, as); }
-    if (n < 0) { throw RangeError(`Negative index given for ${as.name}.`); }
-    if (isEmpty(as)) { throw RangeError(`Index too large given for ${as.name}.`); }
+  let p = (as, n) => {
+    if (isList(as) === false ) { return error.listError(as, index); }
+    if (n < 0) { return error.rangeError(n, index); }
+    if (isEmpty(as)) { return error.rangeError(n, index); }
     let x = as.head;
     let xs = as.tail;
     if (n === 0) { return x; }
     return index(xs)(n - 1);
   }
-  return n === undefined ? i.bind(this, as) : i.call(this, as, n);
+  return partial(p, as, n);
 }
 
 // Zipping and unzipping lists
 
 function zip(as, bs) {
-  let z = (as, bs) => {
-    if (isList(as) === false) { _typeError(`List`, as); }
-    if (isList(bs) === false) { _typeError(`List`, bs); }
+  let p = (as, bs) => {
+    if (isList(as) === false) { return error.listError(as, zip); }
+    if (isList(bs) === false) { return error.listError(bs, zip); }
     if (isEmpty(as)) { return emptyList; }
     if (isEmpty(bs)) { return emptyList; }
     let x = as.head;
@@ -512,7 +1111,7 @@ function zip(as, bs) {
     let ys = bs.tail;
     return cons(tuple(x, y))(zip(xs)(ys));
   }
-  return bs === undefined ? z.bind(this, as) : z.call(this, as, bs);
+  return partial(p, as, bs);
 }
 
 // Ordered lists
