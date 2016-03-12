@@ -1,38 +1,3 @@
-function subsequences(as) {
-  if (isList(as) === false) { return error.listError(as, subsequences); }
-  function nonEmptySubsequences(as) {
-    if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
-    let f = ys => cons(ys)(cons(cons(x)(ys)))(r);
-    return cons(list(x))(foldr(f, emptyList, nonEmptySubsequences(xs)));
-  }
-  return cons(emptyList)(nonEmptySubsequences(as));
-}
-
-
-
-let abc = fromStringToList('abc');
-//console.log(show(subsequences(abc)))
-
-// -- > subsequences "abc" == ["","a","b","ab","c","ac","bc","abc"]
-// subsequences            :: [a] -> [[a]]
-// subsequences xs         =  [] : nonEmptySubsequences xs
-
-// -- | The 'nonEmptySubsequences' function returns the list of all subsequences of the argument,
-// --   except for the empty list.
-// --
-// -- > nonEmptySubsequences "abc" == ["a","b","ab","c","ac","bc","abc"]
-
-// nonEmptySubsequences         :: [a] -> [[a]]
-// nonEmptySubsequences []      =  []
-// nonEmptySubsequences (x:xs)  =  [x] : foldr f [] (nonEmptySubsequences xs)
-//   where f ys r = ys : (x : ys) : r
-f = cons(ys)(cons(cons(x)(ys)))(r)
-
-
-
-
 // TODO: reimplement Ordering as a Monoid
 // TODO: replace (where possible) class property values with closures
 // TODO: replace pseudo-list comprehensions with maps and filters
@@ -65,14 +30,20 @@ f = cons(ys)(cons(cons(x)(ys)))(r)
  * bottom of this file.
  */
 
-// Base
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Error handling
 
-let defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
-
+/**
+ * Whenever the library needs to throw an error, it calls one of the functions defined in this hash table, which calls in
+ * turn the {@code throwError} function with the arguments to the error function applied to the given template string.
+ * Example: {@code error.typeError(0, and); // *** Error: '0' is not a valid argument to function 'and'.}
+ * @const {Object} error - A hash table of error procedures.
+ * @private
+ */
 const error = {
   emptyList: (a, f) => throwError(`'${a}' is an empty list, but '${f.name}' expects a non-empty list.`),
   listError: (a, f) => throwError(`'${a}' is type '${a.constructor.name}' but function '${f.name}' expects a list.`),
-  nothing: (a, f) => throwError(`'${f}' returned Nothing from argument '${a}'`),
+  nothing: (a, f) => throwError(`'${f}' returned Nothing from argument '${a}'.`),
   rangeError: (n, f) => throwError(`Index '${n}' is out of range in function '${f.name}'.`),
   returnError: (f1, f2) => throwError(`Unexpected return value from function '${f1.name}' called by function '${f2.name}'.`),
   tupleError: (p, f) => throwError(`'${p}' is type '${p.constructor.name}' but function '${f.name}' expects a tuple.`),
@@ -80,8 +51,23 @@ const error = {
   typeMismatch: (a, b, f) => throwError(`Arguments '${a}' and '${b}' to function '${f.name}' are not the same type.`)
 };
 
+/**
+ * Throw an error, outputting the given message. This is one of the only impure functions in this library.
+ * @param {string} e - The error message to display.
+ * @private
+ */
 function throwError(e) { throw Error(`*** Error: ${e}`); }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Type system
+
+/**
+ * The base class for all other types. This class is not meant to be used on its own to instantiate new objects,
+ * so it does not provide a constructor function of its own, but it does provide some default functionality for new
+ * data types.
+ * @class
+ * @private
+ */
 class Type {
   static type(a) { return dataType(a) === this ? this.name : error.typeError(a, this.type); }
   toString() { return this.valueOf(); }
@@ -89,12 +75,85 @@ class Type {
   valueOf() { return this; }
 }
 
-// function partial(f, x, y) {
-//   if (x === undefined) { return error.noArguments(f); }
-//   if (y === undefined) { return f.bind(f, x); }
-//   return f.call(f, x, y)
-// }
+/**
+ * A utility function for declaring new type classes. Returns a closure that checks whether a given object is a
+ * member of a predefined type class. Note that the library only checks for the existence of the required property
+ * or properties. Whether or not those properties are functions and whether or not they return the values expected
+ * by the type class are not verified.
+ * Example: {@code let Eq = defines(`isEq`); // instances of the Eq type class must define an isEq function}
+ * @param {...string} methods
+ * @return {function()} - A closure that returns true if a given object declares all the given methods, false otherwise.
+ * @const
+ */
+const defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
 
+/**
+ * A utility function for returning the data type of a given object. In JavaScript, this is simply the object's
+ * constructor, so this function really just serves as an alias for terminological clarification. Example:
+ * {@code dataType(0); // function Number() { [native code] }
+ *        let lst = list(1,2,3);
+ *        dataType(lst).name // List
+ * }
+ * @param {*} a - Any object.
+ * @return {function()} - The object's constructor function.
+ * @const
+ */
+const dataType = (a) => a.constructor;
+
+/**
+ * Return the type of any object as specified by this library or, otherwise, its primitive type. Example:
+ * {@code type(0); // number
+ *        let t = tuple(1,2);
+ *        type(t); // (number,number)
+ * }
+ * @param {*} a - Any object.
+ * @return {string} - The type of the object.
+ */
+function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
+
+/**
+ * Determine whether two objects are the same type, returning true if they are and false otherwise.
+ * This is a limited form of type checking for this library. It is by no means foolproof but should at least
+ * prevent most careless errors. Example:
+ * {@code typeCheck(0, 1);   // true
+ *        typeCheck(0, 'a'); // false
+ * }
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean} - True if the two objects are the same type, false otherwise.
+ */
+function typeCheck(a, b) {
+  let p = (a, b) => {
+    if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
+    if (dataType(a) === dataType(b)) { return true; }
+    return false;
+  }
+  return partial(p, a, b);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Basic functions
+
+/**
+ * Partially apply arguments to a given function. Accepts a function and a variable number of arguments.
+ * If all the arguments are applied, calls the function and returns its value. Otherwise, returns a
+ * function bound by whichever values have already been applied. In Haskell, all functions technically
+ * bind one argument and return one value. Functions that take multiple arguments are actually curried
+ * under the hood, therefore such a function actually returns another function with its first argument
+ * bound, then another with its second, and so on until all expected arguments have been bound. Likewise,
+ * almost every function in this library that accepts multiple arguments is similarly curried. Example:
+ * {@code function multiply(x, y) {
+ *          let p = (x, y) => x * y; // same arguments to original function
+ *          return partial(p, x, y); // return the function in "curried" form
+ *        }
+ *        multiply(10, 10); // 100
+ *        multiply(10);     // function () { [native code] } (with 10 applied to x)
+ *        multiply(10)(10); // 100
+ * }
+ * @param {function()} f - Any function.
+ * @param {...*) as - Any values expected as arguments.
+ * @return {function()} - The function with its arguments partially or fully applied.
+ */
 function partial(f, ...as) {
   if (isEmpty(as)) { return f.call(); }
   let a = as.shift();
@@ -103,93 +162,94 @@ function partial(f, ...as) {
   return partial(p, ...as);
 }
 
-function print(a) { return console.log(show(a)); }
-
-function constant(a, b) {
-  let p = (a, b) => a;
-  return partial(p, a, b);
-}
-
-function dataType(a) { return a.constructor; }
-
 /**
- * Determine whether two objects are the same type, returning true if they are and false otherwise.
- * This is a limited form of type checking for this library.
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @return {boolean}
- * @private
- */
-function typeCheck(a, b) {
-  let p = (a, b) => {
-    if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
-    if (dataType(a) === dataType(b)) { return true; }
-    return false;
-  }
-  return partial(a, b);
-}
-
-/**
- * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions,
+ * Compose two functions. In Haskell, f.g = \x -> f(g x), or the composition of two functions
  * f and g is the same as applying the result of g to f, or f(g(x)) for a given argument x.
  * This pattern can't exactly be reproduced in JavaScript, since the dot operator denotes
  * namespace membership, and custom operators are not available. However, Haskell also provides
  * the $ operator, which simply binds functions right to left, allowing parentheses to be
  * omitted: f $ g $ h x = f (g (h x)). We still can't do this in JavaScript, but why not borrow
- * the $ for semantic consistency? Sorry, jQuery. Note that an argument need not be supplied
+ * the $ for some semantic consistency? Sorry, jQuery. Note that an argument need not be supplied
  * to the rightmost function, in which case $ returns a new function to which you can bind an
  * argument later. The leftmost function, however, must be a pure function, as its argument is
  * the value returned by the rightmost function. Example:
  * {@code let addTen = x => x + 10;
  *        let multHund = x => x * 100;
  *        let addTwenty = x => addTen(10);
- *        $(addTen)(multHund)(10)           // 1010
- *        $(addTen)(multHund, 10)           // 1010
- *        $(multHund)(addTen)(10)           // 2000
- *        $(multHund)(addTen, 10)           // 2000
- *        $(addTen)(addTwenty)()            // 30
+ *        $(addTen)(multHund)(10) // 1010
+ *        $(addTen)(multHund, 10) // 1010
+ *        $(multHund)(addTen)(10) // 2000
+ *        $(multHund)(addTen, 10) // 2000
+ *        $(addTen)(addTwenty)()  // 30
  * }
+ * Haskell: (.) :: (b -> c) -> (a -> b) -> a -> c
  * @param {function()} f - The outermost function to compose.
  * @return {function()} - The composed function, called only if a value is bound to f.
  */
 function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
+/**
+ * Reverse the order in which arguments are applied to a function. Note that flip only works on functions
+ * that take two arguments. Example:
+ * {@code function subtract(x, y) { return x - y; }
+ *        let flipped = flip(subtract);
+ *        subtract(10, 5); // 5
+ *        flipped(10, 5);  // -5
+ * }
+ * Haskell: flip :: (a -> b -> c) -> b -> a -> c
+ * @param {function()} f - Any function.
+ * @return {function()} - The function with its arguments reversed.
+ */
 function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
 
 /**
  * The identity function.
+ * Example: {@code id(1); // 1 }
+ * Haskell: id :: a -> a
  * @param {*} a - Any value.
- * @return {*} a - The same value;
+ * @return {*} a - The same value.
  */
 function id(a) { return a; }
 
-function isEmpty(a) {
-  if (isList(a)) { return a === emptyList; } // a.head === null
-  if (isTuple(a)) { return false; }
-  if (a === unit) { return true; }
-  if (Array.isArray(a)) { return a.length === 0; }
-  return error.typeError(a, isEmpty);
+/**
+ * Return the value of the first argument, throwing away the value of the second argument.
+ * Example: {@code constant(2, 3); // 2 }
+ * Haskell: const :: a -> b -> a
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
+ * @return {*} a - The first value.
+ */
+function constant(a, b) {
+  let p = (a, b) => a;
+  return partial(p, a, b);
 }
 
 /**
- * Display the value of an object as a string.
- * @param {*} a - The object to show.
- * @return {string} - The value as a string.
+ * Yield the result of applying function f to a value until the predicate function pred is true. Example:
+ * {@code let pred = x => x > 10;
+ *        let f = x => x + 1;
+ *        let u = until(pred, f);
+ *        u(1); // 11
+ * }
+ * Haskell: until :: (a -> Bool) -> (a -> a) -> a -> a
+ * @param {function()} pred - A predicate function that returns a boolean.
+ * @param {function()} f - The function to apply.
+ * @param {*} x - The value to apply to f.
+ * @return
  */
-function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
-
-/**
- * Return the type of any object as specified by this library or its primitive type.
- * @param {*} a - Any object.
- * @return {string}
- */
-function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
-
 function until(pred, f, x) {
-  let p = (pred, f, a) => pred(x) ? x : until(pred, f, f(x));
+  let p = (pred, f, x) => pred(x) ? x : until(pred, f, f(x));
   return partial(p, pred, f, x);
 }
 
+/**
+ * Boolean and. Return true if both arguments are true, false otherwise.
+ * Example: {@code and(true, true) // true }
+ * Haskell: (&&) :: Bool -> Bool -> Bool
+ * @param {boolean} a - A boolean value.
+ * @param {boolean} b - A boolean value.
+ * @return {boolean} - a && b.
+ */
 function and(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, and); }
@@ -199,6 +259,14 @@ function and(a, b) {
   return partial(p, a, b);
 }
 
+/**
+ * Boolean or. Return true if either argument is true, false otherwise.
+ * Example: {@code or(true, false) // true }
+ * Haskell: (||) :: Bool -> Bool -> Bool
+ * @param {boolean} a - A boolean value.
+ * @param {boolean} b - A boolean value.
+ * @return {boolean} - a || b.
+ */
 function or(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, or); }
@@ -208,23 +276,68 @@ function or(a, b) {
   return partial(p, a, b);
 }
 
+/**
+ * Boolean not. Return true if the argument is false, false otherwise.
+ * Example: {@code not(false) // true }
+ * Haskell: not :: Bool -> Bool
+ * @param {boolean} a - A boolean value.
+ * @return {boolean} - !a.
+ */
 function not(a) {
   if (a === true) { return false; }
   if (a === false) { return true; }
   return error.typeError(a, not);
 }
 
-// Eq (from Prelude)
+/**
+ * Check whether a value is an empty collection. Returns true if the value is an empty list, an empty tuple,
+ * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous.
+ * Example: {@code isEmpty([]); // true }
+ * @param {*} a - Any collection value of type List, Tuple, or Array.
+ * @return {boolean} - True if the collection is empty, false otherwise.
+ */
+function isEmpty(a) {
+  if (isList(a)) { return a === emptyList; } // a.head === null
+  if (isTuple(a)) { return false; }
+  if (a === unit) { return true; }
+  if (Array.isArray(a)) { return a.length === 0; }
+  return error.typeError(a, isEmpty);
+}
 
+/**
+ * Display the value of an object as a string. Calls the object's valueOf function. Useful for custom types
+ * that look ugly when displayed as objects. Example:
+ * {@code let lst = list(1,2,3);
+ *        let tup = tuple(1,2);
+ *        lst;       // {"head":1,"tail":{"head":2,"tail":{"head":3,"tail":{"head":null,"tail":null}}}}
+ *        show(lst); // [1:2:3:[]]
+ *        tup;       // {"1":1,"2":2}
+ *        show(tup); // (1,2)
+ * }
+ * @param {*} a - The object to show.
+ * @return {string} - The value of the object as a string, returned from the object's valueOf function.
+ */
+function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
+
+/**
+ * A utility function for displaying the results of show on the console.
+ * @param {*} a - The object to print.
+ */
+function print(a) { return console.log(show(a)); }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Eq
+
+// The Eq type class defines equality and inequality. Instances of Eq must provide an isEq function.
 let Eq = defines(`isEq`);
 
 /**
- * Compare two objects for equality. Both objects must be instances of a class that implements
- * an eq() static method.
- * (==), (/=) :: a -> a -> Bool
+ * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
+ * both define an isEq static method).
+ * Haskell: (==) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @return {boolean}
+ * @return {boolean} - a === b
  */
 function isEq(a, b) {
   let p = (a, b) => {
@@ -234,23 +347,34 @@ function isEq(a, b) {
   return partial(p, a, b);
 }
 
+/**
+ * Compare two objects for inequality. Both objects must be instances of the Eq type class (i.e. they
+ * both define an isEq static method).
+ * Haskell: (/=) :: a -> a -> Bool
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean} - a !== b
+ */
 function isNotEq(a, b) {
   let p = (a, b) => !isEq(a, b);
   return partial(p, a, b);
 }
 
-// Ord (from Prelude)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ord
 
+// The Ord type class is used for totally ordered datatypes. Instances of Ord must provide a compare
+// function and must also be instances of Eq.
 let Ord = defines(`isEq`, `compare`);
 
 /**
- * Compare two objects for ordering. Both values must be instances of a class that implements
- * an ord() static method. Only a single comparison is required to determine the precise
+ * Compare two objects and return an ordering. Both values must be instances of the Ord type class (i.e. they
+ * both define a compare static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
  * compare :: a -> a -> Ordering
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @return {string} - Ordering.
+ * @return {string} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
  */
 function compare(a, b) {
   let p = (a, b) => {
@@ -266,43 +390,72 @@ function compare(a, b) {
 }
 
 /**
- * (<), (<=), (>), (>=) :: a -> a -> Bool
+ * Determine whether one value is less than another.
+ * (<) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @return {boolean}
+ * @return {boolean} - a < b.
  */
 function lessThan(a, b) {
   let p = (a, b) => compare(a, b) === Ordering.LT;
   return partial(p, a, b);
 }
 
+/**
+ * Determine whether one value is less than or equal to another.
+ * (<=) :: a -> a -> Bool
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean} - a <= b.
+ */
 function lessThanOrEqual(a, b) {
   let p = (a, b) => compare(a, b) !== Ordering.GT;
   return partial(p, a, b);
 }
 
+/**
+ * Determine whether one value is greater than another.
+ * (>) :: a -> a -> Bool
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean} - a > b.
+ */
 function greaterThan(a, b) {
   let p = (a, b) => compare(a, b) === Ordering.GT;
   return partial(p, a, b);
 }
 
+/**
+ * Determine whether one value is greater than or equal to another.
+ * (>=) :: a -> a -> Bool
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {boolean} - a >= b.
+ */
 function greaterThanOrEqual(a, b) {
   let p = (a, b) => compare(a, b) !== Ordering.LT;
   return partial(p, a, b);
 }
 
 /**
- * Return the higher or lower in value of two objects.
- * max, min :: a -> a -> a
+ * Return the higher in value of two objects.
+ * max :: a -> a -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @return {Object} - a or b.
+ * @return {Object} - a or b, whichever is greater.
  */
 function max(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
   return partial(p, a, b);
 }
 
+/**
+ * Return the lower in value of two objects.
+ * min :: a -> a -> a
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @return {Object} - a or b, whichever is lesser.
+ */
 function min(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
   return partial(p, a, b);
@@ -313,17 +466,27 @@ function min(a, b) {
  * @const {Object}
  */
 const Ordering = {
-  EQ: 'EQ', // a === b
-  LT: 'LT', // a < b
-  GT: 'GT'  // a > b
+  EQ: 'EQ', // ===
+  LT: 'LT', // <
+  GT: 'GT'  // >
 }
-Object.freeze(Ordering);
 
-// instance Monoid Ordering where
-//         mempty         = EQ
-//         LT `mappend` _ = LT
-//         EQ `mappend` y = y
-//         GT `mappend` _ = GT
+class Ordering {
+  constructor(ord) { this.ord = () => ord; }
+  static mempty(a) { return EQ; }
+  static mappend(a, b) {
+    if (a === LT) { return LT; }
+    if (a === EQ) { return b; }
+    if (a === GT) { return GT; }
+  }
+  valueOf() { return this.ord(); }
+}
+
+const EQ = new Ordering(`EQ`); // ===
+
+const LT = new Ordering(`LT`); // <
+
+const GT = new Ordering(`GT`); // >
 
 // Monoid (from Prelude)
 
@@ -834,9 +997,9 @@ class List extends Type {
   static mappend(a, b) { return listAppend(a, b); }
   // Foldable
   static foldr(f, acc, as) {
-    if (isList(as) === false ) { return error.listError(as, map); }
+    if (isList(as) === false ) { return error.listError(as, foldr); }
     if (isEmpty(as)) { return acc; }
-    if (typeCheck(acc, as.head) === false) { return error.typeMismatch(acc, as.head, foldr); }
+    //if (typeCheck(acc, as.head) === false) { return error.typeMismatch(acc, as.head, foldr); }
     let x = as.head;
     let xs = as.tail;
     return f(x, foldr(f, acc, xs));
@@ -1123,11 +1286,23 @@ function zip(as, bs) {
 // API
 
 export default {
+  throwError: throwError,
+  defines: defines,
+  dataType: dataType,
+  type: type,
+  typeCheck: typeCheck,
+  partial: partial,
   $: $,
+  flip: flip,
   id: id,
+  constant: constant,
+  until: until,
+  and: and,
+  or: or,
+  not: not,
   isEmpty: isEmpty,
   show: show,
-  type: type,
+  print: print,
   isEq: isEq,
   isNotEq: isNotEq,
   compare: compare,
