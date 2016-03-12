@@ -10,6 +10,8 @@ function subsequences(as) {
   return cons(emptyList)(nonEmptySubsequences(as));
 }
 
+
+
 let abc = fromStringToList('abc');
 //console.log(show(subsequences(abc)))
 
@@ -429,7 +431,7 @@ function bind(m, f) { // >>=
 }
 
 function chain(m, f) {  // >>
-  let p = (m, f) => return Monad(m) ? then(f, m) : error.typeError(m, chain);
+  let p = (m, f) => Monad(m) ? then(f, m) : error.typeError(m, chain);
   return partial(p, m, f);
 }
 
@@ -488,7 +490,7 @@ function mapM(f, m) {
 }
 
 function mapM_(f, m) {
-  let p = (f, m) => Monad(m) ? foldr(chain(m, f), inject(m, unit), m); : error.typeError(m, mapM_);
+  let p = (f, m) => Monad(m) ? foldr(chain(m, f), inject(m, unit), m) : error.typeError(m, mapM_);
   return partial(p, f, m);
 }
 
