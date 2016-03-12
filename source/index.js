@@ -329,7 +329,7 @@ function print(a) { return console.log(show(a)); }
 // Eq
 
 // The Eq type class defines equality and inequality. Instances of Eq must provide an isEq function.
-let Eq = defines(`isEq`);
+const Eq = defines(`isEq`);
 
 /**
  * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
@@ -365,13 +365,52 @@ function isNotEq(a, b) {
 
 // The Ord type class is used for totally ordered datatypes. Instances of Ord must provide a compare
 // function and must also be instances of Eq.
-let Ord = defines(`isEq`, `compare`);
+const Ord = defines(`isEq`, `compare`);
+
+/**
+ * A data constructor for orderings, implemented as a class because in Haskell, Ordering is a Monoid.
+ * There is no reason to ever create any other new objects from this class.
+ * @param {string} ord - A string representing the type of ordering.
+ * @class
+ * @private
+ */
+class Ordering extends Type {
+  constructor(ord) {
+    super();
+    this.ord = () => ord;
+  }
+  static mempty(a) { return EQ; }
+  static mappend(a, b) {
+    if (a === LT) { return LT; }
+    if (a === EQ) { return b; }
+    if (a === GT) { return GT; }
+  }
+  valueOf() { return this.ord(); }
+}
+
+/**
+ * The equals ordering. Equivalent to ===.
+ * @const {Ordering}
+ */
+const EQ = new Ordering(`EQ`);
+
+/**
+ * The less than ordering. Equivalent to <.
+ * @const {Ordering}
+ */
+const LT = new Ordering(`LT`);
+
+/**
+ * The greater than ordering. Equivalent to >.
+ * @const {Ordering}
+ */
+const GT = new Ordering(`GT`);
 
 /**
  * Compare two objects and return an ordering. Both values must be instances of the Ord type class (i.e. they
  * both define a compare static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
- * compare :: a -> a -> Ordering
+ * Haskell: compare :: a -> a -> Ordering
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {string} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
@@ -380,9 +419,9 @@ function compare(a, b) {
   let p = (a, b) => {
     if (typeCheck(a, b)) {
       if (Ord(a)) { return dataType(a).compare(a, b); }
-      if (isEq(a, b)) { return Ordering.EQ; }
-      if (a < b) { return Ordering.LT; }
-      if (a > b) { return Ordering.GT; }
+      if (isEq(a, b)) { return EQ; }
+      if (a < b) { return LT; }
+      if (a > b) { return GT; }
     }
     return error.typeMismatch(a, b, compare);
   }
@@ -391,55 +430,55 @@ function compare(a, b) {
 
 /**
  * Determine whether one value is less than another.
- * (<) :: a -> a -> Bool
+ * Haskell: (<) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {boolean} - a < b.
  */
 function lessThan(a, b) {
-  let p = (a, b) => compare(a, b) === Ordering.LT;
+  let p = (a, b) => compare(a, b) === LT;
   return partial(p, a, b);
 }
 
 /**
  * Determine whether one value is less than or equal to another.
- * (<=) :: a -> a -> Bool
+ * Haskell: (<=) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {boolean} - a <= b.
  */
 function lessThanOrEqual(a, b) {
-  let p = (a, b) => compare(a, b) !== Ordering.GT;
+  let p = (a, b) => compare(a, b) !== GT;
   return partial(p, a, b);
 }
 
 /**
  * Determine whether one value is greater than another.
- * (>) :: a -> a -> Bool
+ * Haskell: (>) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {boolean} - a > b.
  */
 function greaterThan(a, b) {
-  let p = (a, b) => compare(a, b) === Ordering.GT;
+  let p = (a, b) => compare(a, b) === GT;
   return partial(p, a, b);
 }
 
 /**
  * Determine whether one value is greater than or equal to another.
- * (>=) :: a -> a -> Bool
+ * Haskell: (>=) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {boolean} - a >= b.
  */
 function greaterThanOrEqual(a, b) {
-  let p = (a, b) => compare(a, b) !== Ordering.LT;
+  let p = (a, b) => compare(a, b) !== LT;
   return partial(p, a, b);
 }
 
 /**
  * Return the higher in value of two objects.
- * max :: a -> a -> a
+ * Haskell: max :: a -> a -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {Object} - a or b, whichever is greater.
@@ -451,7 +490,7 @@ function max(a, b) {
 
 /**
  * Return the lower in value of two objects.
- * min :: a -> a -> a
+ * Haskell: min :: a -> a -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
  * @return {Object} - a or b, whichever is lesser.
@@ -461,39 +500,39 @@ function min(a, b) {
   return partial(p, a, b);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Monoid
+
+// A monoid is a type with an associative binary operation that has an identity. In plainer language,
+// a monoid is any type that has an "empty" value that, when "appended" to any other value of that
+// type, equals that same value. For example, an integer is a monoid, because any integer added to 0,
+// the "empty" value, equals that integer. Likewise, a list is a monoid, because any list appended to
+// the empty list equals the original list. Monoids must define mempty and mappend functions.
+const Monoid = defines(`mempty`, `mappend`);
+
 /**
- * A data type for representing the relationship of two values.
- * @const {Object}
+ * Return the identity (or "empty") value for the monoid.
+ * Haskell: mempty :: a
+ * @param {*} a - Any monoid.
+ * @return {*} - Identity of mappend.
  */
-const Ordering = {
-  EQ: 'EQ', // ===
-  LT: 'LT', // <
-  GT: 'GT'  // >
-}
-
-class Ordering {
-  constructor(ord) { this.ord = () => ord; }
-  static mempty(a) { return EQ; }
-  static mappend(a, b) {
-    if (a === LT) { return LT; }
-    if (a === EQ) { return b; }
-    if (a === GT) { return GT; }
-  }
-  valueOf() { return this.ord(); }
-}
-
-const EQ = new Ordering(`EQ`); // ===
-
-const LT = new Ordering(`LT`); // <
-
-const GT = new Ordering(`GT`); // >
-
-// Monoid (from Prelude)
-
-let Monoid = defines(`mempty`, `mappend`);
-
 function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(a, mempty); }
 
+/**
+ * Perform an associative operation (similar to appending to a list) on two monoids.
+ * Example:
+ * {@code let l1 = list(1,2,3);           // [1:2:3:[]]
+ *        let l2 = list(4,5,6);           // [4:5:6:[]]
+ *        let l3 = list(7,8,9);           // [7:8:9:[]]
+ *        mappend(mempty(l1), l1);        // [1:2:3:[]]
+ *        mappend(l1, (mappend(l2, l3))); // [1:2:3:4:5:6:7:8:9:[]]
+ *        mappend(mappend(l1, l2), l3);   // [1:2:3:4:5:6:7:8:9:[]]
+ * }
+ * Haskell: mappend :: a -> a -> a
+ * @param {*} a - Any monoid.
+ * @param {*} b - Any monoid.
+ * @return {*} - A new monoid of the same type, the result of the associative operation.
+ */
 function mappend(a, b) {
   let p = (a, b) => {
     if (typeCheck(a, b)) { return Monoid(a) ? dataType(a).mappend(a, b) : error.typeError(a, mappend); }
@@ -502,38 +541,72 @@ function mappend(a, b) {
   return partial(p, a, b);
 }
 
+/**
+ * Fold a list using the monoid. Concatenates a list of monoids into a single list. For example, since
+ * lists themselves are monoids, this function will flatten a list of lists into a single list. Example:
+ * {@code let l1 = list(1,2,3);    // [1:2:3:[]]
+ *        let l2 = list(4,5,6);    // [4:5:6:[]]
+ *        let l3 = list(7,8,9);    // [7:8:9:[]]
+ *        let ls = list(l1,l2,l3); // [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
+ *        mconcat(ls);             // [1:2:3:4:5:6:7:8:9:[]]
+ * }
+ * Haskell: mconcat :: [a] -> a
+ * @param {*} - Any monoid.
+ * @return {*} - A new monoid of the same type.
+ */
 function mconcat(a) { return foldr(mappend, mempty(a), a); }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functor
 
-let Functor = defines(`fmap`);
+// A functor is a type that can be mapped over. This includes lists and other collections, but functions
+// themselves as well as other sorts of values can also be mapped over, so no one metaphor is likely to
+// cover all possible cases. Functors must define an fmap function.
+const Functor = defines(`fmap`);
 
-// fmap id  ==  id
-// fmap (f . g)  ==  fmap f . fmap g
-
-// function f(x) { return x * 11; }
-// function g(x) { return x * 100; }
-// let g1 = fmap(g, t1)
-// let f1 = fmap(f, g1)
-// let m = fmap(f(fmap(g, t1)))
-// function $$(f) { return (g, x) => partial(f, g, x); }
-// let f2 = fmap(f);
-// let g2 = fmap(g);
-// let mm = $(f2)(g2)(t1)
-
+/**
+ * Map a function over a functor, which is a type that specifies how functions may be mapped over it.
+ * {@code let lst = list(1,2,3);  // [1:2:3:[]]
+ *        fmap(id, lst);          // [1:2:3:[]]
+ *        let f = x => x * 11;
+ *        let g = x => x * 100;
+ *        $(fmap(f))(fmap(g))(l1) // [1100:2200:3300:[]]
+ *        fmap($(f)(g))(l1)       // [1100:2200:3300:[]]
+ * }
+ * Haskell: fmap :: (a -> b) -> f a -> f b
+ * @param {function()} f - The function to map.
+ * @param {*} - The functor to map over.
+ * @return {*} - A new functor of the same type, the result of the mapping.
+ */
 function fmap(f, a) {
   let p = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
   return partial(p, f, a);
 }
 
+/**
+ * Map a function over a functor, which is a type that specifies how functions may be mapped over it.
+ * {@code let lst = list(1,2,3);  // [1:2:3:[]]
+ *        fmap(id, lst);          // [1:2:3:[]]
+ *        let f = x => x * 11;
+ *        let g = x => x * 100;
+ *        $(fmap(f))(fmap(g))(l1) // [1100:2200:3300:[]]
+ *        fmap($(f)(g))(l1)       // [1100:2200:3300:[]]
+ * }
+ * Haskell: fmap :: (a -> b) -> f a -> f b
+ * @param {function()} f - The function to map.
+ * @param {*} - The functor to map over.
+ * @return {*} - A new functor of the same type, the result of the mapping.
+ */
+(<$) :: a -> f b -> f a
 function fmapReplaceBy(a, b) {
   let p = (a, b) => fmap(constant(a), b);
   return partial(p, a, b);
 }
 
-// Applicative (let p all these multiparameter functions)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Applicative
 
-let Applicative = defines(`fmap`, `pure`, `ap`);
+const Applicative = defines(`fmap`, `pure`, `ap`);
 
 function pure(f, a) {
   let p = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
@@ -579,9 +652,10 @@ function liftA3(f, a, b, c) {
   return partial(p, f, a, b, c);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monad
 
-let Monad = defines(`fmap`, `pure`, `ap`, `bind`);
+const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
 function inject(m, a) { // return
   let p = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
@@ -620,9 +694,10 @@ class DoBlock {
 
 function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Foldable
 
-let Foldable = defines(`foldr`);
+const Foldable = defines(`foldr`);
 
 function fold(a) { return foldMap(id, a); }
 
@@ -636,9 +711,10 @@ function foldr(f, z, t) {
   return partial(p, f, z, t);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Traversable
 
-let Traversable = defines(`fmap`, `foldr`, `traverse`);
+const Traversable = defines(`fmap`, `foldr`, `traverse`);
 
 function traverse(f, a) {
   let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
@@ -661,31 +737,9 @@ function sequence(m) { return Monad(m) ? traverse(id, a) : error.typeError(a, se
 
 function sequence_(m) { return Monad(m) ? foldr(chain(m, f), inject(m, unit), m) : error.typeError(m, sequence_); }
 
-// Morphism (fix)
-
-class Morphism extends Type {
-  constructor(f) {
-    super();
-    this.bind = f;
-  }
-  static mempty(a) { return this.mempty; }
-  static mappend(f, g, x) { return x => mappend(f.bind(x), g.bind(x)); }
-  static fmap(g, m) { return x => $(m.bind)(g)(x); } // might be backward
-  static pure(a) { return constant(a); }
-  static ap(f, g) { return x => f(x).g.bind(g, x); } // I have no idea
-  toString() { return this.bind; }
-  typeOf() { return `morphism`; }
-  valueOf() { return this.toString(); }
-}
-
-// instance Applicative ((->) a) where
-//     pure = const
-//     (<*>) f g x = f x (g x)
-
-function functor(f) { return new Morphism(f); }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maybe
-// derives Eq and Ord
+
 class Maybe extends Type {
   constructor(a) {
     super();
@@ -699,9 +753,9 @@ class Maybe extends Type {
   }
   // Ord
   static compare(a, b) {
-    if (isEq(a, b)) { return Ordering.EQ; }
-    if (isNothing(a)) { return Ordering.LT; }
-    if (isNothing(b)) { return Ordering.GT; }
+    if (isEq(a, b)) { return EQ; }
+    if (isNothing(a)) { return LT; }
+    if (isNothing(b)) { return GT; }
     return compare(a.value, b.value);
   }
   // Monoid
@@ -728,7 +782,7 @@ class Maybe extends Type {
   valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value}`; }
 }
 
-let Nothing = new Maybe();
+const Nothing = new Maybe();
 
 function just(a) { return new Maybe(a); }
 
@@ -798,6 +852,7 @@ function mapMaybe(f, as) {
   return partial(p, f, as);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tuple (from Data.Tuple)
 
 /**
@@ -822,11 +877,11 @@ class Tuple extends Type {
   static isEq(a, b) { return fromTupleToArray(a).every((a, i) => a === fromTupleToArray(b)[i]); }
   // Ord
   static compare(a, b) {
-    if (this.isEq(a, b)) { return Ordering.EQ; }
+    if (this.isEq(a, b)) { return EQ; }
     let i = 1;
     while (Reflect.has(a, i)) {
-      if (a[i] < b[i]) { return Ordering.LT; }
-      if (a[i] > b[i]) { return Ordering.GT; }
+      if (a[i] < b[i]) { return LT; }
+      if (a[i] > b[i]) { return GT; }
       i += 1;
     }
   }
@@ -965,7 +1020,8 @@ function uncurry(f, p) {
   return isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry);
 }
 
-// List (from Data.List)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// List
 
 // Basic functions
 
@@ -986,10 +1042,10 @@ class List extends Type {
   }
   // Ord
   static compare(a, b) {
-    if (isEmpty(a) && isEmpty(b)) { return Ordering.EQ; }
-    if (isEmpty(a) && isEmpty(b) === false) { return Ordering.LT; }
-    if (isEmpty(a) === false && isEmpty(b)) { return Ordering.GT; }
-    if (compare(a.head, b.head) === Ordering.EQ) { return compare(a.tail, b.tail)}
+    if (isEmpty(a) && isEmpty(b)) { return EQ; }
+    if (isEmpty(a) && isEmpty(b) === false) { return LT; }
+    if (isEmpty(a) === false && isEmpty(b)) { return GT; }
+    if (compare(a.head, b.head) === EQ) { return compare(a.tail, b.tail)}
     return compare(a.head, b.head);
   }
   // Monoid
@@ -1103,11 +1159,6 @@ function listAppend(as, bs) {
   return partial(p, as, bs);
 }
 
-function head(as) {
-  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
-  return error.listError(as, head);
-}
-
 function tail(as) {
   if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail; }
   return error.listError(as, tail);
@@ -1169,10 +1220,8 @@ function map(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, map); }
     if (isEmpty(as)) { return emptyList; }
-    //let x = as.head;
-    let x = !f(as.head) ? f.bind(f, as.head) : f(as.head);
+    let x = f(as.head) === undefined ? f.bind(f, as.head) : f(as.head);
     let xs = as.tail;
-    //return cons(f(x))(map(f)(xs));
     return cons(x)(map(f)(xs));
   }
   return partial(p, f, as);
@@ -1305,6 +1354,9 @@ export default {
   print: print,
   isEq: isEq,
   isNotEq: isNotEq,
+  EQ: EQ,
+  LT: LT,
+  GT: GT,
   compare: compare,
   lessThan: lessThan,
   lessThanOrEqual: lessThanOrEqual,
@@ -1312,6 +1364,46 @@ export default {
   greaterThanOrEqual: greaterThanOrEqual,
   max: max,
   min: min,
+  mempty: mempty,
+  mappend: mappend,
+  mconcat: mconcat,
+  fmap: fmap,
+  fmapReplaceBy: fmapReplaceBy,
+  pure: pure,
+  ap: ap,
+  apFlip: apFlip,
+  then: then,
+  skip: skip,
+  liftA: liftA,
+  liftA2: liftA2,
+  liftA3: liftA3,
+  inject: inject,
+  bind: bind,
+  chain: chain,
+  bindFlip: bindFlip,
+  join: join,
+  liftM: liftM,
+  Do: Do,
+  fold: fold,
+  foldMap: foldMap,
+  foldr: foldr,
+  traverse: traverse,
+  mapM: mapM,
+  mapM_: mapM_,
+  sequence: sequence,
+  sequence_, sequence_,
+  Nothing: Nothing,
+  just: just,
+  maybe: maybe,
+  isMaybe: isMaybe,
+  isJust: isJust,
+  isNothing: isNothing,
+  fromJust: fromJust,
+  fromMaybe: fromMaybe,
+  maybeToList: maybeToList,
+  listToMaybe: listToMaybe,
+  catMaybes: catMaybes,
+  mapMaybe, mapMaybe,
   unit: unit,
   tuple: tuple,
   curry: curry,
@@ -1324,6 +1416,7 @@ export default {
   uncurry: uncurry,
   emptyList: emptyList,
   list: list,
+  concat: concat,
   cons: cons,
   fromArrayToList: fromArrayToList,
   fromListToArray: fromListToArray,
@@ -1336,7 +1429,17 @@ export default {
   length: length,
   listAppend: listAppend,
   tail: tail,
+  reverse: reverse,
+  splitAt: splitAt,
+  takeWhile: takeWhile,
+  dropWhile: dropWhile,
+  span: span,
+  spanNot: spanNot,
   map: map,
+  filter: filter,
+  intersperse: intersperse,
+  intercalate: intercalate,
+  transpose: transpose,
   drop: drop,
   take: take,
   index: index,
