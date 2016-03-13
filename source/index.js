@@ -734,43 +734,107 @@ function liftA3(f, a, b, c) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monad
 
+// A monad is an abstract datatype of actions. Instances of Monad must define a {@code bind} function
+// as well as all the required functions for Functor and Applicative.
 const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
-function inject(m, a) { // return
+/**
+ * Inject a value into the monadic type.
+ * Haskell: return :: a -> m a
+ * @param {Monad} m - A monad.
+ * @param {*} a - The value to inject.
+ * @return {Monad} - A new monad of the same type with the value injected.
+ */
+function inject(m, a) {
   let p = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
   return partial(p, m, a);
 }
 
-function bind(m, f) { // >>=
+/**
+ * Sequentially compose two actions, passing any value produced by the first as an argument to the second.
+ * Haskell: (>>=) :: m a -> (a -> m b) -> m b
+ * @param {Monad} m - A monad.
+ * @param {function()} f - A function to bind to the injected value of the monad.
+ * @return {Monad} - A new monad of the same type, the result of binding the function to the original injected value.
+ */
+function bind(m, f) {
   let p = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
   return partial(p, m, f);
 }
 
-function chain(m, f) {  // >>
-  let p = (m, f) => Monad(m) ? then(f, m) : error.typeError(m, chain);
+/**
+ * Sequentially compose two actions, discarding any value produced by the first, like sequencing operators
+ * (such as the semicolon) in imperative languages.
+ * @param {Monad} m - A monad.
+ * @param {function()} f - A function to call that ignores the injected value of the monad.
+ * @return {Monad} - A new monad of the same type, the result of calling the function.
+ * Haskell: (>>) :: m a -> m b -> m b
+ */
+function chain(m, f) {
+  let p = (m, f) => Monad(m) ? then(m, f) : error.typeError(m, chain);
   return partial(p, m, f);
 }
 
-function bindFlip(f, m) { // =<<
+/**
+ * Same as {@code bind} but with the arguments interchanged.
+ * Haskell: (=<<) :: Monad m => (a -> m b) -> m a -> m b
+ * @param {function()} f - A function to bind to the injected value of the monad.
+ * @param {Monad} m - A monad.
+ * @return {Monad} - A new monad of the same type, the result of binding the function to the original injected value.
+ */
+function bindFlip(f, m) {
   let p = (f, m) => bind(m, f);
   return partial(p, f, m);
 }
 
+/**
+ * Remove one level of monadic structure, projecting its bound argument into the outer level. Example:
+ * {@code let m = just(10); // Just 10
+ *        let n = just(m);  // Just Just 10
+ *        join(n);          // Just 10
+ *        join(m);          // 10 (is this a bug?)
+ * }
+ * Haskell: join :: Monad m => m (m a) -> m a
+ * @param {Monad} m - A monad (wrapping another monad).
+ * @return {Monad} - The wrapped monad on its own.
+ */
 function join(m) { return Monad(m) ? bind(m, id) : error.typeError(m, join); }
 
+/**
+ * Promote a function to a monad.
+ * Haskell: liftM :: Monad m => (a1 -> r) -> m a1 -> m r
+ * @param {function()} f - The function to lift into a monad.
+ * @param {Monad} m - The monad to lift the function into.
+ * @return {Monad} - A new monad containing the result of mapping the function over the monad.
+ */
 function liftM(f, m) {
   let p = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
   return partial(p, f, m)
 }
 
+/**
+ * Since there is no way to exactly replicate Haskell's 'do' notation for monadic chaining, but it
+ * would be useful to have a similar affordance, this class provides such a mechanism. See {@code Do}
+ * below for an example of how it works.
+ * @param {Monad} m - A monad.
+ * @class
+ * @private
+ */
 class DoBlock {
-  constructor(m) { this.m = m; }
-  inject(a) { return Do(dataType(this.m).pure(a)); }
-  bind(f) { return Do(bind(this.m, f)); }
-  then(a) { return Do(chain(this.m, a)); }
-  valueOf() { return `${dataType(this.m).name} >>= ${this.m.valueOf()}`; }
+  constructor(m) { this.m = () => m; }
+  inject(a) { return Do(dataType(this.m()).pure(a)); }
+  bind(f) { return Do(bind(this.m(), f)); }
+  chain(f) { return Do(chain(this.m(), f)); }
+  valueOf() { return `${dataType(this.m()).name} >>= ${this.m().valueOf()}`; }
 }
 
+/**
+ * Wrap a monad in a special container for the purpose of chaining actions, in imitation of the
+ * syntactic sugar provided by Haskell's 'do' notation. Example:
+ *
+ * @param {Monad} m - A monad.
+ * @return {DoBlock} - A monadic context in which to chain actions.
+ */
 function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -778,13 +842,16 @@ function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 
 const Foldable = defines(`foldr`);
 
+fold :: Monoid m => t m -> m
 function fold(a) { return foldMap(id, a); }
 
+foldMap :: Monoid m => (a -> m) -> t a -> m
 function foldMap(f, a) {
   let p = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
   return partial(p, f, a);
 }
 
+foldr :: (a -> b -> b) -> b -> t a -> b
 function foldr(f, z, t) {
   let p = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
   return partial(p, f, z, t);
@@ -932,16 +999,14 @@ function mapMaybe(f, as) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Tuple (from Data.Tuple)
+// Tuple
 
 /**
  * A data constructor for a tuple. Unlike Haskell, which provides a separate constructor
  * for every possible number of tuple values, this class will construct tuples of any size.
- * Empty Tuples, however, are a special type called {@code unit}, and single values passed to this
- * constructor will be returned unmodified. In order for them be useful, it is recommended
- * that you create Tuples with primitive values. Note that this class is not exposed as part
- * of the maryamyriameliamurphies.js API, as new Tuples should be instantiated with the
- * {@code tuple()} function and not by using {@code new Tuple()} directly.
+ * Empty Tuples, however, are a special type called {@code unit}, and single values passed to
+ * this constructor will be returned unmodified. In order for them be useful, it is recommended
+ * that you create Tuples with primitive values.
  * @class
  * @param {*} values - The values to put into the tuple.
  */
