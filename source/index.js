@@ -293,7 +293,7 @@ function not(a) {
  * Check whether a value is an empty collection. Returns true if the value is an empty list, an empty tuple,
  * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous.
  * Example: {@code isEmpty([]); // true }
- * @param {*} a - Any collection value of type List, Tuple, or Array.
+ * @param {Object} a - Any collection value of type List, Tuple, or Array.
  * @return {boolean} - True if the collection is empty, false otherwise.
  */
 function isEmpty(a) {
@@ -321,7 +321,7 @@ function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.v
 
 /**
  * A utility function for displaying the results of show on the console.
- * @param {*} a - The object to print.
+ * @param {*} a - The value to print.
  */
 function print(a) { return console.log(show(a)); }
 
@@ -335,8 +335,8 @@ const Eq = defines(`isEq`);
  * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
  * both define an isEq static method).
  * Haskell: (==) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a === b
  */
 function isEq(a, b) {
@@ -351,8 +351,8 @@ function isEq(a, b) {
  * Compare two objects for inequality. Both objects must be instances of the Eq type class (i.e. they
  * both define an isEq static method).
  * Haskell: (/=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a !== b
  */
 function isNotEq(a, b) {
@@ -411,9 +411,9 @@ const GT = new Ordering(`GT`);
  * both define a compare static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
  * Haskell: compare :: a -> a -> Ordering
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @return {string} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
+ * @return {Ordering} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
  */
 function compare(a, b) {
   let p = (a, b) => {
@@ -431,8 +431,8 @@ function compare(a, b) {
 /**
  * Determine whether one value is less than another.
  * Haskell: (<) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a < b.
  */
 function lessThan(a, b) {
@@ -443,8 +443,8 @@ function lessThan(a, b) {
 /**
  * Determine whether one value is less than or equal to another.
  * Haskell: (<=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a <= b.
  */
 function lessThanOrEqual(a, b) {
@@ -455,8 +455,8 @@ function lessThanOrEqual(a, b) {
 /**
  * Determine whether one value is greater than another.
  * Haskell: (>) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a > b.
  */
 function greaterThan(a, b) {
@@ -467,8 +467,8 @@ function greaterThan(a, b) {
 /**
  * Determine whether one value is greater than or equal to another.
  * Haskell: (>=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
  * @return {boolean} - a >= b.
  */
 function greaterThanOrEqual(a, b) {
@@ -479,9 +479,9 @@ function greaterThanOrEqual(a, b) {
 /**
  * Return the higher in value of two objects.
  * Haskell: max :: a -> a -> a
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @return {Object} - a or b, whichever is greater.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
+ * @return {*} - a or b, whichever is greater.
  */
 function max(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
@@ -491,9 +491,9 @@ function max(a, b) {
 /**
  * Return the lower in value of two objects.
  * Haskell: min :: a -> a -> a
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @return {Object} - a or b, whichever is lesser.
+ * @param {*} a - Any value.
+ * @param {*} b - Any value.
+ * @return {*} - a or b, whichever is lesser.
  */
 function min(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
@@ -513,8 +513,8 @@ const Monoid = defines(`mempty`, `mappend`);
 /**
  * Return the identity (or "empty") value for the monoid.
  * Haskell: mempty :: a
- * @param {*} a - Any monoid.
- * @return {*} - Identity of mappend.
+ * @param {Object} a - Any monoid.
+ * @return {Object} - Identity of mappend.
  */
 function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(a, mempty); }
 
@@ -529,9 +529,9 @@ function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(
  *        mappend(mappend(l1, l2), l3);   // [1:2:3:4:5:6:7:8:9:[]]
  * }
  * Haskell: mappend :: a -> a -> a
- * @param {*} a - Any monoid.
- * @param {*} b - Any monoid.
- * @return {*} - A new monoid of the same type, the result of the associative operation.
+ * @param {Object} a - Any monoid.
+ * @param {Object} b - Any monoid.
+ * @return {Object} - A new monoid of the same type, the result of the associative operation.
  */
 function mappend(a, b) {
   let p = (a, b) => {
@@ -551,8 +551,8 @@ function mappend(a, b) {
  *        mconcat(ls);             // [1:2:3:4:5:6:7:8:9:[]]
  * }
  * Haskell: mconcat :: [a] -> a
- * @param {*} - Any monoid.
- * @return {*} - A new monoid of the same type.
+ * @param {Object} - Any monoid.
+ * @return {Object} - A new monoid of the same type.
  */
 function mconcat(a) { return foldr(mappend, mempty(a), a); }
 
@@ -565,7 +565,7 @@ function mconcat(a) { return foldr(mappend, mempty(a), a); }
 const Functor = defines(`fmap`);
 
 /**
- * Map a function over a functor, which is a type that specifies how functions may be mapped over it.
+ * Map a function over a functor, which is a type that specifies how functions may be mapped over it. Example:
  * {@code let lst = list(1,2,3);   // [1:2:3:[]]
  *        fmap(id, lst);           // [1:2:3:[]]
  *        let f = x => x * 11;
@@ -575,8 +575,8 @@ const Functor = defines(`fmap`);
  * }
  * Haskell: fmap :: (a -> b) -> f a -> f b
  * @param {function()} f - The function to map.
- * @param {*} - The functor to map over.
- * @return {*} - A new functor of the same type, the result of the mapping.
+ * @param {Object} - The functor to map over.
+ * @return {Object} - A new functor of the same type, the result of the mapping.
  */
 function fmap(f, a) {
   let p = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
@@ -590,8 +590,8 @@ function fmap(f, a) {
  * }
  * Haskell: (<$) :: a -> f b -> f a
  * @param {*} a - The value to inject into the functor.
- * @param {*} b - The functor to map over.
- * @return {*} - A new functor of the same type, with the values of the original replaced by the new value.
+ * @param {Object} b - The functor to map over.
+ * @return {Object} - A new functor of the same type, with the values of the original replaced by the new value.
  */
 function fmapReplaceBy(a, b) {
   let p = (a, b) => fmap(constant(a), b);
@@ -601,13 +601,47 @@ function fmapReplaceBy(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Applicative
 
+// Applicative functors are functors that support function application within their contexts. They must
+// define pure and ap functions and also be instances of Functor.
 const Applicative = defines(`fmap`, `pure`, `ap`);
 
+/**
+ * Lift a value into an applicative context. Example:
+ * {@code let lst = list(1,2,3); // [1:2:3:[]]
+ *        let p = pure(lst, 5);  // [5:[]]
+ * }
+ * Haskell: pure :: a -> f a
+ * @param {Object} f - An applicative functor.
+ * @param {*} a - Any value.
+ * @return {Object} - An applicative functor with the value injected.
+ */
 function pure(f, a) {
   let p = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
   return partial(p, f, a);
 }
 
+/**
+ * {@code let lst = list(1,2,3);
+ *        let p = pure(lst, id); // lift id function into applicative context
+ *        ap(p, lst);            // [1:2:3:[]] proves identity
+ *        let f = x => x * 2;
+ *        let g = x => x * 3;
+ *        let pf = pure(lst, f);
+ *        let pg = pure(lst, g);
+ *        let p$ = pure(lst, $);
+ *        ap(ap(ap(p$)(pf))(pg))(lst); // [6:12:18:[]] not pretty
+ *        ap(ap(ap(p$, pf), pg), lst); // [6:12:18:[]] but
+ *        ap(pf, ap(pg, lst));         // [6:12:18:[]] proves composition
+ *        ap(pf, pure(lst, 10))        // [20:[]]
+ *        pure(lst, f(10))             // [20:[]] proves homomorphism
+ *        ap(pf, pure(lst, 3));        // [6:[]]
+ *        let a = pure(lst, 3);
+ *        ap(pf, a);                   // [6:[]] proves interchange (not really possible?)
+ * }
+ * (<*>) :: f (a -> b) -> f a -> f b
+ * @param {function()} f -
+ * @param
+ */
 function ap(f, a) { // <*>
   let p = (f, a) => {
     if (Applicative(f) === false) { error.typeError(f, ap); }
@@ -617,31 +651,37 @@ function ap(f, a) { // <*>
   return partial(p, f, a);
 }
 
+(<**>) :: Applicative f => f a -> f (a -> b) -> f b
 function apFlip(f, a, b) { // <**>
   let p = (f, a, b) => liftA2(flip(f), a, b);
   return partial(p, f, a, b);
 }
 
+(*>) :: f a -> f b -> f b
 function then(a1, a2) { // *>
   let p = (a1, a2) => liftA2(constant(id), a1, a2);
   return partial(p, a1, a2);
 }
 
+(<*) :: f a -> f b -> f a
 function skip(a1, a2) { // <*
   let p = (a1, a2) => liftA2(constant, a1, a2);
   return partial(p, a1, a2);
 }
 
+liftA :: Applicative f => (a -> b) -> f a -> f b
 function liftA(f, a) {
   let p = (f, a) => ap(dataType(a).pure(f))(a);
   return partial(p, f, a);
 }
 
+liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
 function liftA2(f, a, b) {
   let p = (f, a, b) => ap(fmap(f, a))(b);
   return partial(p, f, a, b);
 }
 
+liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
 function liftA3(f, a, b, c) {
   let p = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
   return partial(p, f, a, b, c);
