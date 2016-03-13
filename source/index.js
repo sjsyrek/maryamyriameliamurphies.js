@@ -305,8 +305,8 @@ function isEmpty(a) {
 }
 
 /**
- * Display the value of an object as a string. Calls the object's valueOf function. Useful for custom types
- * that look ugly when displayed as objects. Example:
+ * Display the value of an object as a string. Calls the object's {@code valueOf} function. Useful for custom
+ * types that look ugly when displayed as objects. Example:
  * {@code let lst = list(1,2,3);
  *        let tup = tuple(1,2);
  *        lst;       // {"head":1,"tail":{"head":2,"tail":{"head":3,"tail":{"head":null,"tail":null}}}}
@@ -328,12 +328,12 @@ function print(a) { return console.log(show(a)); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Eq
 
-// The Eq type class defines equality and inequality. Instances of Eq must provide an isEq function.
+// The Eq type class defines equality and inequality. Instances of Eq must provide an {@code isEq} function.
 const Eq = defines(`isEq`);
 
 /**
  * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
- * both define an isEq static method).
+ * both define an {@code isEq} static method).
  * Haskell: (==) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
@@ -363,12 +363,12 @@ function isNotEq(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Ord
 
-// The Ord type class is used for totally ordered datatypes. Instances of Ord must provide a compare
+// The Ord type class is used for totally ordered datatypes. Instances of Ord must provide a {@code compare}
 // function and must also be instances of Eq.
 const Ord = defines(`isEq`, `compare`);
 
 /**
- * A data constructor for orderings, implemented as a class because in Haskell, Ordering is a Monoid.
+ * A data constructor for orderings implemented as a class, because {@code Ordering} in Haskell is a monoid.
  * There is no reason to ever create any other new objects from this class.
  * @param {string} ord - A string representing the type of ordering.
  * @class
@@ -408,7 +408,7 @@ const GT = new Ordering(`GT`);
 
 /**
  * Compare two objects and return an ordering. Both values must be instances of the Ord type class (i.e. they
- * both define a compare static method). Only a single comparison is required to determine the precise
+ * both define a {@code compare} static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
  * Haskell: compare :: a -> a -> Ordering
  * @param {*} a - Any value.
@@ -507,7 +507,7 @@ function min(a, b) {
 // a monoid is any type that has an "empty" value that, when "appended" to any other value of that
 // type, equals that same value. For example, an integer is a monoid, because any integer added to 0,
 // the "empty" value, equals that integer. Likewise, a list is a monoid, because any list appended to
-// the empty list equals the original list. Monoids must define mempty and mappend functions.
+// the empty list equals the original list. Monoids must define {@code mempty} and {@code mappend}.
 const Monoid = defines(`mempty`, `mappend`);
 
 /**
@@ -561,7 +561,7 @@ function mconcat(a) { return foldr(mappend, mempty(a), a); }
 
 // A functor is a type that can be mapped over. This includes lists and other collections, but functions
 // themselves as well as other sorts of values can also be mapped over, so no one metaphor is likely to
-// cover all possible cases. Functors must define an fmap function.
+// cover all possible cases. Functors must define an {@code fmap} function.
 const Functor = defines(`fmap`);
 
 /**
@@ -602,7 +602,7 @@ function fmapReplaceBy(a, b) {
 // Applicative
 
 // Applicative functors are functors that support function application within their contexts. They must
-// define pure and ap functions and also be instances of Functor.
+// define {@code pure} and {@code ap} functions and also be instances of Functor.
 const Applicative = defines(`fmap`, `pure`, `ap`);
 
 /**
@@ -621,6 +621,7 @@ function pure(f, a) {
 }
 
 /**
+ * Apply a function within an applicative context to an applicative functor. Example:
  * {@code let lst = list(1,2,3);
  *        let p = pure(lst, id); // lift id function into applicative context
  *        ap(p, lst);            // [1:2:3:[]] proves identity
@@ -632,17 +633,18 @@ function pure(f, a) {
  *        ap(ap(ap(p$)(pf))(pg))(lst); // [6:12:18:[]] not pretty
  *        ap(ap(ap(p$, pf), pg), lst); // [6:12:18:[]] but
  *        ap(pf, ap(pg, lst));         // [6:12:18:[]] proves composition
- *        ap(pf, pure(lst, 10))        // [20:[]]
- *        pure(lst, f(10))             // [20:[]] proves homomorphism
+ *        ap(pf, pure(lst, 10));       // [20:[]]
+ *        pure(lst, f(10));            // [20:[]] proves homomorphism
  *        ap(pf, pure(lst, 3));        // [6:[]]
  *        let a = pure(lst, 3);
  *        ap(pf, a);                   // [6:[]] proves interchange (not really possible?)
  * }
- * (<*>) :: f (a -> b) -> f a -> f b
- * @param {function()} f -
- * @param
+ * Haskell: (<*>) :: f (a -> b) -> f a -> f b
+ * @param {function()} f - A function lifted into an applicative context.
+ * @param {Object} a - An applicative functor.
+ * @return {Object} - A new applicative functor of the same type, the result of the application.
  */
-function ap(f, a) { // <*>
+function ap(f, a) {
   let p = (f, a) => {
     if (Applicative(f) === false) { error.typeError(f, ap); }
     if (Applicative(a) === false) { error.typeError(a, ap); }
@@ -651,37 +653,79 @@ function ap(f, a) { // <*>
   return partial(p, f, a);
 }
 
-(<**>) :: Applicative f => f a -> f (a -> b) -> f b
-function apFlip(f, a, b) { // <**>
+/**
+ * A variant of {@code ap} with the arguments reversed.
+ * Haskell: (<**>) :: Applicative f => f a -> f (a -> b) -> f b
+ * @param {function()} f - A function lifted into an applicative context.
+ * @param {Object} a - The first argument to f.
+ * @param {Object} b - The second argument to f.
+ */
+function apFlip(f, a, b) {
   let p = (f, a, b) => liftA2(flip(f), a, b);
   return partial(p, f, a, b);
 }
 
-(*>) :: f a -> f b -> f b
-function then(a1, a2) { // *>
+/**
+ * Sequence actions, discarding the value of the first argument. Example:
+ * {@code let l1 = list(1,2,3);
+ *        let l2 = list(4,5,6);
+ *        then(l1, l2); // [4:5:6:4:5:6:4:5:6:[]]
+ * }
+ * Haskell: (*>) :: f a -> f b -> f b
+ * @param {Object} a1 - The action to skip.
+ * @param {Object} a2 - The action to perform.
+ */
+function then(a1, a2) {
   let p = (a1, a2) => liftA2(constant(id), a1, a2);
   return partial(p, a1, a2);
 }
 
-(<*) :: f a -> f b -> f a
-function skip(a1, a2) { // <*
+/**
+ * Sequence actions, discarding the value of the second argument. Example:
+ * {@code let l1 = list(1,2,3);
+ *        let l2 = list(4,5,6);
+ *        skip(l1, l2); // [1:1:1:2:2:2:3:3:3:[]]
+ * }
+ * Haskell: (<*) :: f a -> f b -> f a
+ * @param {Object} a1 - The action to perform.
+ * @param {Object} a2 - The action to skip.
+ */
+function skip(a1, a2) {
   let p = (a1, a2) => liftA2(constant, a1, a2);
   return partial(p, a1, a2);
 }
 
-liftA :: Applicative f => (a -> b) -> f a -> f b
+/**
+ * Lift a function to actions.
+ * Haskell: liftA :: Applicative f => (a -> b) -> f a -> f b
+ * @param {function()} f - The function to lift into an applicative context.
+ * @param {Object} a - An applicative functor, the context to lift the function into.
+ */
 function liftA(f, a) {
   let p = (f, a) => ap(dataType(a).pure(f))(a);
   return partial(p, f, a);
 }
 
-liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+/**
+ * Lift a binary function to actions.
+ * Haskell: liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+ * @param {function()} f - The function to lift into an applicative context.
+ * @param {Object} a - An applicative functor, the first argument to f.
+ * @param {Object} b - An applicative functor, the second argument to f.
+ */
 function liftA2(f, a, b) {
   let p = (f, a, b) => ap(fmap(f, a))(b);
   return partial(p, f, a, b);
 }
 
-liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+/**
+ * Lift a ternary function to actions.
+ * Haskell: liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+ * @param {function()} f - The function to lift into an applicative context.
+ * @param {Object} a - An applicative functor, the first argument to f.
+ * @param {Object} b - An applicative functor, the second argument to f.
+ * @param {Object} c - An applicative functor, the third argument to f.
+ */
 function liftA3(f, a, b, c) {
   let p = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
   return partial(p, f, a, b, c);
