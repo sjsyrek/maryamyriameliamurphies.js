@@ -8,8 +8,11 @@
  *
  * See also:
  *
- * - [casualjs](https://github.com/casualjs/f)
+ * - [ghcjs](https://github.com/ghcjs/ghcjs)
+ * - [purescript](https://github.com/purescript/purescript)
+ * - [lazy.js](https://github.com/dtao/lazy.js)
  * - [pointfree-fantasy](https://github.com/DrBoolean/pointfree-fantasy)
+ * - [casualjs](https://github.com/casualjs/f)
  *
  * Reading the code:
  *
@@ -29,6 +32,8 @@
  * The public API for this library is specified, following CommonJS style, in a default object
  * at the bottom of this file. Corrections, modifications, improvements, and additions welcome.
  */
+
+ /** @module maryamyriameliamurphies.js/source/index */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Error handling
@@ -156,7 +161,7 @@ const defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a),
  * dataType(0);               // function Number() { [native code] }
  * let lst = list(1,2,3);
  * dataType(lst)              // => function List(head, tail) { ... }
- * lst.typeOf();         // => List
+ * lst.typeOf();              // => List // more useful if you don't need a function pointer
  */
 const dataType = (a) => a.constructor;
 
@@ -232,22 +237,32 @@ function partial(f, ...as) {
  * namespace membership, and custom operators are not available. However, Haskell also provides
  * the $ operator, which simply binds functions right to left, allowing parentheses to be
  * omitted: f $ g $ h x = f (g (h x)). We still can't do this in JavaScript, but why not borrow
- * the $ for some semantic consistency? Sorry, jQuery. Note that an argument need not be supplied
- * to the rightmost function, in which case `$` returns a new function to which you can bind an
- * argument later. The leftmost function, however, must be a pure function, as its argument is
- * the value returned by the rightmost function. Example:
- * {@code let addTen = x => x + 10;
- *        let multHund = x => x * 100;
- *        let addTwenty = x => addTen(10);
- *        $(addTen)(multHund)(10) // 1010
- *        $(addTen)(multHund, 10) // 1010
- *        $(multHund)(addTen)(10) // 2000
- *        $(multHund)(addTen, 10) // 2000
- *        $(addTen)(addTwenty)()  // 30
- * }
+ * the $ for some semantic consistency? Sorry, jQuery. This function takes one function as an
+ * argument and returns a new closure that expects another function and a single argument. This
+ * function will not work as expected if you pass in two arguments. Note that an argument need
+ * not be supplied to the rightmost function, in which case `$` returns a new function to which
+ * you can bind an argument later. The leftmost function, however, must be a pure function, as
+ * its argument is the value returned by the rightmost function (though you can use for `f` a
+ * function with all but one of its arguments partially applied).
  * Haskell> (.) :: (b -> c) -> (a -> b) -> a -> c
  * @param {Function} f - The outermost function to compose.
- * @returns {Function} - The composed function, called only if a value is bound to f.
+ * @returns {Function|*} - The composed function or its value, returned only if a value is bound to f.
+ * @example
+ * let addTen = x => x + 10;
+ * let multHund = x => x * 100;
+ * let addTwenty = x => addTen(10);
+ * let h = (x, y) => {
+ *   let p = (x, y) => x / y;
+ *   return partial(p, x, y);
+ * }
+ * let divByTen = h(10);
+ * $(addTen)(multHund)(10)            // => 1010
+ * $(addTen)(multHund, 10)            // => 1010
+ * $(multHund)(addTen)(10)            // => 2000
+ * $(multHund)(addTen, 10)            // => 2000
+ * $(addTen)(addTwenty)()             // => 30
+ * $(divByTen)(multHund)(10)          // => 0.01
+ * }
  */
 function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
