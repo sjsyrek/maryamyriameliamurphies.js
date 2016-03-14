@@ -490,18 +490,21 @@ function isNotEq(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Ord
 
-// The Ord type class is used for totally ordered datatypes. Instances of Ord must provide a {@code compare}
-// function and must also be instances of Eq.
+// The `Ord` type class is used for totally ordered datatypes. Instances of `Ord` must define a `compare`
+// method and must also be instances of `Eq`.
 const Ord = defines(`isEq`, `compare`);
 
 /**
- * A data constructor for orderings implemented as a class, because {@code Ordering} in Haskell is a monoid.
- * There is no reason to ever create any other new objects from this class.
- * @param {string} ord - A string representing the type of ordering.
- * @class
+ * A data constructor for orderings of objects that can be compared, implemented as a class because
+ * Ordering in Haskell is a monoid. There is no reason to ever create any other new objects from this class.
+ * @extends Type
  * @private
  */
 class Ordering extends Type {
+  /**
+   * Create a new ordering.
+   * @param {string} ord - A string representing the type of ordering.
+   */
   constructor(ord) {
     super();
     this.ord = () => ord;
@@ -516,31 +519,42 @@ class Ordering extends Type {
 }
 
 /**
- * The equals ordering. Equivalent to ===.
+ * The "equals" Ordering. Equivalent to ===.
  * @const {Ordering}
  */
 const EQ = new Ordering(`EQ`);
 
 /**
- * The less than ordering. Equivalent to <.
+ * The "less than" Ordering. Equivalent to <.
  * @const {Ordering}
  */
 const LT = new Ordering(`LT`);
 
 /**
- * The greater than ordering. Equivalent to >.
+ * The "greater than" Ordering. Equivalent to >.
  * @const {Ordering}
  */
 const GT = new Ordering(`GT`);
 
 /**
- * Compare two objects and return an ordering. Both values must be instances of the Ord type class (i.e. they
- * both define a {@code compare} static method). Only a single comparison is required to determine the precise
- * ordering of two objects.
+ * Compare two objects and return an `Ordering`. Both values must be instances of the `Ord` type class
+ * (i.e. they both define a `compare` static method) and must also be the same data type (or the same
+ * primitive type). Only a single comparison is required to determine the precise ordering of two objects.
  * Haskell> compare :: a -> a -> Ordering
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @returns {Ordering} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
+ * @returns {Ordering} - The Ordering value (`EQ` for equality, `LT` for less than, or `GT` for greater than).
+ * @example
+ * let lst1 = list(1,2,3);
+ * let lst2 = list(4,5,6);
+ * compare(lst1, lst2);    // => LT
+ * compare(lst2, lst1);    // => GT
+ * let tup1 = tuple(1,2);
+ * let tup2 = tuple(2,1);
+ * let tup3 = swap(tup2);
+ * compare(tup1, tup2);    // => LT
+ * compare(tup2, tup3);    // => GT
+ * compare(tup3, tup1);    // => EQ
  */
 function compare(a, b) {
   let p = (a, b) => {
@@ -608,7 +622,14 @@ function greaterThanOrEqual(a, b) {
  * Haskell> max :: a -> a -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @returns {*} - a or b, whichever is greater.
+ * @returns {*} - `a` or `b`, whichever is greater.
+ * @example
+ * let tup1 = tuple(1,2);
+ * let tup2 = tuple(2,1);
+ * let tup3 = swap(tup2);
+ * max(tup1, tup2);       // => (2,1)
+ * max(tup2, tup1);       // => (2,1)
+ * max(tup3, tup1);       // => (1,2)
  */
 function max(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
@@ -620,7 +641,14 @@ function max(a, b) {
  * Haskell> min :: a -> a -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @returns {*} - a or b, whichever is lesser.
+ * @returns {*} - `a` or `b`, whichever is lesser.
+ * @example
+ * let tup1 = tuple(1,2);
+ * let tup2 = tuple(2,1);
+ * let tup3 = swap(tup2);
+ * min(tup1, tup2);       // => (1,2)
+ * min(tup2, tup1);       // => (1,2)
+ * min(tup3, tup1);       // => (1,2)
  */
 function min(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
