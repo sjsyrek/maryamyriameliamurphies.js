@@ -674,11 +674,11 @@ function min(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monoid
 
-// A monoid is a type with an associative binary operation that has an identity. In plainer language,
+// A `Monoid` is a type with an associative binary operation that has an identity. In plainer language,
 // a monoid is any type that has an "empty" value that, when "appended" to any other value of that
 // type, equals that same value. For example, an integer is a monoid, because any integer added to 0,
 // the "empty" value, equals that integer. Likewise, a list is a monoid, because any list appended to
-// the empty list equals the original list. Monoids must define {@code mempty} and {@code mappend}.
+// the empty list equals the original list. Monoids must define `mempty` and `mappend` methods.
 const Monoid = defines(`mempty`, `mappend`);
 
 /**
@@ -691,18 +691,17 @@ function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(
 
 /**
  * Perform an associative operation (similar to appending to a list) on two monoids.
- * Example:
- * {@code let l1 = list(1,2,3);           // [1:2:3:[]]
- *        let l2 = list(4,5,6);           // [4:5:6:[]]
- *        let l3 = list(7,8,9);           // [7:8:9:[]]
- *        mappend(mempty(l1), l1);        // [1:2:3:[]]
- *        mappend(l1, (mappend(l2, l3))); // [1:2:3:4:5:6:7:8:9:[]]
- *        mappend(mappend(l1, l2), l3);   // [1:2:3:4:5:6:7:8:9:[]]
- * }
  * Haskell> mappend :: a -> a -> a
  * @param {Object} a - Any monoid.
  * @param {Object} b - Any monoid.
  * @returns {Object} - A new monoid of the same type, the result of the associative operation.
+ * @example
+ * let l1 = list(1,2,3);           // => [1:2:3:[]]
+ * let l2 = list(4,5,6);           // => [4:5:6:[]]
+ * let l3 = list(7,8,9);           // => [7:8:9:[]]
+ * mappend(mempty(l1), l1);        // => [1:2:3:[]]
+ * mappend(l1, (mappend(l2, l3))); // => [1:2:3:4:5:6:7:8:9:[]]
+ * mappend(mappend(l1, l2), l3);   // => [1:2:3:4:5:6:7:8:9:[]]
  */
 function mappend(a, b) {
   let p = (a, b) => {
@@ -715,39 +714,39 @@ function mappend(a, b) {
 /**
  * Fold a list using the monoid. Concatenates a list of monoids into a single list. For example, since
  * lists themselves are monoids, this function will flatten a list of lists into a single list. Example:
- * {@code let l1 = list(1,2,3);    // [1:2:3:[]]
- *        let l2 = list(4,5,6);    // [4:5:6:[]]
- *        let l3 = list(7,8,9);    // [7:8:9:[]]
- *        let ls = list(l1,l2,l3); // [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
- *        mconcat(ls);             // [1:2:3:4:5:6:7:8:9:[]]
- * }
  * Haskell> mconcat :: [a] -> a
- * @param {Object} - Any monoid.
- * @returns {Object} - A new monoid of the same type.
+ * @param {Object} a - Any monoid.
+ * @returns {Object} - A new monoid of the same type, the result of the concatenation.
+ * @example
+ * let l1 = list(1,2,3);    // => [1:2:3:[]]
+ * let l2 = list(4,5,6);    // => [4:5:6:[]]
+ * let l3 = list(7,8,9);    // => [7:8:9:[]]
+ * let ls = list(l1,l2,l3); // => [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
+ * mconcat(ls);             // => [1:2:3:4:5:6:7:8:9:[]]
  */
 function mconcat(a) { return foldr(mappend, mempty(a), a); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functor
 
-// A functor is a type that can be mapped over. This includes lists and other collections, but functions
+// A `Functor` is a type that can be mapped over. This includes lists and other collections, but functions
 // themselves as well as other sorts of values can also be mapped over, so no one metaphor is likely to
-// cover all possible cases. Functors must define an {@code fmap} function.
+// cover all possible cases. Functors must define an `fmap` method.
 const Functor = defines(`fmap`);
 
 /**
- * Map a function over a functor, which is a type that specifies how functions may be mapped over it. Example:
- * {@code let lst = list(1,2,3);   // [1:2:3:[]]
- *        fmap(id, lst);           // [1:2:3:[]]
- *        let f = x => x * 11;
- *        let g = x => x * 100;
- *        $(fmap(f))(fmap(g))(lst) // [1100:2200:3300:[]]
- *        fmap($(f)(g))(lst)       // [1100:2200:3300:[]]
- * }
+ * Map a function over a functor, which is a type that specifies how functions may be mapped over it.
  * Haskell> fmap :: (a -> b) -> f a -> f b
  * @param {Function} f - The function to map.
- * @param {Object} - The functor to map over.
+ * @param {Object} a - The functor to map over.
  * @returns {Object} - A new functor of the same type, the result of the mapping.
+ * @example
+ * let lst = list(1,2,3);   // => [1:2:3:[]]
+ * fmap(id, lst);           // => [1:2:3:[]]
+ * let f = x => x * 11;
+ * let g = x => x * 100;
+ * $(fmap(f))(fmap(g))(lst) // => [1100:2200:3300:[]]
+ * fmap($(f)(g))(lst)       // => [1100:2200:3300:[]]
  */
 function fmap(f, a) {
   let p = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
@@ -755,14 +754,14 @@ function fmap(f, a) {
 }
 
 /**
- * Replace all locations in a functor with the same value. Example:
- * {@code let lst = list(1,2,3); // [1:2:3:[]]
- *        fmapReplaceBy(5, lst)  // [5:5:5:[]]
- * }
+ * Replace all locations in a functor with the same value.
  * Haskell> (<$) :: a -> f b -> f a
  * @param {*} a - The value to inject into the functor.
  * @param {Object} b - The functor to map over.
  * @returns {Object} - A new functor of the same type, with the values of the original replaced by the new value.
+ * @example
+ * let lst = list(1,2,3); // => [1:2:3:[]]
+ * fmapReplaceBy(5, lst)  // => [5:5:5:[]]
  */
 function fmapReplaceBy(a, b) {
   let p = (a, b) => fmap(constant(a), b);
@@ -772,19 +771,19 @@ function fmapReplaceBy(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Applicative
 
-// Applicative functors are functors that support function application within their contexts. They must
-// define {@code pure} and {@code ap} functions and also be instances of Functor.
+// `Applicative` functors are functors that support function application within their contexts. They must
+// define `pure` and `ap` methods and also be instances of `Functor`.
 const Applicative = defines(`fmap`, `pure`, `ap`);
 
 /**
- * Lift a value into an applicative context. Example:
- * {@code let lst = list(1,2,3); // [1:2:3:[]]
- *        let p = pure(lst, 5);  // [5:[]]
- * }
+ * Lift a value into an applicative context.
  * Haskell> pure :: a -> f a
  * @param {Object} f - An applicative functor.
  * @param {*} a - Any object.
  * @returns {Object} - An applicative functor with the value injected.
+ * @example
+ * let lst = list(1,2,3); // => [1:2:3:[]]
+ * let p = pure(lst, 5);  // => [5:[]]
  */
 function pure(f, a) {
   let p = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
@@ -792,28 +791,28 @@ function pure(f, a) {
 }
 
 /**
- * Apply a function within an applicative context to an applicative functor. Example:
- * {@code let lst = list(1,2,3);
- *        let p = pure(lst, id); // lift id function into applicative context
- *        ap(p, lst);            // [1:2:3:[]] proves identity
- *        let f = x => x * 2;
- *        let g = x => x * 3;
- *        let pf = pure(lst, f);
- *        let pg = pure(lst, g);
- *        let p$ = pure(lst, $);
- *        ap(ap(ap(p$)(pf))(pg))(lst); // [6:12:18:[]] not pretty
- *        ap(ap(ap(p$, pf), pg), lst); // [6:12:18:[]] but
- *        ap(pf, ap(pg, lst));         // [6:12:18:[]] proves composition
- *        ap(pf, pure(lst, 10));       // [20:[]]
- *        pure(lst, f(10));            // [20:[]] proves homomorphism
- *        ap(pf, pure(lst, 3));        // [6:[]]
- *        let a = pure(lst, 3);
- *        ap(pf, a);                   // [6:[]] proves interchange (not really possible?)
- * }
+ * Apply a function within an applicative context to an applicative functor.
  * Haskell> (<*>) :: f (a -> b) -> f a -> f b
  * @param {Function} f - A function lifted into an applicative context.
  * @param {Object} a - An applicative functor.
  * @returns {Object} - A new applicative functor of the same type, the result of the application.
+ * @example
+ * let lst = list(1,2,3);
+ * let p = pure(lst, id);       // lift id function into applicative context
+ * ap(p, lst);                  // => [1:2:3:[]] // proves identity
+ * let f = x => x * 2;
+ * let g = x => x * 3;
+ * let pf = pure(lst, f);
+ * let pg = pure(lst, g);
+ * let p$ = pure(lst, $);
+ * ap(ap(ap(p$)(pf))(pg))(lst); // => [6:12:18:[]] // not pretty
+ * ap(ap(ap(p$, pf), pg), lst); // => [6:12:18:[]] // but
+ * ap(pf, ap(pg, lst));         // => [6:12:18:[]] // proves composition
+ * ap(pf, pure(lst, 10));       // => [20:[]]
+ * pure(lst, f(10));            // => [20:[]] // proves homomorphism
+ * ap(pf, pure(lst, 3));        // => [6:[]]
+ * let a = pure(lst, 3);
+ * ap(pf, a);                   // => [6:[]] // proves interchange (well, not really possible?)
  */
 function ap(f, a) {
   let p = (f, a) => {
@@ -825,11 +824,12 @@ function ap(f, a) {
 }
 
 /**
- * A variant of {@code ap} with the arguments reversed.
+ * A variant of `ap` with the arguments reversed.
  * Haskell> (<**>) :: Applicative f => f a -> f (a -> b) -> f b
  * @param {Function} f - A function lifted into an applicative context.
  * @param {Object} a - The first argument to f.
  * @param {Object} b - The second argument to f.
+ * @returns {Object} - A new applicative functor of the same type, the result of the application.
  */
 function apFlip(f, a, b) {
   let p = (f, a, b) => liftA2(flip(f), a, b);
@@ -837,14 +837,15 @@ function apFlip(f, a, b) {
 }
 
 /**
- * Sequence actions, discarding the value of the first argument. Example:
- * {@code let l1 = list(1,2,3);
- *        let l2 = list(4,5,6);
- *        then(l1, l2); // [4:5:6:4:5:6:4:5:6:[]]
- * }
+ * Sequence actions, discarding the value of the first argument.
  * Haskell> (*>) :: f a -> f b -> f b
  * @param {Object} a1 - The action to skip.
  * @param {Object} a2 - The action to perform.
+ * @returns {Object} - A new applicative functor, the result of sequencing the actions.
+ * @example
+ * let l1 = list(1,2,3);
+ * let l2 = list(4,5,6);
+ * then(l1, l2);         // => [4:5:6:4:5:6:4:5:6:[]]
  */
 function then(a1, a2) {
   let p = (a1, a2) => liftA2(constant(id), a1, a2);
@@ -853,13 +854,14 @@ function then(a1, a2) {
 
 /**
  * Sequence actions, discarding the value of the second argument. Example:
- * {@code let l1 = list(1,2,3);
- *        let l2 = list(4,5,6);
- *        skip(l1, l2); // [1:1:1:2:2:2:3:3:3:[]]
- * }
  * Haskell> (<*) :: f a -> f b -> f a
  * @param {Object} a1 - The action to perform.
  * @param {Object} a2 - The action to skip.
+ * @returns {Object} - A new applicative functor, the result of sequencing the actions.
+ * @example
+ * let l1 = list(1,2,3);
+ * let l2 = list(4,5,6);
+ * skip(l1, l2);         // => [1:1:1:2:2:2:3:3:3:[]]
  */
 function skip(a1, a2) {
   let p = (a1, a2) => liftA2(constant, a1, a2);
@@ -867,10 +869,11 @@ function skip(a1, a2) {
 }
 
 /**
- * Lift a function to actions.
+ * Lift a function into an applicative context.
  * Haskell> liftA :: Applicative f => (a -> b) -> f a -> f b
  * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the context to lift the function into.
+ * @returns {Object} - The result of applying the lifted function.
  */
 function liftA(f, a) {
   let p = (f, a) => ap(dataType(a).pure(f))(a);
@@ -883,6 +886,7 @@ function liftA(f, a) {
  * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
+ * @returns {Object} - The result of applying the lifted function.
  */
 function liftA2(f, a, b) {
   let p = (f, a, b) => ap(fmap(f, a))(b);
@@ -896,6 +900,7 @@ function liftA2(f, a, b) {
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
  * @param {Object} c - An applicative functor, the third argument to f.
+ * @returns {Object} - The result of applying the lifted function.
  */
 function liftA3(f, a, b, c) {
   let p = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
@@ -905,8 +910,8 @@ function liftA3(f, a, b, c) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monad
 
-// A monad is an abstract datatype of actions. Instances of Monad must define a {@code bind} function
-// as well as all the required functions for Functor and Applicative.
+// A monad is an abstract datatype of actions. Instances of `Monad` must define a `bind` method as well
+// all the required methods for `Functor` and `Applicative`.
 const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
 /**
@@ -947,7 +952,7 @@ function chain(m, f) {
 }
 
 /**
- * Same as {@code bind} but with the arguments interchanged.
+ * The same as `bind` but with the arguments interchanged.
  * Haskell> (=<<) :: Monad m => (a -> m b) -> m a -> m b
  * @param {Function} f - A function to bind to the injected value of the monad.
  * @param {Object} m - A monad.
@@ -959,17 +964,20 @@ function bindFlip(f, m) {
 }
 
 /**
- * Remove one level of monadic structure, projecting its bound argument into the outer level. Example:
- * {@code let m = just(10); // Just 10
- *        let n = just(m);  // Just Just 10
- *        join(n);          // Just 10
- *        join(m);          // 10 (is this a bug?)
- * }
+ * Remove one level of monadic structure from a monad, projecting its bound argument into the outer level.
  * Haskell> join :: Monad m => m (m a) -> m a
  * @param {Object} m - A monad (wrapping another monad).
  * @returns {Object} - The wrapped monad on its own.
+ * @example
+ * let m = just(10); // => Just 10
+ * let n = just(m);  // => Just Just 10
+ * join(n);          // => Just 10
+ * join(m);          // => *** Error: 'Just 10' is not a valid argument to function 'join'.
  */
-function join(m) { return Monad(m) ? bind(m, id) : error.typeError(m, join); }
+function join(m) {
+  if (Monad(m)) { return Monad(bind(m, id)) ? bind(m, id) : error.typeError(m, join); }
+  return error.typeError(m, join);
+}
 
 /**
  * Promote a function to a monad.
@@ -985,13 +993,15 @@ function liftM(f, m) {
 
 /**
  * Since there is no way to exactly replicate Haskell's 'do' notation for monadic chaining, but it
- * would be useful to have a similar affordance, this class provides such a mechanism. See {@code Do}
+ * would be useful to have a similar affordance, this class provides such a mechanism. See `Do`
  * below for an example of how it works.
- * @param {Object} m - A monad.
- * @class
  * @private
  */
 class DoBlock {
+  /**
+   * Create a new monadic context for chaining actions.
+   * @param {Object} m - A monad, the context for the actions.
+   */
   constructor(m) { this.m = () => m; }
   inject(a) { return Do(dataType(this.m()).pure(a)); }
   bind(f) { return Do(bind(this.m(), f)); }
@@ -1002,33 +1012,33 @@ class DoBlock {
 /**
  * Wrap a monad in a special container for the purpose of chaining actions, in imitation of the
  * syntactic sugar provided by Haskell's 'do' notation. Example:
- * {@code let m = just(10);
- *        let f = x => just(x * 2);
- *        let g = x => just(x - 1);
- *        Do(m).bind(f).bind(g);              // Maybe >>= Just 19
- *        Do(m).bind(f).chain(m).bind(g);     // Maybe >>= Just 9
- *        let lst = list(1,2,3);
- *        let m = x => list(x + 1);
- *        let n = x => list(x * 2);
- *        Do(lst).bind(m).bind(n);            // List >>= [4:6:8:[]]
- *        Do(lst).bind(m).chain(lst).bind(n); // List >>= [2:4:6:2:4:6:2:4:6:[]]
- *        let put = x => {
- *          print(x);
- *          return just(x);
- *        }
- *        Do(m)
- *        .bind(put)  // 10
- *        .bind(f)
- *        .bind(put)  // 20
- *        .chain(m)
- *        .bind(put)  // 10
- *        .bind(g)
- *        .bind(put)  // 9
- *        .bind(f)
- *        .bind(put); // 18
- * }
  * @param {Object} m - A monad.
  * @returns {DoBlock} - A monadic context in which to chain actions.
+ * @example
+ * let m = just(10);
+ * let f = x => just(x * 2);
+ * let g = x => just(x - 1);
+ * Do(m).bind(f).bind(g);              // => Maybe >>= Just 19
+ * Do(m).bind(f).chain(m).bind(g);     // => Maybe >>= Just 9
+ * let lst = list(1,2,3);
+ * let m = x => list(x + 1);
+ * let n = x => list(x * 2);
+ * Do(lst).bind(m).bind(n);            // => List >>= [4:6:8:[]]
+ * Do(lst).bind(m).chain(lst).bind(n); // => List >>= [2:4:6:2:4:6:2:4:6:[]]
+ * let put = x => {
+ *   print(x);
+ *   return just(x);
+ * }
+ * Do(m)
+ * .bind(put)                          // => 10
+ * .bind(f)
+ * .bind(put)                          // => 20
+ * .chain(m)
+ * .bind(put)                          // => 10
+ * .bind(g)
+ * .bind(put)                          // => 9
+ * .bind(f)
+ * .bind(put);                         // => 18
  */
 function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 
@@ -1679,7 +1689,7 @@ function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
 function transpose(xss) {
   if (isList(xss) === false) { return error.listError(xss, transpose); }
   if (isEmpty(xss)) { return emptyList; }
-  let head = head(xxs);
+  let head = head(xss);
   let tail = tail(xss);
   if (isList(head) === false) { return error.listError(head, transpose); }
   if (isEmpty(head)) { return transpose(tail); }
@@ -1695,7 +1705,7 @@ function transpose(xss) {
 function concat(xss) {
   if (isList(xss)) {
     if (isEmpty(xss)) { return emptyList; }
-    let x = head(xxs);
+    let x = head(xss);
     let xs = tail(xss);
     return isList(x) ? listAppend(x, concat(xs)) : error.listError(x, concat);
   }
