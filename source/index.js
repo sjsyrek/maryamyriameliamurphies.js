@@ -68,14 +68,65 @@ function throwError(e) { throw Error(`*** Error: ${e}`); }
 /**
  * The base class for all other types. This class is not meant to be used on its own to instantiate new objects,
  * so it does not provide a constructor function of its own, but it does provide some default functionality for new
- * data types.
- * @class
+ * data types. The examples below apply to all children of this class and are for illustrative purposes only.
  * @private
  */
 class Type {
+  /**
+   * Returns the type of an object if it is an instance of this data type, throws an error otherwise. This function
+   * is not meant to be called directly but is used for type checking. To retrieve the data type of an object, use
+   * the `type` function instead or `dataType` if performing your own type checking.
+   * @abstract
+   * @param {Type} a - An instance of this type class.
+   * @returns {string} - The type.
+   * @example
+   * let lst = list(1,2,3);
+   * List.type(lst);         // => List
+   * let tup = tuple(1,2);
+   * Tuple.type(tup);        // => (number,number)
+   * let m = just(5);
+   * Maybe.type(m);          // => Maybe
+   */
   static type(a) { return dataType(a) === this ? this.name : error.typeError(a, this.type); }
+  /**
+   * Returns the string representation of an object for a given data type. As with most objects,
+   * this is fairly useless and is here only for the sake of completeness.
+   * @abstract
+   * @returns {string} - The data type as a string.
+   * @example
+   * let tup = tuple(1,2);
+   * tup.toString();         // => [Object Tuple]
+   * let lst = list(1,2,3);
+   * lst.toString();         // => [Object List]
+   * let m = just(5);
+   * m.toString();           // => Just 5
+   */
   toString() { return this.valueOf(); }
+  /**
+   * Returns the type of an object for a given data type.
+   * @abstract
+   * @returns {string} - The type of the object.
+   * @example
+   * let tup = tuple(1,2);
+   * tup.typeOf();           // => (number,number)
+   * let lst = list(1,2,3);
+   * lst.typeOf();           // => [number]
+   * let m = just(5);
+   * m.typeOf();             // => Maybe number
+   */
   typeOf() { return dataType(this).name; }
+  /**
+   * Returns the value of an object for a given data type.
+   * @abstract
+   * @returns {string} - The value of the object.
+   * @example
+   * let tup = tuple(1,2);
+   * tup.valueOf();          // => (1,2)
+   * let lst = list(1,2,3);
+   * lst.valueOf();          // => [1:2:3:[]]
+   * let m = just(5);
+   * m.valueOf();            // => Just 5
+   */
   valueOf() { return this; }
 }
 
@@ -105,7 +156,7 @@ const defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a),
  * dataType(0);               // function Number() { [native code] }
  * let lst = list(1,2,3);
  * dataType(lst)              // => function List(head, tail) { ... }
- * dataType(lst).name         // => List
+ * lst.typeOf();         // => List
  */
 const dataType = (a) => a.constructor;
 
@@ -145,23 +196,26 @@ function typeCheck(a, b) {
 
 /**
  * Partially apply arguments to a given function. Accepts a function and a variable number of arguments.
- * If all the arguments are applied, calls the function and returns its value. Otherwise, returns a
+ * If all the arguments are applied, calls the function and returns its value. Otherwise, returns a new
  * function bound by whichever values have already been applied. In Haskell, all functions technically
  * bind one argument and return one value. Functions that take multiple arguments are actually curried
  * under the hood, therefore such a function actually returns another function with its first argument
  * bound, then another with its second, and so on until all expected arguments have been bound. Likewise,
- * almost every function in this library that accepts multiple arguments is similarly curried. Example:
- * {@code function multiply(x, y) {
- *          let p = (x, y) => x * y; // same arguments to original function
- *          return partial(p, x, y); // return the function in "curried" form
- *        }
- *        multiply(10, 10); // 100
- *        multiply(10);     // function () { [native code] } (with 10 applied to x)
- *        multiply(10)(10); // 100
+ * almost every function in this library that accepts multiple arguments is similarly curried, so you
+ * can partially apply arguments to almost any function and pass that value around as an argument to
+ * another function, if you so desire. Note that `partial` itself cannot be partially applied, but I
+ * expose it anyway, because it might be useful to others writing their own functions for this library.
+ * @param {Function} f - The function to partially apply.
+ * @param {...*) as - The values expected as arguments.
+ * @returns {Function|*} - A new function with its arguments partially or fully applied (i.e. its final value).
+ * @example
+ * function multiply(x, y) {
+ *   let p = (x, y) => x * y; // create a closure with the same arguments and "do the math" in this closure
+ *   return partial(p, x, y); // return a "curried" version of the function that accepts partial application
  * }
- * @param {Function} f - Any function.
- * @param {...*) as - Any values expected as arguments.
- * @returns {Function} - The function with its arguments partially or fully applied.
+ * multiply(10, 10);          // => 100
+ * multiply(10);              // => function () { [native code] } // (with 10 applied to x)
+ * multiply(10)(10);          // => 100
  */
 function partial(f, ...as) {
   if (isEmpty(as)) { return f.call(); }
@@ -179,7 +233,7 @@ function partial(f, ...as) {
  * the $ operator, which simply binds functions right to left, allowing parentheses to be
  * omitted: f $ g $ h x = f (g (h x)). We still can't do this in JavaScript, but why not borrow
  * the $ for some semantic consistency? Sorry, jQuery. Note that an argument need not be supplied
- * to the rightmost function, in which case $ returns a new function to which you can bind an
+ * to the rightmost function, in which case `$` returns a new function to which you can bind an
  * argument later. The leftmost function, however, must be a pure function, as its argument is
  * the value returned by the rightmost function. Example:
  * {@code let addTen = x => x + 10;
@@ -834,7 +888,7 @@ class DoBlock {
   inject(a) { return Do(dataType(this.m()).pure(a)); }
   bind(f) { return Do(bind(this.m(), f)); }
   chain(f) { return Do(chain(this.m(), f)); }
-  valueOf() { return `${dataType(this.m()).name} >>= ${this.m().valueOf()}`; }
+  valueOf() { return `${this.m().typeOf()} >>= ${this.m().valueOf()}`; }
 }
 
 /**
@@ -1022,7 +1076,6 @@ class Maybe extends Type {
   // Monad
   static bind(m, f) { return isNothing(m) ? Nothing : f(m.value()); }
   // Prototype
-  toString() { return this.toString(); }
   typeOf() { return `Maybe ${this.value === undefined ? 'Nothing' : type(this.value())}`; }
   valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value()}`; }
 }
