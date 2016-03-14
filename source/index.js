@@ -390,6 +390,22 @@ function not(a) {
 }
 
 /**
+ * Return `true` if a value is even, `false` otherwise.
+ * Haskell> even :: (Integral a) => a -> Bool
+ * @param {*} a - Any value.
+ * @returns {boolean} - `true` if even, `false` otherwise.
+ */
+function even(a) { return a % 2 === 0; }
+
+/**
+ * Return `true` if a value is odd, `false` otherwise.
+ * Haskell> odd :: (Integral a) => a -> Bool
+ * @param {*} a - Any value.
+ * @returns {boolean} - `true` if odd, `false` otherwise.
+ */
+function odd(a) { return $(not)(even)(a); }
+
+/**
  * Check whether a value is an empty collection. Returns `true` if the value is an empty list, an empty tuple,
  * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous and probably does
  * too much, but it's useful for the time being.
@@ -405,7 +421,7 @@ function not(a) {
  * isEmpty(tuple(unit, unit)); // => false (warning!)
  */
 function isEmpty(a) {
-  if (isList(a)) { return a === emptyList; } // a.head === null
+  if (isList(a)) { return a === emptyList; }
   if (isTuple(a)) { return false; }
   if (a === unit) { return true; }
   if (Array.isArray(a)) { return a.length === 0; }
@@ -1221,12 +1237,12 @@ function maybeToList(m) {
 
 function listToMaybe(as) {
   if (isList(as) === false) { return error.listError(as, listToMaybe); }
-  return isEmpty(as) ? Nothing : just(as.head);
+  return isEmpty(as) ? Nothing : just(head(as));
 }
 
 function catMaybes(as) {
   if (isList(as) === false) { return error.listError(as, catMaybes); }
-  if (isMaybe(as.head) === false) { return error.typeError(m, catMaybes); }
+  if (isMaybe(head(as)) === false) { return error.typeError(m, catMaybes); }
   let pred = as => isJust(x);
   return filter(pred, as);
 }
@@ -1235,9 +1251,9 @@ function mapMaybe(f, as) {
   let p = (f, as) => {
     if (isList(as) === false) { return error.listError(as, mapMaybe); }
     if (isEmpty(as)) { return emptyList; }
-    if (isMaybe(as.head) === false) { return error.typeError(m, mapMaybe); }
-    let x = as.head;
-    let xs = as.tail;
+    if (isMaybe(head(as)) === false) { return error.typeError(m, mapMaybe); }
+    let x = head(as);
+    let xs = tail(as);
     let r = f(x);
     let rs = mapMaybe.bind(this, f, xs);
     if (isNothing(r)) { return rs(); }
@@ -1431,50 +1447,48 @@ function fromTupleToArray(p) {
 class List extends Type {
   constructor(head, tail) {
     super();
-    this.head = null;
-    this.tail = null;
-    if (head !== undefined) { this.head = head; }
-    if (tail !== undefined) { this.tail = tail; }
+    this.head = () => head || null;
+    this.tail = () => tail || null;
   }
   // Eq
-  static isEq(a, b) {
-    return typeCheck(a.head, b.head) ? fromListToArray(a).every((a, i) =>
-    a === fromListToArray(b)[i]) : error.typeMismatch(a.head, b.head, this.isEq);
+  static isEq(as, bs) {
+    return typeCheck(head(as), head(bs)) ? fromListToArray(as).every((a, i) =>
+    a === fromListToArray(bs)[i]) : error.typeMismatch(head(as), head(bs), this.isEq);
   }
   // Ord
-  static compare(a, b) {
-    if (isEmpty(a) && isEmpty(b)) { return EQ; }
-    if (isEmpty(a) && isEmpty(b) === false) { return LT; }
-    if (isEmpty(a) === false && isEmpty(b)) { return GT; }
-    if (compare(a.head, b.head) === EQ) { return compare(a.tail, b.tail)}
-    return compare(a.head, b.head);
+  static compare(as, bs) {
+    if (isEmpty(as) && isEmpty(bs)) { return EQ; }
+    if (isEmpty(as) && isEmpty(bs) === false) { return LT; }
+    if (isEmpty(as) === false && isEmpty(bs)) { return GT; }
+    if (compare(head(as), head(bs)) === EQ) { return compare(tail(as), tail(bs)); }
+    return compare(head(as), head(bs));
   }
   // Monoid
-  static mempty(a) { return emptyList; }
-  static mappend(a, b) { return listAppend(a, b); }
+  static mempty(as) { return emptyList; }
+  static mappend(as, bs) { return listAppend(as, bs); }
   // Foldable
   static foldr(f, acc, as) {
     if (isList(as) === false ) { return error.listError(as, foldr); }
     if (isEmpty(as)) { return acc; }
-    //if (typeCheck(acc, as.head) === false) { return error.typeMismatch(acc, as.head, foldr); }
-    let x = as.head;
-    let xs = as.tail;
+    //if (typeCheck(acc, head(as)) === false) { return error.typeMismatch(acc, head(as), foldr); }
+    let x = head(as);
+    let xs = tail(as);
     return f(x, foldr(f, acc, xs));
   }
   // Traversable
-  static traverse(f, as) { return isEmpty(as) ? pure(as, emptyList) : ap(fmap(cons)(f(as.head)))(traverse(f, as.tail)); }
+  static traverse(f, as) { return isEmpty(as) ? pure(as, emptyList) : ap(fmap(cons)(f(head(as))))(traverse(f, tail(as))); }
   // Functor
   static fmap(f, as) { return map(f, as); }
   // Applicative
   static pure(a) { return list(a); }
-  static ap(fs, as) { return isEmpty(fs) ? emptyList : listAppend(fmap(fs.head, as))(ap(fs.tail, as)); }
+  static ap(fs, as) { return isEmpty(fs) ? emptyList : listAppend(fmap(head(fs), as))(ap(tail(fs), as)); }
   // Monad
   static bind(xs, f) { return concat(map(f, xs)); }
   // Prototype
   toString() { return `[Object List]`; }
-  typeOf() { return `[${isEmpty(this) ? '' : type(this.head)}]`; }
-  valueOf() { //return this.head === null ? `[]` : `${this.head}:${this.tail.valueOf()}`;
-    let value = list => isEmpty(list) ? `[]` : `${list.head}:${value(list.tail)}`;
+  typeOf() { return `[${isEmpty(this) ? '' : type(head(this))}]`; }
+  valueOf() { //return head(this) === null ? `[]` : `${head(this)}:${tail(this).valueOf()}`;
+    let value = list => isEmpty(list) ? `[]` : `${head(list)}:${value(tail(list))}`;
     return `[${type(this) === `[string]` ? fromListToString(this) : value(this)}]`;
   }
 }
@@ -1483,13 +1497,63 @@ const emptyList = new List();
 
 function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct(List, [as.shift(), list(...as)]); }
 
+/**
+ * Build a finite list from a range of values. Currently, this only works with numbers. The
+ * equivalent is achieved in Haskell using list comprehensions.
+ * @param {*} start - The beginning of the range (inclusive).
+ * @param {*} end - The end of the range (exclusive).
+ * @param {Function} [f=(x => x + 1)] - The function to apply iteratively to each value.
+ * @param {Function} [filter] - An optional filter (returning `boolean`) to test whether to add each value to the list.
+ * @returns {List} - The new list.
+ * @example
+ * let f = x => x + 5;
+ * let filt = x => even(x);
+ * listRange(0, 100, f);        // => [0:5:10:15:20:25:30:35:40:45:50:55:60:65:70:75:80:85:90:95:[]]
+ * listRange(0, 100, f, filt);  // => [0:10:20:30:40:50:60:70:80:90:[]]
+ */
+function listRange(start, end, f, filter) {
+ let p = (start, end) => {
+   if (f === undefined) { f = x => x + 1; }
+   let lst = emptyList;
+   let pred = x => x >= end;
+   let go = x => {
+     if (filter === undefined) { lst = listAppend(lst)(list(x)); }
+     if (filter !== undefined && filter(x)) { lst = listAppend(lst)(list(x)); }
+     x = f(x);
+     return x;
+   }
+   until(pred, go, start);
+   return lst;
+ }
+ return partial(p, start, end);
+}
+
+/**
+ * Build a finite list from a range of enumerated values, and apply a filter to each one. This
+ * function is a shortcut for `listRange` that simply applies a filter with the default function
+ * x = x + 1.
+ * @param {*} start - The beginning of the range (inclusive).
+ * @param {*} end - The end of the range (exclusive).
+ * @param {Function} [filter] - An optional filter (returning `boolean`) to test whether to add each value to the list.
+ * @returns {List} - The new list.
+ * @example
+ * let f = x => x + 5;
+ * let filt = x => even(x);
+ * listFilter(1, 50, filt)  // [2:4:6:8:10:12:14:16:18:20:22:24:26:28:30:32:34:36:38:40:42:44:46:48:[]]
+ */
+function listFilter(start, end, filter) {
+ let f = x => x + 1;
+ let p = (start, end, filter) => listRange(start, end, f, filter);
+ return partial(p, start, end, filter);
+}
+
 function listAppend(as, bs) {
   let p = (as, bs) => {
     if (isList(as) === false ) { return error.listError(as, listAppend); }
     if (isList(bs) === false ) { return error.listError(bs, listAppend); }
     if (isEmpty(as)) { return bs; }
     if (isEmpty(bs)) { return as; }
-    if (type(head(as)) === type(head(bs))) { return cons(as.head)(listAppend(as.tail)(bs)); }
+    if (type(head(as)) === type(head(bs))) { return cons(head(as))(listAppend(tail(as))(bs)); }
     return error.typeMismatch(type(head(as)), type(head(bs)), listAppend);
   }
   return partial(p, as, bs);
@@ -1506,27 +1570,27 @@ function cons(x, xs) {
 }
 
 function head(as) {
-  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head(); }
   return error.listError(as, head);
 }
 
 function last(as) {
   if (isList(as)) {
     if (isEmpty(as)) { return error.emptyList(as, last); }
-    return isEmpty(as.tail) ? as.head : last(as.tail);
+    return isEmpty(tail(as)) ? head(as) : last(tail(as));
   }
   return error.listError(as, last);
 }
 
 function tail(as) {
-  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail; }
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail(); }
   return error.listError(as, tail);
 }
 
 function init(as) {
   if (isList(as)) {
     if (isEmpty(as)) { return error.emptyList(as, init); }
-    return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail));
+    return isEmpty(tail(as)) ? emptyList : cons(head(as))(init(tail(as)));
   }
   return error.listError(as, init);
 }
@@ -1542,7 +1606,7 @@ function init(as) {
  * @param {List} as - The list to decompose.
  * @returns {Maybe} - The decomposed list wrapped in a Just or Nothing if the list is empty.
  */
-function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(as.head, as.tail)); }
+function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(head(as), tail(as))); }
 
 /**
  * Test whether a structure is empty. Example:
@@ -1556,7 +1620,7 @@ function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(as.head, as.tail
 function empty(t) { return foldr(x => x === undefined, true, t); }
 
 function length(as) {
-  let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
+  let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(tail(xs), n + 1);
   return isList(as) ? lenAcc(as, 0) : error.listError(as, length);
 }
 
@@ -1565,7 +1629,7 @@ function isList(a) { return a instanceof List ? true : false; }
 function fromArrayToList(a) { return Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList); }
 
 function fromListToArray(as) {
-  if (isList(as)) { return isEmpty(as) ? [] : [as.head].concat(fromListToArray(as.tail)); }
+  if (isList(as)) { return isEmpty(as) ? [] : [head(as)].concat(fromListToArray(tail(as))); }
   return error.listError(as, fromListToArray);
 }
 
@@ -1585,28 +1649,28 @@ function map(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, map); }
     if (isEmpty(as)) { return emptyList; }
-    let x = f(as.head) === undefined ? f.bind(f, as.head) : f(as.head);
-    let xs = as.tail;
+    let x = f(head(as)) === undefined ? f.bind(f, head(as)) : f(head(as));
+    let xs = tail(as);
     return cons(x)(map(f)(xs));
   }
   return partial(p, f, as);
 }
 
 function reverse(as) {
-  let rev = (as, a) => isEmpty(as) ? a : rev(as.tail, cons(as.head)(a));
+  let rev = (as, a) => isEmpty(as) ? a : rev(tail(as), cons(head(as))(a));
   return rev(as, emptyList);
 }
 
 function intersperse(sep, as) {
   let p = (sep, as) => {
     if (isList(as) === false) { return error.listError(as, intersperse); }
-    if (typeCheck(sep, as.head) === false) { return error.typeMismatch(sep, as.head, intersperse); }
+    if (typeCheck(sep, head(as)) === false) { return error.typeMismatch(sep, head(as), intersperse); }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     return cons(x)(prependToAll(sep, xs));
   }
-  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(xs.head)(prependToAll(sep, xs.tail))); }
+  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(head(xs))(prependToAll(sep, tail(xs)))); }
   return partial(p, sep, as);
 }
 
@@ -1615,14 +1679,14 @@ function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
 function transpose(xss) {
   if (isList(xss) === false) { return error.listError(xss, transpose); }
   if (isEmpty(xss)) { return emptyList; }
-  let head = xss.head;
-  let tail = xss.tail;
+  let head = head(xxs);
+  let tail = tail(xss);
   if (isList(head) === false) { return error.listError(head, transpose); }
   if (isEmpty(head)) { return transpose(tail); }
-  let x = head.head;
-  let xs = head.tail;
-  let headComp = fromArrayToList(fromListToArray(tail).map(xs => xs.head));
-  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => xs.tail));
+  let x = head(head);
+  let xs = tail(head);
+  let headComp = fromArrayToList(fromListToArray(tail).map(xs => head(xs)));
+  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => tail(xs)));
   return cons(cons(x)(headComp))(transpose(cons(xs)(tailComp)));
 }
 
@@ -1631,8 +1695,8 @@ function transpose(xss) {
 function concat(xss) {
   if (isList(xss)) {
     if (isEmpty(xss)) { return emptyList; }
-    let x = xss.head;
-    let xs = xss.tail;
+    let x = head(xxs);
+    let xs = tail(xss);
     return isList(x) ? listAppend(x, concat(xs)) : error.listError(x, concat);
   }
   return error.listError(xss, concat);
@@ -1645,8 +1709,8 @@ function take(n, as) {
     if (isList(as) === false) { return error.listError(as, take); }
     if (n <= 0) { return emptyList; }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     return cons(x)(take(n - 1)(xs));
   }
   return partial(p, n, as);
@@ -1657,8 +1721,8 @@ function drop(n, as) {
     if (isList(as) === false) { return error.listError(as, drop); }
     if (n <= 0) { return as; }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     return drop(n - 1)(xs);
   }
   return partial(p, n, as);
@@ -1673,8 +1737,8 @@ function takeWhile(pred, as) {
   let p = (pred, as) => {
     if (isList(as) === false) { return error.listError(as, takeWhile); }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     let test = pred(x);
     if (test === true) { return cons(x)(takeWhile(pred, xs)); }
     if (test === false) { return emptyList; }
@@ -1687,8 +1751,8 @@ function dropWhile(pred, as) {
   let p = (pred, as) => {
     if (isList(as) === false) { return error.listError(as, dropWhile); }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     let test = pred(x);
     if (test === true) { return dropWhile(pred, xs); }
     if (test === false) { return as; }
@@ -1714,8 +1778,8 @@ function filter(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, filter); }
     if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     if (f(x) === true) { return cons(x)(filter(f, xs)); }
     if (f(x) === false) { return filter(f, xs); }
     return error.returnError(f, filter);
@@ -1730,8 +1794,8 @@ function index(as, n) {
     if (isList(as) === false ) { return error.listError(as, index); }
     if (n < 0) { return error.rangeError(n, index); }
     if (isEmpty(as)) { return error.rangeError(n, index); }
-    let x = as.head;
-    let xs = as.tail;
+    let x = head(as);
+    let xs = tail(as);
     if (n === 0) { return x; }
     return index(xs)(n - 1);
   }
@@ -1746,10 +1810,10 @@ function zip(as, bs) {
     if (isList(bs) === false) { return error.listError(bs, zip); }
     if (isEmpty(as)) { return emptyList; }
     if (isEmpty(bs)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
-    let y = bs.head;
-    let ys = bs.tail;
+    let x = head(as);
+    let xs = tail(as);
+    let y = head(bs);
+    let ys = tail(bs);
     return cons(tuple(x, y))(zip(xs)(ys));
   }
   return partial(p, as, bs);
@@ -1807,8 +1871,8 @@ function insert(e, ls) {
 function insertBy(cmp, e, ls) {
   let p = (cmp, e, ls) => {
     if (isEmpty(ls)) { return list(e); }
-    let y = ls.head;
-    let ys = ls.tail;
+    let y = head(ls);
+    let ys = tail(ls);
     if (cmp(e, y) === GT) { return cons(y)(insertBy(cmp, e, ys)); }
     return cons(e)(ls);
   }
@@ -1833,6 +1897,8 @@ export default {
   and: and,
   or: or,
   not: not,
+  even: even,
+  odd: odd,
   isEmpty: isEmpty,
   show: show,
   print: print,
@@ -1873,9 +1939,7 @@ export default {
   foldr: foldr,
   traverse: traverse,
   mapM: mapM,
-  mapM_: mapM_,
   sequence: sequence,
-  sequence_, sequence_,
   Nothing: Nothing,
   just: just,
   maybe: maybe,
@@ -1900,6 +1964,8 @@ export default {
   uncurry: uncurry,
   emptyList: emptyList,
   list: list,
+  listRange: listRange,
+  listFilter: listFilter,
   listAppend: listAppend,
   cons: cons,
   head: head,
@@ -1934,4 +2000,20 @@ export default {
   sortBy: sortBy,
   insert: insert,
   insertBy: insertBy
+}
+
+function listGenerator(f = (x => x += 1), a = 1) {
+  function* as() { yield cons(f(a))(listGenerator(this, f, f(a))); }
+  return cons(a)(as);
+}
+
+function* listGenerator(f = (x => x += 1), start = 1, end = Infinity) {
+  let i = start;
+  let lst = emptyList;
+  do {
+    let newList = listAppend(lst)(list(i));
+    lst = newList;
+    yield lst.tail;
+    i = f(i);
+  } while (i < end)
 }
