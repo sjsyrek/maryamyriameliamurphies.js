@@ -268,34 +268,40 @@ function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
 /**
  * Reverse the order in which arguments are applied to a function. Note that flip only works on functions
- * that take two arguments. Example:
- * {@code function subtract(x, y) { return x - y; }
- *        let flipped = flip(subtract);
- *        subtract(10, 5); // 5
- *        flipped(10, 5);  // -5
- * }
+ * that take two arguments.
  * Haskell> flip :: (a -> b -> c) -> b -> a -> c
- * @param {Function} f - Any function.
+ * @param {Function} f - The function to flip.
  * @returns {Function} - The function with its arguments reversed.
+ * @example
+ * let subtract = (x, y) => x - y;
+ * let flipped = flip(subtract);
+ * subtract(10, 5);                // => 5
+ * flipped(10, 5);                 // => -5
  */
 function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
 
 /**
- * The identity function.
- * Example: {@code id(1); // 1 }
+ * The identity function. Returns the value of the argument unchanged.
  * Haskell> id :: a -> a
  * @param {*} a - Any object.
- * @returns {*} a - The same value.
+ * @returns {*} a - The same object.
+ * @example
+ * id(1);           // => 1
+ * id(list(1,2,3)); // => [1:2:3:[]]
  */
 function id(a) { return a; }
 
 /**
  * Return the value of the first argument, throwing away the value of the second argument.
- * Example: {@code constant(2, 3); // 2 }
  * Haskell> const :: a -> b -> a
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @returns {*} a - The first value.
+ * @returns {*} a - The value of the first object.
+ * @example
+ * constant(2, 3);                                // => 2
+ * let multHund = x => x * 100;
+ * let c = (x, y) => $(constant(x))(multHund)(y);
+ * c(5, 10);                                      // => 5
  */
 function constant(a, b) {
   let p = (a, b) => a;
@@ -303,17 +309,18 @@ function constant(a, b) {
 }
 
 /**
- * Yield the result of applying function f to a value until the predicate function pred is true. Example:
- * {@code let pred = x => x > 10;
- *        let f = x => x + 1;
- *        let u = until(pred, f);
- *        u(1); // 11
- * }
+ * Yield the result of applying function `f` to a value `x` until the predicate
+ * function `pred` is true. A negative, recursive version of a `while` loop.
  * Haskell> until :: (a -> Bool) -> (a -> a) -> a -> a
  * @param {Function} pred - A predicate function that returns a boolean.
- * @param {Function} f - The function to apply.
- * @param {*} x - The value to apply to f.
- * @returns
+ * @param {Function} f - The function to apply to `x`.
+ * @param {*} x - The value to bind to `f`.
+ * @returns {*} - The result of applying `f` to `x` until `pred` returns `true`.
+ * @example
+ * let pred = x => x > 10;
+ * let f = x => x + 1;
+ * let u = until(pred, f);
+ * u(1);                   // => 11
  */
 function until(pred, f, x) {
   let p = (pred, f, x) => pred(x) ? x : until(pred, f, f(x));
@@ -321,12 +328,16 @@ function until(pred, f, x) {
 }
 
 /**
- * Boolean and. Return true if both arguments are true, false otherwise.
- * Example: {@code and(true, true) // true }
+ * Boolean "and". Return `true` if both arguments are true, `false` otherwise.
  * Haskell> (&&) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
  * @returns {boolean} - a && b.
+ * @example
+ * and(true, true); // => true
+ * let a = 5 > 0;
+ * let b = 0 > 5;
+ * and(a, b);       // => false
  */
 function and(a, b) {
   let p = (a, b) => {
@@ -338,12 +349,16 @@ function and(a, b) {
 }
 
 /**
- * Boolean or. Return true if either argument is true, false otherwise.
- * Example: {@code or(true, false) // true }
+ * Boolean "or". Return `true` if either argument is true, `false` otherwise.
  * Haskell> (||) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
  * @returns {boolean} - a || b.
+ * @example
+ * or(true, false); // => true
+ * let a = 5 > 0;
+ * let b = 0 > 5;
+ * or(a, b);        // => true
  */
 function or(a, b) {
   let p = (a, b) => {
@@ -355,11 +370,18 @@ function or(a, b) {
 }
 
 /**
- * Boolean not. Return true if the argument is false, false otherwise.
+ * Boolean "not". Return `true` if the argument is false, `false` otherwise.
  * Example: {@code not(false) // true }
  * Haskell> not :: Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @returns {boolean} - !a.
+ * @example
+ * not(true);     // => false
+ * not(false);    // => true
+ * let a = 5 > 0;
+ * let b = 0 > 5;
+ * not(a);        // => false
+ * not(b);        // => true
  */
 function not(a) {
   if (a === true) { return false; }
@@ -368,11 +390,19 @@ function not(a) {
 }
 
 /**
- * Check whether a value is an empty collection. Returns true if the value is an empty list, an empty tuple,
- * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous.
- * Example: {@code isEmpty([]); // true }
+ * Check whether a value is an empty collection. Returns `true` if the value is an empty list, an empty tuple,
+ * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous and probably does
+ * too much, but it's useful for the time being.
  * @param {Object} a - Any collection value of type List, Tuple, or Array.
- * @returns {boolean} - True if the collection is empty, false otherwise.
+ * @returns {boolean} - `true` if the collection is empty, `false` otherwise.
+ * @example
+ * isEmpty([]);                // => true
+ * isEmpty([[]]);              // => false (warning!)
+ * isEmpty(emptyList);         // => true
+ * isEmpty(list(emptyList));   // => false (warning!)
+ * isEmpty(tuple(1,2));        // => false
+ * isEmpty(unit);              // => true
+ * isEmpty(tuple(unit, unit)); // => false (warning!)
  */
 function isEmpty(a) {
   if (isList(a)) { return a === emptyList; } // a.head === null
@@ -383,23 +413,28 @@ function isEmpty(a) {
 }
 
 /**
- * Display the value of an object as a string. Calls the object's {@code valueOf} function. Useful for custom
- * types that look ugly when displayed as objects. Example:
- * {@code let lst = list(1,2,3);
- *        let tup = tuple(1,2);
- *        lst;       // {"head":1,"tail":{"head":2,"tail":{"head":3,"tail":{"head":null,"tail":null}}}}
- *        show(lst); // [1:2:3:[]]
- *        tup;       // {"1":1,"2":2}
- *        show(tup); // (1,2)
- * }
+ * Display the value of an object as a string. Calls the object's `valueOf` function. Useful for custom
+ * types that look ugly when displayed as objects.
  * @param {*} a - The object to show.
- * @returns {string} - The value of the object as a string, returned from the object's valueOf function.
+ * @returns {string} - The value of the object as a string, returned from the object's `valueOf` function.
+ * @example
+ * let lst = list(1,2,3);
+ * let tup = tuple(1,2);
+ * lst;                   // => {"head":1,"tail":{"head":2,"tail":{"head":3,"tail":{"head":null,"tail":null}}}}
+ * show(lst);             // => [1:2:3:[]]
+ * tup;                   // => {"1":1,"2":2}
+ * show(tup);             // => (1,2)
  */
 function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
 
 /**
- * A utility function for displaying the results of show on the console.
+ * A utility function for displaying the results of show on the console. One could imagine a more generalized
+ * `printBy` function that redirects the output of `show(a)` elsewhere.
  * @param {*} a - The value to print.
+ * @returns {Function} - The `console.log` function applied to the return value of `show(a)`.
+ * @example
+ * let lst = list(1,2,3);
+ * print(lst);            // "[1:2:3:[]]"
  */
 function print(a) { return console.log(show(a)); }
 
