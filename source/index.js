@@ -13,16 +13,21 @@
  *
  * Reading the code:
  *
- * I implement each Haskell data type as an ES2015 class, hewing as closely as I can to the
+ * I implement each Haskell datatype as an ES2015 class, hewing as closely as I can to the
  * Haskell original but with reasonable concessions to JavaScript idiom. Type classes are
  * represented by static class methods. Since the class definitions are not exported, these
  * methods remain private, thus providing a limited amount of type checking that cannot be
  * easily hacked by accident. For example, data types that are equatable (with ===) will work
- * with the isEq() function if they define an eq() static function or are natively equatable.
- * For the sake of those interested, I introduce each function with the syntax of its Haskell
- * original. My hope is that most of the functions are otherwise self-documenting. The public
- * API for this library is specified, following CommonJS style, in a default object at the
- * bottom of this file.
+ * with the isEq() function if they define an isEq() static function or are natively equatable.
+ * This is not dissimilar to Haskell's own implementation under the hood, which uses C-style
+ * virtual functions (or so I gather), which is also why none of these functions are members
+ * of a class. All of them are meant to be, as in Haskell, pure functions that take one value
+ * and return one value. Functions that take multiple arguments are curried automatically.
+ * For the sake of those interested, the comment for each function includes the type signature
+ * of its Haskell original. My hope is that most of the functions are otherwise self-documenting,
+ * though the style is admittedly terse and, therefore, potentially bewildering (or Joycean?).
+ * The public API for this library is specified, following CommonJS style, in a default object
+ * at the bottom of this file. Corrections, modifications, improvements, and additions welcome.
  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,10 +35,11 @@
 
 /**
  * Whenever the library needs to throw an error, it calls one of the functions defined in this hash table, which calls in
- * turn the {@code throwError} function with the arguments to the error function applied to the given template string.
- * Example: {@code error.typeError(0, and); // *** Error: '0' is not a valid argument to function 'and'.}
+ * turn the `throwError` function with the arguments to the error function applied to the given template string.
  * @const {Object} error - A hash table of error procedures.
  * @private
+ * @example
+ * error.typeError(0, and); // => *** Error: '0' is not a valid argument to function 'and'.
  */
 const error = {
   emptyList: (a, f) => throwError(`'${a}' is an empty list, but '${f.name}' expects a non-empty list.`),
@@ -47,7 +53,10 @@ const error = {
 };
 
 /**
- * Throw an error, outputting the given message. This is one of the only impure functions in this library.
+ * Throw an error, outputting the given message. This is one of the only impure functions in this library. I am thinking
+ * about getting rid of error handling entirely, since it's such a pain to implement, but it does at least guarantee
+ * at least some conformance to Haskell style. The question is whether this library would be more useful without it or
+ * if the whole point of it is just to be a thought experiment.
  * @param {string} e - The error message to display.
  * @private
  */
@@ -75,47 +84,52 @@ class Type {
  * member of a predefined type class. Note that the library only checks for the existence of the required property
  * or properties. Whether or not those properties are functions and whether or not they return the values expected
  * by the type class are not verified.
- * Example: {@code let Eq = defines(`isEq`); // instances of the Eq type class must define an isEq function}
  * @param {...string} methods
- * @return {function()} - A closure that returns true if a given object declares all the given methods, false otherwise.
+ * @returns {Function} - A closure that returns true if a given object declares all the given methods, false otherwise.
  * @const
+ * @example
+ * // requires that instances of the `Eq` type class define an `isEq` function
+ * const Eq = defines(`isEq`);
+ * // requires that instances of `Traversable` define `traverse` and also be instances of `Functor` and `Foldable`
+ * const Traversable = defines(`fmap`, `foldr`, `traverse`);
  */
 const defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
 
 /**
  * A utility function for returning the data type of a given object. In JavaScript, this is simply the object's
- * constructor, so this function really just serves as an alias for terminological clarification. Example:
- * {@code dataType(0); // function Number() { [native code] }
- *        let lst = list(1,2,3);
- *        dataType(lst).name // List
- * }
+ * constructor, so this function really just serves as an alias for terminological clarification.
  * @param {*} a - Any object.
- * @return {function()} - The object's constructor function.
+ * @returns {Function} - The object's constructor function.
  * @const
+ * @example
+ * dataType(0);               // function Number() { [native code] }
+ * let lst = list(1,2,3);
+ * dataType(lst)              // => function List(head, tail) { ... }
+ * dataType(lst).name         // => List
  */
 const dataType = (a) => a.constructor;
 
 /**
- * Return the type of any object as specified by this library or, otherwise, its primitive type. Example:
- * {@code type(0); // number
- *        let t = tuple(1,2);
- *        type(t); // (number,number)
- * }
+ * Return the type of any object as specified by this library or, otherwise, its primitive type.
  * @param {*} a - Any object.
- * @return {string} - The type of the object.
+ * @returns {string} - The type of the object.
+ * @example
+ * type(0);                   // => number
+ * let t = tuple(1,2);
+ * type(t);                   // => (number,number)
  */
 function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
 
 /**
- * Determine whether two objects are the same type, returning true if they are and false otherwise.
+ * Determine whether two objects are the same type, returning `true` if they are and `false` otherwise.
  * This is a limited form of type checking for this library. It is by no means foolproof but should at least
- * prevent most careless errors. Example:
- * {@code typeCheck(0, 1);   // true
- *        typeCheck(0, 'a'); // false
- * }
+ * prevent most careless errors.
  * @param {*} a - Any object.
  * @param {*} b - Any object.
- * @return {boolean} - True if the two objects are the same type, false otherwise.
+ * @returns {boolean} - `true` if the two objects are the same type, `false` otherwise.
+ * @example
+ * typeCheck(0, 1);         // => true
+ * typeCheck(0, 'a');       // => false
  */
 function typeCheck(a, b) {
   let p = (a, b) => {
@@ -145,9 +159,9 @@ function typeCheck(a, b) {
  *        multiply(10);     // function () { [native code] } (with 10 applied to x)
  *        multiply(10)(10); // 100
  * }
- * @param {function()} f - Any function.
+ * @param {Function} f - Any function.
  * @param {...*) as - Any values expected as arguments.
- * @return {function()} - The function with its arguments partially or fully applied.
+ * @returns {Function} - The function with its arguments partially or fully applied.
  */
 function partial(f, ...as) {
   if (isEmpty(as)) { return f.call(); }
@@ -178,8 +192,8 @@ function partial(f, ...as) {
  *        $(addTen)(addTwenty)()  // 30
  * }
  * Haskell> (.) :: (b -> c) -> (a -> b) -> a -> c
- * @param {function()} f - The outermost function to compose.
- * @return {function()} - The composed function, called only if a value is bound to f.
+ * @param {Function} f - The outermost function to compose.
+ * @returns {Function} - The composed function, called only if a value is bound to f.
  */
 function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
@@ -192,8 +206,8 @@ function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
  *        flipped(10, 5);  // -5
  * }
  * Haskell> flip :: (a -> b -> c) -> b -> a -> c
- * @param {function()} f - Any function.
- * @return {function()} - The function with its arguments reversed.
+ * @param {Function} f - Any function.
+ * @returns {Function} - The function with its arguments reversed.
  */
 function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
 
@@ -201,8 +215,8 @@ function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
  * The identity function.
  * Example: {@code id(1); // 1 }
  * Haskell> id :: a -> a
- * @param {*} a - Any value.
- * @return {*} a - The same value.
+ * @param {*} a - Any object.
+ * @returns {*} a - The same value.
  */
 function id(a) { return a; }
 
@@ -210,9 +224,9 @@ function id(a) { return a; }
  * Return the value of the first argument, throwing away the value of the second argument.
  * Example: {@code constant(2, 3); // 2 }
  * Haskell> const :: a -> b -> a
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {*} a - The first value.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {*} a - The first value.
  */
 function constant(a, b) {
   let p = (a, b) => a;
@@ -227,10 +241,10 @@ function constant(a, b) {
  *        u(1); // 11
  * }
  * Haskell> until :: (a -> Bool) -> (a -> a) -> a -> a
- * @param {function()} pred - A predicate function that returns a boolean.
- * @param {function()} f - The function to apply.
+ * @param {Function} pred - A predicate function that returns a boolean.
+ * @param {Function} f - The function to apply.
  * @param {*} x - The value to apply to f.
- * @return
+ * @returns
  */
 function until(pred, f, x) {
   let p = (pred, f, x) => pred(x) ? x : until(pred, f, f(x));
@@ -243,7 +257,7 @@ function until(pred, f, x) {
  * Haskell> (&&) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
- * @return {boolean} - a && b.
+ * @returns {boolean} - a && b.
  */
 function and(a, b) {
   let p = (a, b) => {
@@ -260,7 +274,7 @@ function and(a, b) {
  * Haskell> (||) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
- * @return {boolean} - a || b.
+ * @returns {boolean} - a || b.
  */
 function or(a, b) {
   let p = (a, b) => {
@@ -276,7 +290,7 @@ function or(a, b) {
  * Example: {@code not(false) // true }
  * Haskell> not :: Bool -> Bool
  * @param {boolean} a - A boolean value.
- * @return {boolean} - !a.
+ * @returns {boolean} - !a.
  */
 function not(a) {
   if (a === true) { return false; }
@@ -289,7 +303,7 @@ function not(a) {
  * or an empty array. Throws a type error, otherwise. This function is somewhat superfluous.
  * Example: {@code isEmpty([]); // true }
  * @param {Object} a - Any collection value of type List, Tuple, or Array.
- * @return {boolean} - True if the collection is empty, false otherwise.
+ * @returns {boolean} - True if the collection is empty, false otherwise.
  */
 function isEmpty(a) {
   if (isList(a)) { return a === emptyList; } // a.head === null
@@ -310,7 +324,7 @@ function isEmpty(a) {
  *        show(tup); // (1,2)
  * }
  * @param {*} a - The object to show.
- * @return {string} - The value of the object as a string, returned from the object's valueOf function.
+ * @returns {string} - The value of the object as a string, returned from the object's valueOf function.
  */
 function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
 
@@ -330,9 +344,9 @@ const Eq = defines(`isEq`);
  * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
  * both define an {@code isEq} static method).
  * Haskell> (==) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a === b
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a === b
  */
 function isEq(a, b) {
   let p = (a, b) => {
@@ -346,9 +360,9 @@ function isEq(a, b) {
  * Compare two objects for inequality. Both objects must be instances of the Eq type class (i.e. they
  * both define an isEq static method).
  * Haskell> (/=) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a !== b
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a !== b
  */
 function isNotEq(a, b) {
   let p = (a, b) => !isEq(a, b);
@@ -406,9 +420,9 @@ const GT = new Ordering(`GT`);
  * both define a {@code compare} static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
  * Haskell> compare :: a -> a -> Ordering
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {Ordering} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {Ordering} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
  */
 function compare(a, b) {
   let p = (a, b) => {
@@ -426,9 +440,9 @@ function compare(a, b) {
 /**
  * Determine whether one value is less than another.
  * Haskell> (<) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a < b.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a < b.
  */
 function lessThan(a, b) {
   let p = (a, b) => compare(a, b) === LT;
@@ -438,9 +452,9 @@ function lessThan(a, b) {
 /**
  * Determine whether one value is less than or equal to another.
  * Haskell> (<=) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a <= b.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a <= b.
  */
 function lessThanOrEqual(a, b) {
   let p = (a, b) => compare(a, b) !== GT;
@@ -450,9 +464,9 @@ function lessThanOrEqual(a, b) {
 /**
  * Determine whether one value is greater than another.
  * Haskell> (>) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a > b.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a > b.
  */
 function greaterThan(a, b) {
   let p = (a, b) => compare(a, b) === GT;
@@ -462,9 +476,9 @@ function greaterThan(a, b) {
 /**
  * Determine whether one value is greater than or equal to another.
  * Haskell> (>=) :: a -> a -> Bool
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {boolean} - a >= b.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {boolean} - a >= b.
  */
 function greaterThanOrEqual(a, b) {
   let p = (a, b) => compare(a, b) !== LT;
@@ -474,9 +488,9 @@ function greaterThanOrEqual(a, b) {
 /**
  * Return the higher in value of two objects.
  * Haskell> max :: a -> a -> a
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {*} - a or b, whichever is greater.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {*} - a or b, whichever is greater.
  */
 function max(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
@@ -486,9 +500,9 @@ function max(a, b) {
 /**
  * Return the lower in value of two objects.
  * Haskell> min :: a -> a -> a
- * @param {*} a - Any value.
- * @param {*} b - Any value.
- * @return {*} - a or b, whichever is lesser.
+ * @param {*} a - Any object.
+ * @param {*} b - Any object.
+ * @returns {*} - a or b, whichever is lesser.
  */
 function min(a, b) {
   let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
@@ -509,7 +523,7 @@ const Monoid = defines(`mempty`, `mappend`);
  * Return the identity (or "empty") value for the monoid.
  * Haskell> mempty :: a
  * @param {Object} a - Any monoid.
- * @return {Object} - Identity of mappend.
+ * @returns {Object} - Identity of mappend.
  */
 function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(a, mempty); }
 
@@ -526,7 +540,7 @@ function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(
  * Haskell> mappend :: a -> a -> a
  * @param {Object} a - Any monoid.
  * @param {Object} b - Any monoid.
- * @return {Object} - A new monoid of the same type, the result of the associative operation.
+ * @returns {Object} - A new monoid of the same type, the result of the associative operation.
  */
 function mappend(a, b) {
   let p = (a, b) => {
@@ -547,7 +561,7 @@ function mappend(a, b) {
  * }
  * Haskell> mconcat :: [a] -> a
  * @param {Object} - Any monoid.
- * @return {Object} - A new monoid of the same type.
+ * @returns {Object} - A new monoid of the same type.
  */
 function mconcat(a) { return foldr(mappend, mempty(a), a); }
 
@@ -569,9 +583,9 @@ const Functor = defines(`fmap`);
  *        fmap($(f)(g))(lst)       // [1100:2200:3300:[]]
  * }
  * Haskell> fmap :: (a -> b) -> f a -> f b
- * @param {function()} f - The function to map.
+ * @param {Function} f - The function to map.
  * @param {Object} - The functor to map over.
- * @return {Object} - A new functor of the same type, the result of the mapping.
+ * @returns {Object} - A new functor of the same type, the result of the mapping.
  */
 function fmap(f, a) {
   let p = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
@@ -586,7 +600,7 @@ function fmap(f, a) {
  * Haskell> (<$) :: a -> f b -> f a
  * @param {*} a - The value to inject into the functor.
  * @param {Object} b - The functor to map over.
- * @return {Object} - A new functor of the same type, with the values of the original replaced by the new value.
+ * @returns {Object} - A new functor of the same type, with the values of the original replaced by the new value.
  */
 function fmapReplaceBy(a, b) {
   let p = (a, b) => fmap(constant(a), b);
@@ -607,8 +621,8 @@ const Applicative = defines(`fmap`, `pure`, `ap`);
  * }
  * Haskell> pure :: a -> f a
  * @param {Object} f - An applicative functor.
- * @param {*} a - Any value.
- * @return {Object} - An applicative functor with the value injected.
+ * @param {*} a - Any object.
+ * @returns {Object} - An applicative functor with the value injected.
  */
 function pure(f, a) {
   let p = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
@@ -635,9 +649,9 @@ function pure(f, a) {
  *        ap(pf, a);                   // [6:[]] proves interchange (not really possible?)
  * }
  * Haskell> (<*>) :: f (a -> b) -> f a -> f b
- * @param {function()} f - A function lifted into an applicative context.
+ * @param {Function} f - A function lifted into an applicative context.
  * @param {Object} a - An applicative functor.
- * @return {Object} - A new applicative functor of the same type, the result of the application.
+ * @returns {Object} - A new applicative functor of the same type, the result of the application.
  */
 function ap(f, a) {
   let p = (f, a) => {
@@ -651,7 +665,7 @@ function ap(f, a) {
 /**
  * A variant of {@code ap} with the arguments reversed.
  * Haskell> (<**>) :: Applicative f => f a -> f (a -> b) -> f b
- * @param {function()} f - A function lifted into an applicative context.
+ * @param {Function} f - A function lifted into an applicative context.
  * @param {Object} a - The first argument to f.
  * @param {Object} b - The second argument to f.
  */
@@ -693,7 +707,7 @@ function skip(a1, a2) {
 /**
  * Lift a function to actions.
  * Haskell> liftA :: Applicative f => (a -> b) -> f a -> f b
- * @param {function()} f - The function to lift into an applicative context.
+ * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the context to lift the function into.
  */
 function liftA(f, a) {
@@ -704,7 +718,7 @@ function liftA(f, a) {
 /**
  * Lift a binary function to actions.
  * Haskell> liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
- * @param {function()} f - The function to lift into an applicative context.
+ * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
  */
@@ -716,7 +730,7 @@ function liftA2(f, a, b) {
 /**
  * Lift a ternary function to actions.
  * Haskell> liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
- * @param {function()} f - The function to lift into an applicative context.
+ * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
  * @param {Object} c - An applicative functor, the third argument to f.
@@ -738,7 +752,7 @@ const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
  * Haskell> return :: a -> m a
  * @param {Object} m - A monad.
  * @param {*} a - The value to inject.
- * @return {Object} - A new monad of the same type with the value injected.
+ * @returns {Object} - A new monad of the same type with the value injected.
  */
 function inject(m, a) {
   let p = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
@@ -749,8 +763,8 @@ function inject(m, a) {
  * Sequentially compose two actions, passing any value produced by the first as an argument to the second.
  * Haskell> (>>=) :: m a -> (a -> m b) -> m b
  * @param {Object} m - A monad.
- * @param {function()} f - A function to bind to the injected value of the monad. This function must return a monad.
- * @return {Object} - A new monad of the same type, the result of binding the function to the original injected value.
+ * @param {Function} f - A function to bind to the injected value of the monad. This function must return a monad.
+ * @returns {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 function bind(m, f) {
   let p = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
@@ -761,8 +775,8 @@ function bind(m, f) {
  * Sequentially compose two actions, discarding any value produced by the first, like sequencing operators
  * (such as the semicolon) in imperative languages.
  * @param {Object} m - A monad.
- * @param {function()} f - A function to call that ignores the injected value of the monad.
- * @return {Object} - A new monad of the same type, the result of calling the function.
+ * @param {Function} f - A function to call that ignores the injected value of the monad.
+ * @returns {Object} - A new monad of the same type, the result of calling the function.
  * Haskell> (>>) :: m a -> m b -> m b
  */
 function chain(m, f) {
@@ -773,9 +787,9 @@ function chain(m, f) {
 /**
  * Same as {@code bind} but with the arguments interchanged.
  * Haskell> (=<<) :: Monad m => (a -> m b) -> m a -> m b
- * @param {function()} f - A function to bind to the injected value of the monad.
+ * @param {Function} f - A function to bind to the injected value of the monad.
  * @param {Object} m - A monad.
- * @return {Object} - A new monad of the same type, the result of binding the function to the original injected value.
+ * @returns {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 function bindFlip(f, m) {
   let p = (f, m) => bind(m, f);
@@ -791,16 +805,16 @@ function bindFlip(f, m) {
  * }
  * Haskell> join :: Monad m => m (m a) -> m a
  * @param {Object} m - A monad (wrapping another monad).
- * @return {Object} - The wrapped monad on its own.
+ * @returns {Object} - The wrapped monad on its own.
  */
 function join(m) { return Monad(m) ? bind(m, id) : error.typeError(m, join); }
 
 /**
  * Promote a function to a monad.
  * Haskell> liftM :: Monad m => (a1 -> r) -> m a1 -> m r
- * @param {function()} f - The function to lift into a monad.
+ * @param {Function} f - The function to lift into a monad.
  * @param {Object} m - The monad to lift the function into.
- * @return {Object} - A new monad containing the result of mapping the function over the monad.
+ * @returns {Object} - A new monad containing the result of mapping the function over the monad.
  */
 function liftM(f, m) {
   let p = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
@@ -852,7 +866,7 @@ class DoBlock {
  *        .bind(put); // 18
  * }
  * @param {Object} m - A monad.
- * @return {DoBlock} - A monadic context in which to chain actions.
+ * @returns {DoBlock} - A monadic context in which to chain actions.
  */
 function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 
@@ -871,7 +885,7 @@ const Foldable = defines(`foldr`);
  * }
  * Haskell> fold :: Monoid m => t m -> m
  * @param {*} a - The monoid to fold.
- * @return {*} - The folded monoid.
+ * @returns {*} - The folded monoid.
  */
 function fold(a) { return foldMap(id, a); }
 
@@ -882,9 +896,9 @@ function fold(a) { return foldMap(id, a); }
  *        foldMap(f, lst); // [3:6:9:[]]
  * }
  * Haskell> foldMap :: Monoid m => (a -> m) -> t a -> m
- * @param {function()} f - The function to map.
+ * @param {Function} f - The function to map.
  * @param {*} a - The monoid to map over.
- * @return {*} - A new monoid of the same type, the result of the mapping.
+ * @returns {*} - A new monoid of the same type, the result of the mapping.
  */
 function foldMap(f, a) {
   let p = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
@@ -898,10 +912,10 @@ function foldMap(f, a) {
  *        foldr(f, 0, lst); // 6
  * }
  * Haskell> foldr :: (a -> b -> b) -> b -> t a -> b
- * @param {function()} f - A binary function.
+ * @param {Function} f - A binary function.
  * @param {*} z - A base accumulator value.
  * @param {*} t - A foldable value.
- * @return {*} - The result of applying the function to the foldable and the accumulator.
+ * @returns {*} - The result of applying the function to the foldable and the accumulator.
  */
 function foldr(f, z, t) {
   let p = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
@@ -925,9 +939,9 @@ const Traversable = defines(`fmap`, `foldr`, `traverse`);
  *        traverse(f, tup); // [(1,9):[]]
  * }
  * Haskell> traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
- * @param {function()} f - The function to map.
+ * @param {Function} f - The function to map.
  * @param {*} a - The traversable structure to traverse.
- * @return {*} - A collection of the results of the traversal.
+ * @returns {*} - A collection of the results of the traversal.
  */
 function traverse(f, a) {
   let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
@@ -938,9 +952,9 @@ function traverse(f, a) {
  * Map each element of a structure to a monadic action, evaluate these actions from left to right,
  * and collect the results. This function is essentially the same as {@code traverse}.
  * Haskell> mapM :: Monad m => (a -> m b) -> t a -> m (t b)
- * @param {function()} f - The function to map.
+ * @param {Function} f - The function to map.
  * @param {*} m - The monad to traverse.
- * @return {*} - A collection of the results of the traversal.
+ * @returns {*} - A collection of the results of the traversal.
  */
 function mapM(f, m) {
   let p = (f, m) => Monad(m) ? dataType(m).traverse(f, m) : error.typeError(m, mapM);
@@ -955,7 +969,7 @@ function mapM(f, m) {
  * }
  * Haskell> sequence :: Monad m => t (m a) -> m (t a)
  * @param {*} m - The monadic collection of actions.
- * @return {*} - A collection of the results.
+ * @returns {*} - A collection of the results.
  */
 function sequence(m) { return Monad(m) ? traverse(id, m) : error.typeError(m, sequence); }
 
@@ -1152,7 +1166,7 @@ const unit = new Tuple();
  * and {@code unit}, the empty tuple, will be returned if no arguments are passed.
  * Usage: tuple(10, 20) -> {"1": 10, "2": 20}
  * @param {...*} values - The values to put into a tuple.
- * @return {Tuple} - A new tuple.
+ * @returns {Tuple} - A new tuple.
  */
 function tuple(...as) {
   let [x, y] = as;
@@ -1164,14 +1178,14 @@ function tuple(...as) {
 /**
  * Extract the first value of a tuple.
  * @param {Tuple} p - A tuple.
- * @return {*} - The first value of the tuple.
+ * @returns {*} - The first value of the tuple.
  */
 function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
 
 /**
  * Extract the second value of a tuple.
  * @param {Tuple} p - A tuple.
- * @return {*} - The second value of the tuple.
+ * @returns {*} - The second value of the tuple.
  */
 function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
 
@@ -1189,10 +1203,10 @@ function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
  *        let B = uncurry(A);     // B(p) === 85
  *        let C = curry(B);       // A(100)(15) === C(100)(15) === 85
  * }
- * @param {function()} f - The function to curry.
+ * @param {Function} f - The function to curry.
  * @param {*} x - Any value, the first value of the new tuple argument.
  * @param {*} y - Any value, the second value of the new tuple argument.
- * @return {function()} - The curried function.
+ * @returns {Function} - The curried function.
  */
 function curry(f, x, y) {
   if (x === undefined) { return x => y => f.call(f, tuple(x, y)); }
@@ -1213,9 +1227,9 @@ function curry(f, x, y) {
  *        let c = b(p);           // c === f({`1`: 100, `2`: 15}) === 85
  *        let d = uncurry(a, p)   // d === 85
  * }
- * @param {function()} f - The function to uncurry.
+ * @param {Function} f - The function to uncurry.
  * @param {Tuple} p - The tuple from which to extract argument values for the function.
- * @return {function()} - The uncurried function.
+ * @returns {Function} - The uncurried function.
  */
 function uncurry(f, p) {
   if (p === undefined) { return p => isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry); }
@@ -1225,14 +1239,14 @@ function uncurry(f, p) {
 /**
  * Swap the values of a tuple. This function does not modify the original tuple.
  * @param {Tuple} p - A tuple.
- * @return {Tuple} - A new tuple, with the values of the first tuple swapped.
+ * @returns {Tuple} - A new tuple, with the values of the first tuple swapped.
  */
 function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
 
 /**
  * Determine whether an object is a tuple. The {@code unit}, or empty tuple, returns false.
  * @param {*} a - Any object.
- * @return {boolean} - True if the object is a tuple.
+ * @returns {boolean} - True if the object is a tuple.
  */
 function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
 
@@ -1240,7 +1254,7 @@ function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
  * Convert an array into a tuple. Returns {@code unit}, the empty tuple, if no arguments or
  * arguments other than an array are passed. This function will not work on array-like objects.
  * @param {Array<*>} array - The array to convert.
- * @return {Tuple} - The new tuple.
+ * @returns {Tuple} - The new tuple.
  */
 function fromArrayToTuple(a) {
   return Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
@@ -1249,7 +1263,7 @@ function fromArrayToTuple(a) {
 /**
  * Convert a tuple into an array.
  * @param {Tuple} p - The tuple to convert.
- * @return {Array<*>} - The new array.
+ * @returns {Array<*>} - The new array.
  */
 function fromTupleToArray(p) {
   return isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
@@ -1381,7 +1395,7 @@ function init(as) {
  * }
  * Haskell> uncons :: [a] -> Maybe (a, [a])
  * @param {List} as - The list to decompose.
- * @return {Maybe} - The decomposed list wrapped in a Just or Nothing if the list is empty.
+ * @returns {Maybe} - The decomposed list wrapped in a Just or Nothing if the list is empty.
  */
 function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(as.head, as.tail)); }
 
@@ -1392,7 +1406,7 @@ function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(as.head, as.tail
  * }
  * Haskell> null :: t a -> Bool
  * @param {Object} t - The Foldable structure to test.
- * @return {boolean} - True if the structure is empty, false otherwise.
+ * @returns {boolean} - True if the structure is empty, false otherwise.
  */
 function empty(t) { return foldr(x => x === undefined, true, t); }
 
@@ -1606,16 +1620,16 @@ function zip(as, bs) {
  * }
  * Haskell> sort :: Ord a => [a] -> [a]
  * @param {List} as - The list to sort.
- * @return {List} - The sorted list.
+ * @returns {List} - The sorted list.
  */
 function sort(as) { return sortBy(compare, as); }
 
 /**
  * Sort a list using a comparison function of your choice.
  * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
- * @param {function()} cmp - The comparison function—must return an Ordering.
+ * @param {Function} cmp - The comparison function—must return an Ordering.
  * @param {List} as - The list to sort.
- * @return {List} - The sorted list.
+ * @returns {List} - The sorted list.
  */
 function sortBy(cmp, as) {
   let p = (cmp, as) => foldr(insertBy(cmp), emptyList, as);
@@ -1630,7 +1644,7 @@ function sortBy(cmp, as) {
  * Haskell> insert :: Ord a => a -> [a] -> [a]
  * @param {*} e - The element to insert.
  * @param {List} ls - The list to insert into.
- * @return {List} - A new list, with the element inserted.
+ * @returns {List} - A new list, with the element inserted.
  */
 function insert(e, ls) {
   let p = (e, ls) => insertBy(compare, e, ls);
@@ -1640,10 +1654,10 @@ function insert(e, ls) {
 /**
  * Insert an element into a list using a comparison function of your choice.
  * Haskell> insertBy :: (a -> a -> Ordering) -> a -> [a] -> [a]
- * @param {function()} cmp - The comparison function—must return an Ordering.
+ * @param {Function} cmp - The comparison function—must return an Ordering.
  * @param {*} e - The element to insert.
  * @param {List} ls - The list to insert into.
- * @return {List} - A new list, with the element inserted.
+ * @returns {List} - A new list, with the element inserted.
  */
 function insertBy(cmp, e, ls) {
   let p = (cmp, e, ls) => {
