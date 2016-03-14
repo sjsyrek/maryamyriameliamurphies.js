@@ -1258,6 +1258,17 @@ function fromTupleToArray(p) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // List
 
+/**
+ * A data constructor for a list. In Haskell, unlike in JavaScript, the default collection type is a
+ * linked list, not an array. Obviously, there are benefits and drawbacks to both, and native Arrays
+ * in JavaScript have certain performance advantages that a custom linked list implementation may not
+ * be able to outperform, even when performing operations for which linked lists, all other things
+ * being equal, have an advantage. Lists may only contain values of a single type.
+ * @param {*} head - The value to put at the head of the list, which will also determine the list's type.
+ * @param {List} tail - The tail of the list, which is also a list (possibly the empty list).
+ * @class
+ * @private
+ */
 class List extends Type {
   constructor(head, tail) {
     super();
@@ -1361,9 +1372,29 @@ function init(as) {
   return error.listError(as, init);
 }
 
-// uncons
+/**
+ * Decompose a list into its head and tail. If the list is empty, returns {@code Nothing}.
+ * If the list is non-empty, returns {@code Just (x, xs)}, where {@code x} is the head of
+ * the list and {@code xs} its tail. Example:
+ * {@code let lst = list(1,2,3);
+ *        uncons(lst); // Just (1,[2:3:[]])
+ * }
+ * Haskell> uncons :: [a] -> Maybe (a, [a])
+ * @param {List} as - The list to decompose.
+ * @return {Maybe} - The decomposed list wrapped in a Just or Nothing if the list is empty.
+ */
+function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(as.head, as.tail)); }
 
-// null
+/**
+ * Test whether a structure is empty. Example:
+ * {@code empty(list(1,2,3)); // false
+ *        empty(emptyList);   // true
+ * }
+ * Haskell> null :: t a -> Bool
+ * @param {Object} t - The Foldable structure to test.
+ * @return {boolean} - True if the structure is empty, false otherwise.
+ */
+function empty(t) { return foldr(x => x === undefined, true, t); }
 
 function length(as) {
   let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
@@ -1716,6 +1747,8 @@ export default {
   last: last,
   tail: tail,
   init: init,
+  uncons: uncons,
+  empty: empty,
   length: length,
   isList: isList,
   fromArrayToList: fromArrayToList,
