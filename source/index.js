@@ -457,7 +457,10 @@ function print(a) { return console.log(show(a)); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Eq
 
-// The `Eq` type class defines equality and inequality. Instances of `Eq` must define an `isEq` method.
+/**
+ * The `Eq` type class defines equality and inequality. Instances of `Eq` must define an `isEq` method.
+ * @const {Function} - Returns `true` if an object is an instance of `Eq` and `false` otherwise.
+ */
 const Eq = defines(`isEq`);
 
 /**
@@ -506,8 +509,11 @@ function isNotEq(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Ord
 
-// The `Ord` type class is used for totally ordered datatypes. Instances of `Ord` must define a `compare`
-// method and must also be instances of `Eq`.
+/**
+ * The `Ord` type class is used for totally ordered datatypes. Instances of `Ord` must define a `compare`
+ * method and must also be instances of `Eq`.
+ * @const {Function} - Returns `true` if an object is an instance of `Ord` and `false` otherwise.
+ */
 const Ord = defines(`isEq`, `compare`);
 
 /**
@@ -674,11 +680,14 @@ function min(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monoid
 
-// A `Monoid` is a type with an associative binary operation that has an identity. In plainer language,
-// a monoid is any type that has an "empty" value that, when "appended" to any other value of that
-// type, equals that same value. For example, an integer is a monoid, because any integer added to 0,
-// the "empty" value, equals that integer. Likewise, a list is a monoid, because any list appended to
-// the empty list equals the original list. Monoids must define `mempty` and `mappend` methods.
+/**
+ * A `Monoid` is a type with an associative binary operation that has an identity. In plainer language,
+ * a monoid is any type that has an "empty" value that, when "appended" to any other value of that
+ * type, equals that same value. For example, an integer is a monoid, because any integer added to 0,
+ * the "empty" value, equals that integer. Likewise, a list is a monoid, because any list appended to
+ * the empty list equals the original list. Monoids must define `mempty` and `mappend` methods.
+ * @const {Function} - Returns `true` if an object is an instance of `Monoid` and `false` otherwise.
+ */
 const Monoid = defines(`mempty`, `mappend`);
 
 /**
@@ -729,9 +738,12 @@ function mconcat(a) { return foldr(mappend, mempty(a), a); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functor
 
-// A `Functor` is a type that can be mapped over. This includes lists and other collections, but functions
-// themselves as well as other sorts of values can also be mapped over, so no one metaphor is likely to
-// cover all possible cases. Functors must define an `fmap` method.
+/**
+ * A `Functor` is a type that can be mapped over. This includes lists and other collections, but functions
+ * themselves as well as other sorts of values can also be mapped over, so no one metaphor is likely to
+ * cover all possible cases. Functors must define an `fmap` method.
+ * @const {Function} - Returns `true` if an object is an instance of `Functor` and `false` otherwise.
+ */
 const Functor = defines(`fmap`);
 
 /**
@@ -771,8 +783,11 @@ function fmapReplaceBy(a, b) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Applicative
 
-// `Applicative` functors are functors that support function application within their contexts. They must
-// define `pure` and `ap` methods and also be instances of `Functor`.
+/**
+ * `Applicative` functors are functors that support function application within their contexts. They must
+ * define `pure` and `ap` methods and also be instances of `Functor`.
+ * @const {Function} - Returns `true` if an object is an instance of `Applicative` and `false` otherwise.
+ */
 const Applicative = defines(`fmap`, `pure`, `ap`);
 
 /**
@@ -910,8 +925,11 @@ function liftA3(f, a, b, c) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Monad
 
-// A monad is an abstract datatype of actions. Instances of `Monad` must define a `bind` method as well
-// all the required methods for `Functor` and `Applicative`.
+/**
+ * A monad is an abstract datatype of actions. Instances of `Monad` must define a `bind` method as well
+ * all the required methods for `Functor` and `Applicative`.
+ * @const {Function} - Returns `true` if an object is an instance of `Monad` and `false` otherwise.
+ */
 const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
 /**
@@ -1045,32 +1063,35 @@ function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Foldable
 
-// A foldable is a data structure that can be folded to a summary value. Lists are a common form of foldable.
-// Instances of Foldable must define a {@code foldr} function.
+/**
+ * A `Foldable` is a data structure that can be folded into a summary value. Lists are a common form of foldable.
+ * Instances of Foldable must define a `foldr` method.
+ * @const {Function} - Returns `true` if an object is an instance of `Foldable` and `false` otherwise.
+ */
 const Foldable = defines(`foldr`);
 
 /**
- * Combine the elements of a structure using a monoid. For example, fold a list of lists into a list:
- * {@code let lst = list(1,2,3);  // [1:2:3:[]]
- *        let llst = list(lst);   // [[1:2:3:[]]:[]]
- *        fold(llst);             // [1:2:3:[]]
- * }
+ * Combine the elements of a structure using a monoid. For example, fold a list of lists into a single list.
  * Haskell> fold :: Monoid m => t m -> m
- * @param {*} a - The monoid to fold.
- * @returns {*} - The folded monoid.
+ * @param {Object} a - The monoid to fold.
+ * @returns {Object} - The folded monoid.
+ * @example
+ * let lst = list(1,2,3);  // => [1:2:3:[]]
+ * let llst = list(lst);   // => [[1:2:3:[]]:[]]
+ * fold(llst);             // => [1:2:3:[]]
  */
 function fold(a) { return foldMap(id, a); }
 
 /**
- * Map each element of the structure to a monoid, and combine the results. Example:
- * {@code let lst = list(1,2,3);
- *        let f = x => list(x * 3);
- *        foldMap(f, lst); // [3:6:9:[]]
- * }
+ * Map each element of the structure to a monoid, and combine the results.
  * Haskell> foldMap :: Monoid m => (a -> m) -> t a -> m
  * @param {Function} f - The function to map.
- * @param {*} a - The monoid to map over.
- * @returns {*} - A new monoid of the same type, the result of the mapping.
+ * @param {Object} a - The monoid to map over.
+ * @returns {Object} - A new monoid of the same type, the result of the mapping.
+ * @example
+ * let lst = list(1,2,3);
+ * let f = x => list(x * 3);
+ * foldMap(f, lst);          // => [3:6:9:[]]
  */
 function foldMap(f, a) {
   let p = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
@@ -1078,16 +1099,16 @@ function foldMap(f, a) {
 }
 
 /**
- * Right-associative fold of a structure. This is the work horse function of Foldable. Example:
- * {@code let lst = list(1,2,3);
- *        let f = (x, y) => x + y;
- *        foldr(f, 0, lst); // 6
- * }
+ * Right-associative fold of a structure. This is the work horse function of `Foldable`.
  * Haskell> foldr :: (a -> b -> b) -> b -> t a -> b
  * @param {Function} f - A binary function.
  * @param {*} z - A base accumulator value.
- * @param {*} t - A foldable value.
+ * @param {Object} t - A `Foldable` type.
  * @returns {*} - The result of applying the function to the foldable and the accumulator.
+ * @example
+ * let lst = list(1,2,3);
+ * let f = (x, y) => x + y;
+ * foldr(f, 0, lst);        // => 6
  */
 function foldr(f, z, t) {
   let p = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
@@ -1097,23 +1118,26 @@ function foldr(f, z, t) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Traversable
 
-// Traversables are functors representing data structures that can be traversed from left to right. They
-// must define a {@code traverse} function and also be instances of Functor and Foldable.
+/**
+ * A `Traversable` is a functor representing data structures that can be traversed from left to right. They
+ * must define a `traverse` method and also be instances of `Functor` and `Foldable`.
+ * @const {Function} - Returns `true` if an object is an instance of `Traversable` and `false` otherwise.
+ */
 const Traversable = defines(`fmap`, `foldr`, `traverse`);
 
 /**
  * Map each element of a structure to an action, evaluate these actions from left to right, and collect
- * the results. Example:
- * {@code let lst = list(1,2,3);
- *        let f = x => list(x + 7);
- *        traverse(f)(lst); // [[8:9:10:[]]:[]]
- *        let tup = tuple(1,2);
- *        traverse(f, tup); // [(1,9):[]]
- * }
+ * the results.
  * Haskell> traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
  * @param {Function} f - The function to map.
- * @param {*} a - The traversable structure to traverse.
- * @returns {*} - A collection of the results of the traversal.
+ * @param {Object} a - The traversable structure to traverse.
+ * @returns {Object} - A collection of the results of the traversal.
+ * @example
+ * let lst = list(1,2,3);
+ * let f = x => list(x + 7);
+ * traverse(f)(lst);         // => [[8:9:10:[]]:[]]
+ * let tup = tuple(1,2);
+ * traverse(f, tup);         // => [(1,9):[]]
  */
 function traverse(f, a) {
   let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
@@ -1122,11 +1146,11 @@ function traverse(f, a) {
 
 /**
  * Map each element of a structure to a monadic action, evaluate these actions from left to right,
- * and collect the results. This function is essentially the same as {@code traverse}.
+ * and collect the results. This function is essentially the same as `traverse`.
  * Haskell> mapM :: Monad m => (a -> m b) -> t a -> m (t b)
  * @param {Function} f - The function to map.
- * @param {*} m - The monad to traverse.
- * @returns {*} - A collection of the results of the traversal.
+ * @param {Object} m - The monad to traverse.
+ * @returns {Object} - A collection of the results of the traversal.
  */
 function mapM(f, m) {
   let p = (f, m) => Monad(m) ? dataType(m).traverse(f, m) : error.typeError(m, mapM);
@@ -1134,14 +1158,14 @@ function mapM(f, m) {
 }
 
 /**
- * Evaluate each monadic action in the structure from left to right, and collect the results. Example:
- * {@code let lst = list(1,2,3);
- *        let llst = list(lst);
- *        sequence(llst); // [[1:[]]:[2:[]]:[3:[]]:[]]
- * }
+ * Evaluate each monadic action in the structure from left to right, and collect the results.
  * Haskell> sequence :: Monad m => t (m a) -> m (t a)
- * @param {*} m - The monadic collection of actions.
- * @returns {*} - A collection of the results.
+ * @param {Object} m - The monadic collection of actions.
+ * @returns {Object} - A collection of the results.
+ * @example
+ * let lst = list(1,2,3);
+ * let llst = list(lst);
+ * sequence(llst);        // => [[1:[]]:[2:[]]:[3:[]]:[]]
  */
 function sequence(m) { return Monad(m) ? traverse(id, m) : error.typeError(m, sequence); }
 
@@ -1149,15 +1173,18 @@ function sequence(m) { return Monad(m) ? traverse(id, m) : error.typeError(m, se
 // Maybe
 
 /**
- * The Maybe type encapsulates an optional value. A value of type {@code Maybe a} either contains a value of
- * type {@code a} (represented as {@code Just a}), or it is empty (represented as {@code Nothing}). Using Maybe
- * is a good way to deal with errors or exceptional cases without resorting to drastic measures such as throwing
- * an error. That's how the Haskell docs define it, and I don't think I can do a better job.
- * @param {*} a - The value to wrap in a Maybe.
- * @class
+ * The `Maybe` type encapsulates an optional value. A value of type `Maybe a` either contains a value of
+ * type `a` (represented as `Just a`), or it is empty (represented as `Nothing`). Using Maybe
+ * is a good way to deal with errors or exceptional cases without resorting to drastic measures such as
+ * throwing an error. That's how the Haskell docs define it, and I don't think I can do a better job.
+ * @extends Type
  * @private
  */
 class Maybe extends Type {
+  /**
+   * Create a new `Maybe`, which represents either a value or `Nothing`.
+   * @param {*} a - The value to wrap in a `Maybe`.
+   */
   constructor(a) {
     super();
     if (a !== undefined) { this.value = () => a; }
@@ -1199,39 +1226,79 @@ class Maybe extends Type {
 }
 
 /**
- * {@code Nothing} is the absence of a value, the opposite of {@code Just} in a Maybe type. Since all
- * nothings are the same nothing, there is only one {@code Nothing} (c.f. Wallace Stevens).
+ * `Nothing` is the absence of a value, the opposite of `Just` for a `Maybe` object. Since all
+ * nothings are the same nothing, there is only one `Nothing` (c.f. Wallace Stevens).
  * @const {Maybe}
  */
 const Nothing = new Maybe();
 
-function just(a) { return new Maybe(a); }
+/**
+ * A constructor for a `Maybe` value. Returns `Nothing` if the value is `undefined`, `null`, or `NaN`.
+ * @param {*} a - The value to wrap in a `Maybe`.
+ * @returns {Maybe} - `Just a` or `Nothing`.
+ */
+function just(a) { return a === undefined || a === null || a !== a ? Nothing : new Maybe(a); }
 
+/**
+ * The `maybe` function takes a default value, a function, and a `Maybe` value. If the `Maybe` value is
+ * `Nothing`, the function returns the default value. Otherwise, it applies the function to the value
+ * inside the `Just` and returns the result.
+ * Haskell> maybe :: b -> (a -> b) -> Maybe a -> b
+ * @param {*} n - The default value to return if `m` is `Nothing`.
+ * @param {Function} f - The function to apply to the value inside `m` if it is a `Just`.
+ * @param {Maybe} m - A Maybe.
+ * @example
+ * let m1 = just(100);
+ * let m2 = just(null);
+ * let f = x => x * 10;
+ * maybe(0, f, m1);     // => 1000
+ * maybe(0, f, m2);     // => 0
+ */
 function maybe(n, f, m) {
   let p = (n, f, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, maybe); }
-    isNothing(m) ? n : f(x.value());
+    return Nothing(m) ? n : f(fromJust(m));
   }
   return partial(p, n, f, m);
 }
 
-function isMaybe(a) { return dataType(m) === Maybe; }
+/**
+ *
+ * @param
+ */
+function isMaybe(a) { return a instanceof Maybe ? true : false; }
 
+/**
+ * Haskell> isJust :: Maybe a -> Bool
+ * @param
+ */
 function isJust(m) {
   if (isMaybe(m) === false) { return error.typeError(m, isJust); }
   return isNothing(m) ? false : true;
 }
 
+/**
+ * Haskell> isNothing :: Maybe a -> Bool
+ * @param
+ */
 function isNothing(m) {
   if (isMaybe(m) === false) { return error.typeError(m, isNothing); }
   return m === Nothing ? true : false;
 }
 
+/**
+ * Haskell> fromJust :: Maybe a -> a
+ * @param
+ */
 function fromJust(m) {
   if (isMaybe(m) === false) { return error.typeError(m, fromJust); }
   return isNothing(m) ? error.nothing(m, fromJust) : m.value(); // yuck
 }
 
+/**
+ * Haskell> fromMaybe :: a -> Maybe a -> a
+ * @param
+ */
 function fromMaybe(d, m) {
   let p = (d, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, fromMaybe); }
@@ -1240,16 +1307,28 @@ function fromMaybe(d, m) {
   return partial(p, d, m);
 }
 
-function maybeToList(m) {
-  if (isMaybe(m) === false) { return error.typeError(m, maybeToList); }
-  return isNothing(m) ? emptyList : list(m.value());
-}
-
+/**
+ * Haskell> listToMaybe :: [a] -> Maybe a
+ * @param
+ */
 function listToMaybe(as) {
   if (isList(as) === false) { return error.listError(as, listToMaybe); }
   return isEmpty(as) ? Nothing : just(head(as));
 }
 
+/**
+ * Haskell> maybeToList :: Maybe a -> [a]
+ * @param
+ */
+function maybeToList(m) {
+  if (isMaybe(m) === false) { return error.typeError(m, maybeToList); }
+  return isNothing(m) ? emptyList : list(m.value());
+}
+
+/**
+ * Haskell> catMaybes :: [Maybe a] -> [a]
+ * @param
+ */
 function catMaybes(as) {
   if (isList(as) === false) { return error.listError(as, catMaybes); }
   if (isMaybe(head(as)) === false) { return error.typeError(m, catMaybes); }
@@ -1257,6 +1336,10 @@ function catMaybes(as) {
   return filter(pred, as);
 }
 
+/**
+ * Haskell> mapMaybe :: (a -> Maybe b) -> [a] -> [b]
+ * @param
+ */
 function mapMaybe(f, as) {
   let p = (f, as) => {
     if (isList(as) === false) { return error.listError(as, mapMaybe); }
