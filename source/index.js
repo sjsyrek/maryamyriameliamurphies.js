@@ -1,8 +1,3 @@
-// TODO: reimplement Ordering as a Monoid
-// TODO: replace (where possible) class property values with closures
-// TODO: replace pseudo-list comprehensions with maps and filters
-// TODO: implement error checking for lazy functions that don't do it, because it's hard to track down errors otherwise
-
 /*
  * maryamyriameliamurphies.js
  *
@@ -967,48 +962,62 @@ function sequence(m) { return Monad(m) ? traverse(id, m) : error.typeError(m, se
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maybe
 
+/**
+ * The Maybe type encapsulates an optional value. A value of type {@code Maybe a} either contains a value of
+ * type {@code a} (represented as {@code Just a}), or it is empty (represented as {@code Nothing}). Using Maybe
+ * is a good way to deal with errors or exceptional cases without resorting to drastic measures such as throwing
+ * an error. That's how the Haskell docs define it, and I don't think I can do a better job.
+ * @param {*} a - The value to wrap in a Maybe.
+ * @class
+ * @private
+ */
 class Maybe extends Type {
   constructor(a) {
     super();
-    if (a !== undefined) { this.value = a; }
+    if (a !== undefined) { this.value = () => a; }
   }
   // Eq
   static isEq(a, b) {
     if (isNothing(a) && isNothing(b)) { return true; }
     if (isNothing(a) || isNothing(b)) { return false; }
-    return isEq(a.value, b.value);
+    return isEq(a.value(), b.value());
   }
   // Ord
   static compare(a, b) {
     if (isEq(a, b)) { return EQ; }
     if (isNothing(a)) { return LT; }
     if (isNothing(b)) { return GT; }
-    return compare(a.value, b.value);
+    return compare(a.value(), b.value());
   }
   // Monoid
   static mempty(a) { return Nothing; }
   static mappend(m1, m2) {
     if (isNothing(m1)) { return m2; }
     if (isNothing(m2)) { return m1; }
-    return Reflect.construct(Maybe, [mappend(m1.value, m2.value)]);
+    return Reflect.construct(Maybe, [mappend(m1.value(), m2.value())]);
   }
   // Foldable
-  static foldr(f, z, m) { return isNothing(m) ? z : f(m.value, z); }
+  static foldr(f, z, m) { return isNothing(m) ? z : f(m.value(), z); }
   // Traversable
-  static traverse(f, m) { return isNothing(m) ? pure(this, Nothing) : fmap(maybe, f(x)); }
+  static traverse(f, m) { return isNothing(m) ? pure(m, Nothing) : fmap(maybe, f(x)); }
   // Functor
-  static fmap(f, m) { return isNothing(m) ? Nothing : Reflect.construct(Maybe, [f(m.value)]); }
+  static fmap(f, m) { return isNothing(m) ? Nothing : Reflect.construct(Maybe, [f(m.value())]); }
   // Applicative
   static pure(m) { return just(m); }
-  static ap(f, m) { return isNothing(f) ? Nothing : fmap(f.value, m); }
+  static ap(f, m) { return isNothing(f) ? Nothing : fmap(f.value(), m); }
   // Monad
-  static bind(m, f) { return isNothing(m) ? Nothing : f(m.value); }
+  static bind(m, f) { return isNothing(m) ? Nothing : f(m.value()); }
   // Prototype
   toString() { return this.toString(); }
-  typeOf() { return `Maybe ${this.value === undefined ? 'Nothing' : type(this.value)}`; }
-  valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value}`; }
+  typeOf() { return `Maybe ${this.value === undefined ? 'Nothing' : type(this.value())}`; }
+  valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value()}`; }
 }
 
+/**
+ * {@code Nothing} is the absence of a value, the opposite of {@code Just} in a Maybe type. Since all
+ * nothings are the same nothing, there is only one {@code Nothing} (c.f. Wallace Stevens).
+ * @const {Maybe}
+ */
 const Nothing = new Maybe();
 
 function just(a) { return new Maybe(a); }
@@ -1016,7 +1025,7 @@ function just(a) { return new Maybe(a); }
 function maybe(n, f, m) {
   let p = (n, f, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, maybe); }
-    isNothing(m) ? n : f(x.value);
+    isNothing(m) ? n : f(x.value());
   }
   return partial(p, n, f, m);
 }
@@ -1035,20 +1044,20 @@ function isNothing(m) {
 
 function fromJust(m) {
   if (isMaybe(m) === false) { return error.typeError(m, fromJust); }
-  return isNothing(m) ? error.nothing(m, fromJust) : m.value; // yuck
+  return isNothing(m) ? error.nothing(m, fromJust) : m.value(); // yuck
 }
 
 function fromMaybe(d, m) {
   let p = (d, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, fromMaybe); }
-    return isNothing(m) ? d : m.value;
+    return isNothing(m) ? d : m.value();
   }
   return partial(p, d, m);
 }
 
 function maybeToList(m) {
   if (isMaybe(m) === false) { return error.typeError(m, maybeToList); }
-  return isNothing(m) ? emptyList : list(m.value);
+  return isNothing(m) ? emptyList : list(m.value());
 }
 
 function listToMaybe(as) {
@@ -1088,8 +1097,9 @@ function mapMaybe(f, as) {
  * Empty Tuples, however, are a special type called {@code unit}, and single values passed to
  * this constructor will be returned unmodified. In order for them be useful, it is recommended
  * that you create Tuples with primitive values.
- * @class
  * @param {*} values - The values to put into the tuple.
+ * @class
+ * @private
  */
 class Tuple extends Type {
   constructor(...as) {
@@ -1152,6 +1162,20 @@ function tuple(...as) {
 }
 
 /**
+ * Extract the first value of a tuple.
+ * @param {Tuple} p - A tuple.
+ * @return {*} - The first value of the tuple.
+ */
+function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
+
+/**
+ * Extract the second value of a tuple.
+ * @param {Tuple} p - A tuple.
+ * @return {*} - The second value of the tuple.
+ */
+function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
+
+/**
  * Convert an uncurried function to a curried function. For example, a function that expects
  * a tuple as an argument can be curried into a function that binds one value and returns another
  * function that binds the other value. This function can then be called with or without arguments
@@ -1177,53 +1201,6 @@ function curry(f, x, y) {
 }
 
 /**
- * Convert an array into a tuple. Returns {@code unit}, the empty tuple, if no arguments or
- * arguments other than an array are passed. This function will not work on array-like objects.
- * @param {Array<*>} array - The array to convert.
- * @return {Tuple} - The new tuple.
- */
-function fromArrayToTuple(a) {
-  return Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
-}
-
-/**
- * Convert a tuple into an array.
- * @param {Tuple} p - The tuple to convert.
- * @return {Array<*>} - The new array.
- */
-function fromTupleToArray(p) {
-  return isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
-}
-
-/**
- * Extract the first value of a tuple.
- * @param {Tuple} p - A tuple.
- * @return {*} - The first value of the tuple.
- */
-function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
-
-/**
- * Determine whether an object is a tuple. The {@code unit}, or empty tuple, returns false.
- * @param {*} a - Any object.
- * @return {boolean} - True if the object is a tuple.
- */
-function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
-
-/**
- * Extract the second value of a tuple.
- * @param {Tuple} p - A tuple.
- * @return {*} - The second value of the tuple.
- */
-function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
-
-/**
- * Swap the values of a tuple. This function does not modify the original tuple.
- * @param {Tuple} p - A tuple.
- * @return {Tuple} - A new tuple, with the values of the first tuple swapped.
- */
-function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
-
-/**
  * Convert a curried function to a single function that takes a tuple as an argument.
  * Mostly useful for uncurrying functions previously curried with the {@code curry()}
  * function from this library. This will not work if any arguments are bound to the
@@ -1245,12 +1222,41 @@ function uncurry(f, p) {
   return isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry);
 }
 
+/**
+ * Swap the values of a tuple. This function does not modify the original tuple.
+ * @param {Tuple} p - A tuple.
+ * @return {Tuple} - A new tuple, with the values of the first tuple swapped.
+ */
+function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
+
+/**
+ * Determine whether an object is a tuple. The {@code unit}, or empty tuple, returns false.
+ * @param {*} a - Any object.
+ * @return {boolean} - True if the object is a tuple.
+ */
+function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
+
+/**
+ * Convert an array into a tuple. Returns {@code unit}, the empty tuple, if no arguments or
+ * arguments other than an array are passed. This function will not work on array-like objects.
+ * @param {Array<*>} array - The array to convert.
+ * @return {Tuple} - The new tuple.
+ */
+function fromArrayToTuple(a) {
+  return Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
+}
+
+/**
+ * Convert a tuple into an array.
+ * @param {Tuple} p - The tuple to convert.
+ * @return {Array<*>} - The new array.
+ */
+function fromTupleToArray(p) {
+  return isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // List
-
-// Basic functions
-
-// need to type check lists in static functions
 
 class List extends Type {
   constructor(head, tail) {
@@ -1307,14 +1313,16 @@ const emptyList = new List();
 
 function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct(List, [as.shift(), list(...as)]); }
 
-function concat(xss) {
-  if (isList(xss)) {
-    if (isEmpty(xss)) { return emptyList; }
-    let x = xss.head;
-    let xs = xss.tail;
-    return isList(x) ? listAppend(x, concat(xs)) : error.listError(x, concat);
+function listAppend(as, bs) {
+  let p = (as, bs) => {
+    if (isList(as) === false ) { return error.listError(as, listAppend); }
+    if (isList(bs) === false ) { return error.listError(bs, listAppend); }
+    if (isEmpty(as)) { return bs; }
+    if (isEmpty(bs)) { return as; }
+    if (type(head(as)) === type(head(bs))) { return cons(as.head)(listAppend(as.tail)(bs)); }
+    return error.typeMismatch(type(head(as)), type(head(bs)), listAppend);
   }
-  return error.listError(xss, concat);
+  return partial(p, as, bs);
 }
 
 function cons(x, xs) {
@@ -1326,6 +1334,43 @@ function cons(x, xs) {
   }
   return partial(p, x, xs);
 }
+
+function head(as) {
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
+  return error.listError(as, head);
+}
+
+function last(as) {
+  if (isList(as)) {
+    if (isEmpty(as)) { return error.emptyList(as, last); }
+    return isEmpty(as.tail) ? as.head : last(as.tail);
+  }
+  return error.listError(as, last);
+}
+
+function tail(as) {
+  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail; }
+  return error.listError(as, tail);
+}
+
+function init(as) {
+  if (isList(as)) {
+    if (isEmpty(as)) { return error.emptyList(as, init); }
+    return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail));
+  }
+  return error.listError(as, init);
+}
+
+// uncons
+
+// null
+
+function length(as) {
+  let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
+  return isList(as) ? lenAcc(as, 0) : error.listError(as, length);
+}
+
+function isList(a) { return a instanceof List ? true : false; }
 
 function fromArrayToList(a) { return Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList); }
 
@@ -1344,54 +1389,89 @@ function fromStringToList(str) {
   return error.typeError(as, fromStringToList);
 }
 
-function head(as) {
-  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head; }
-  return error.listError(as, head);
-}
+// List transformations
 
-function init(as) {
-  if (isList(as)) {
-    if (isEmpty(as)) { return error.emptyList(as, init); }
-    return isEmpty(as.tail) ? emptyList : cons(as.head)(init(as.tail));
+function map(f, as) {
+  let p = (f, as) => {
+    if (isList(as) === false ) { return error.listError(as, map); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = f(as.head) === undefined ? f.bind(f, as.head) : f(as.head);
+    let xs = as.tail;
+    return cons(x)(map(f)(xs));
   }
-  return error.listError(as, init);
-}
-
-function isList(a) { return a instanceof List ? true : false; }
-
-function last(as) {
-  if (isList(as)) {
-    if (isEmpty(as)) { return error.emptyList(as, last); }
-    return isEmpty(as.tail) ? as.head : last(as.tail);
-  }
-  return error.listError(as, last);
-}
-
-function length(as) {
-  let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(xs.tail, n + 1);
-  return isList(as) ? lenAcc(as, 0) : error.listError(as, length);
-}
-
-function listAppend(as, bs) {
-  let p = (as, bs) => {
-    if (isList(as) === false ) { return error.listError(as, listAppend); }
-    if (isList(bs) === false ) { return error.listError(bs, listAppend); }
-    if (isEmpty(as)) { return bs; }
-    if (isEmpty(bs)) { return as; }
-    if (type(head(as)) === type(head(bs))) { return cons(as.head)(listAppend(as.tail)(bs)); }
-    return error.typeMismatch(type(head(as)), type(head(bs)), listAppend);
-  }
-  return partial(p, as, bs);
-}
-
-function tail(as) {
-  if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail; }
-  return error.listError(as, tail);
+  return partial(p, f, as);
 }
 
 function reverse(as) {
   let rev = (as, a) => isEmpty(as) ? a : rev(as.tail, cons(as.head)(a));
   return rev(as, emptyList);
+}
+
+function intersperse(sep, as) {
+  let p = (sep, as) => {
+    if (isList(as) === false) { return error.listError(as, intersperse); }
+    if (typeCheck(sep, as.head) === false) { return error.typeMismatch(sep, as.head, intersperse); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    return cons(x)(prependToAll(sep, xs));
+  }
+  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(xs.head)(prependToAll(sep, xs.tail))); }
+  return partial(p, sep, as);
+}
+
+function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
+
+function transpose(xss) {
+  if (isList(xss) === false) { return error.listError(xss, transpose); }
+  if (isEmpty(xss)) { return emptyList; }
+  let head = xss.head;
+  let tail = xss.tail;
+  if (isList(head) === false) { return error.listError(head, transpose); }
+  if (isEmpty(head)) { return transpose(tail); }
+  let x = head.head;
+  let xs = head.tail;
+  let headComp = fromArrayToList(fromListToArray(tail).map(xs => xs.head));
+  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => xs.tail));
+  return cons(cons(x)(headComp))(transpose(cons(xs)(tailComp)));
+}
+
+// Special folds
+
+function concat(xss) {
+  if (isList(xss)) {
+    if (isEmpty(xss)) { return emptyList; }
+    let x = xss.head;
+    let xs = xss.tail;
+    return isList(x) ? listAppend(x, concat(xs)) : error.listError(x, concat);
+  }
+  return error.listError(xss, concat);
+}
+
+// Sublists
+
+function take(n, as) {
+  let p = (n, as) => {
+    if (isList(as) === false) { return error.listError(as, take); }
+    if (n <= 0) { return emptyList; }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    return cons(x)(take(n - 1)(xs));
+  }
+  return partial(p, n, as);
+}
+
+function drop(n, as) {
+  let p = (n, as) => {
+    if (isList(as) === false) { return error.listError(as, drop); }
+    if (n <= 0) { return as; }
+    if (isEmpty(as)) { return emptyList; }
+    let x = as.head;
+    let xs = as.tail;
+    return drop(n - 1)(xs);
+  }
+  return partial(p, n, as);
 }
 
 function splitAt(n, as) {
@@ -1437,20 +1517,7 @@ function spanNot(pred, as) {
   return partial(p, pred, as);
 }
 
-//uncons
-
-// List transformations
-
-function map(f, as) {
-  let p = (f, as) => {
-    if (isList(as) === false ) { return error.listError(as, map); }
-    if (isEmpty(as)) { return emptyList; }
-    let x = f(as.head) === undefined ? f.bind(f, as.head) : f(as.head);
-    let xs = as.tail;
-    return cons(x)(map(f)(xs));
-  }
-  return partial(p, f, as);
-}
+// Searching
 
 // use this in places where I'm mimicking list comprehensions
 function filter(f, as) {
@@ -1466,62 +1533,7 @@ function filter(f, as) {
   return partial(p, f, as);
 }
 
-function intersperse(sep, as) {
-  let p = (sep, as) => {
-    if (isList(as) === false) { return error.listError(as, intersperse); }
-    if (typeCheck(sep, as.head) === false) { return error.typeMismatch(sep, as.head, intersperse); }
-    if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
-    return cons(x)(prependToAll(sep, xs));
-  }
-  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(xs.head)(prependToAll(sep, xs.tail))); }
-  return partial(p, sep, as);
-}
-
-function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
-
-function transpose(xss) {
-  if (isList(xss) === false) { return error.listError(xss, transpose); }
-  if (isEmpty(xss)) { return emptyList; }
-  let head = xss.head;
-  let tail = xss.tail;
-  if (isList(head) === false) { return error.listError(head, transpose); }
-  if (isEmpty(head)) { return transpose(tail); }
-  let x = head.head;
-  let xs = head.tail;
-  let headComp = fromArrayToList(fromListToArray(tail).map(xs => xs.head));
-  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => xs.tail));
-  return cons(cons(x)(headComp))(transpose(cons(xs)(tailComp)));
-}
-
-// Sublists
-
-function drop(n, as) {
-  let p = (n, as) => {
-    if (isList(as) === false) { return error.listError(as, drop); }
-    if (n <= 0) { return as; }
-    if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
-    return drop(n - 1)(xs);
-  }
-  return partial(p, n, as);
-}
-
-function take(n, as) {
-  let p = (n, as) => {
-    if (isList(as) === false) { return error.listError(as, take); }
-    if (n <= 0) { return emptyList; }
-    if (isEmpty(as)) { return emptyList; }
-    let x = as.head;
-    let xs = as.tail;
-    return cons(x)(take(n - 1)(xs));
-  }
-  return partial(p, n, as);
-}
-
-// Indexing functions
+// Indexing
 
 function index(as, n) {
   let p = (as, n) => {
@@ -1536,7 +1548,7 @@ function index(as, n) {
   return partial(p, as, n);
 }
 
-// Zipping and unzipping lists
+// Zipping and unzipping
 
 function zip(as, bs) {
   let p = (as, bs) => {
@@ -1555,8 +1567,65 @@ function zip(as, bs) {
 
 // Ordered lists
 
+/**
+ * Sort a list using regular value comparison. Use {@code sortBy} to supply your own
+ * comparison function. Example:
+ * {@code lst = list(9,8,7,6,5,4,3,10,13,11,14,23,24,26,25,2,1);
+ *        sort(lst) // [1:2:3:4:5:6:7:8:9:10:11:13:14:23:24:25:26:[]]
+ * }
+ * Haskell> sort :: Ord a => [a] -> [a]
+ * @param {List} as - The list to sort.
+ * @return {List} - The sorted list.
+ */
+function sort(as) { return sortBy(compare, as); }
 
+/**
+ * Sort a list using a comparison function of your choice.
+ * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
+ * @param {function()} cmp - The comparison function—must return an Ordering.
+ * @param {List} as - The list to sort.
+ * @return {List} - The sorted list.
+ */
+function sortBy(cmp, as) {
+  let p = (cmp, as) => foldr(insertBy(cmp), emptyList, as);
+  return partial(p, cmp, as);
+}
 
+/**
+ * The {@code insert} function takes an element and a list and inserts the element into the
+ * list at the first position where it is less than or equal to the next element.
+ * In particular, if the list is sorted before the call, the result will also be sorted.
+ * Example: {@code insert(7, list(1,2,3,4,5,6,8,9,10)) // [1:2:3:4:5:6:7:8:9:10:[]] }
+ * Haskell> insert :: Ord a => a -> [a] -> [a]
+ * @param {*} e - The element to insert.
+ * @param {List} ls - The list to insert into.
+ * @return {List} - A new list, with the element inserted.
+ */
+function insert(e, ls) {
+  let p = (e, ls) => insertBy(compare, e, ls);
+  return partial(p, e, ls);
+}
+
+/**
+ * Insert an element into a list using a comparison function of your choice.
+ * Haskell> insertBy :: (a -> a -> Ordering) -> a -> [a] -> [a]
+ * @param {function()} cmp - The comparison function—must return an Ordering.
+ * @param {*} e - The element to insert.
+ * @param {List} ls - The list to insert into.
+ * @return {List} - A new list, with the element inserted.
+ */
+function insertBy(cmp, e, ls) {
+  let p = (cmp, e, ls) => {
+    if (isEmpty(ls)) { return list(e); }
+    let y = ls.head;
+    let ys = ls.tail;
+    if (cmp(e, y) === GT) { return cons(y)(insertBy(cmp, e, ys)); }
+    return cons(e)(ls);
+  }
+  return partial(p, cmp, e, ls);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // API
 
 export default {
@@ -1641,32 +1710,36 @@ export default {
   uncurry: uncurry,
   emptyList: emptyList,
   list: list,
-  concat: concat,
+  listAppend: listAppend,
   cons: cons,
+  head: head,
+  last: last,
+  tail: tail,
+  init: init,
+  length: length,
+  isList: isList,
   fromArrayToList: fromArrayToList,
   fromListToArray: fromListToArray,
   fromListToString: fromListToString,
   fromStringToList: fromStringToList,
-  head: head,
-  init: init,
-  isList: isList,
-  last: last,
-  length: length,
-  listAppend: listAppend,
-  tail: tail,
+  map: map,
   reverse: reverse,
+  intersperse: intersperse,
+  intercalate: intercalate,
+  transpose: transpose,
+  concat: concat,
+  take: take,
+  drop: drop,
   splitAt: splitAt,
   takeWhile: takeWhile,
   dropWhile: dropWhile,
   span: span,
   spanNot: spanNot,
-  map: map,
   filter: filter,
-  intersperse: intersperse,
-  intercalate: intercalate,
-  transpose: transpose,
-  drop: drop,
-  take: take,
   index: index,
-  zip: zip
+  zip: zip,
+  sort: sort,
+  sortBy: sortBy,
+  insert: insert,
+  insertBy: insertBy
 }
