@@ -920,27 +920,49 @@ function foldr(f, z, t) {
 // must define a {@code traverse} function and also be instances of Functor and Foldable.
 const Traversable = defines(`fmap`, `foldr`, `traverse`);
 
-
+/**
+ * Map each element of a structure to an action, evaluate these actions from left to right, and collect
+ * the results. Example:
+ * {@code let lst = list(1,2,3);
+ *        let f = x => list(x + 7);
+ *        traverse(f)(lst); // [[8:9:10:[]]:[]]
+ *        let tup = tuple(1,2);
+ *        traverse(f, tup); // [(1,9):[]]
+ * }
+ * Haskell> traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+ * @param {function()} f - The function to map.
+ * @param {*} a - The traversable structure to traverse.
+ * @return {*} - A collection of the results of the traversal.
+ */
 function traverse(f, a) {
   let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
   return partial(p, f, a);
 }
 
-// I think these are wrong, because the functions should take traversable types that contain monads, not just monads?:
-
+/**
+ * Map each element of a structure to a monadic action, evaluate these actions from left to right,
+ * and collect the results. This function is essentially the same as {@code traverse}.
+ * Haskell> mapM :: Monad m => (a -> m b) -> t a -> m (t b)
+ * @param {function()} f - The function to map.
+ * @param {*} m - The monad to traverse.
+ * @return {*} - A collection of the results of the traversal.
+ */
 function mapM(f, m) {
-  let p = (f, m) => Monad(m) ? traverse(f, dataType(m).bind(f)) : error.typeError(m, mapM);
+  let p = (f, m) => Monad(m) ? dataType(m).traverse(f, m) : error.typeError(m, mapM);
   return partial(p, f, m);
 }
 
-function mapM_(f, m) {
-  let p = (f, m) => Monad(m) ? foldr(chain(m, f), inject(m, unit), m) : error.typeError(m, mapM_);
-  return partial(p, f, m);
-}
-
-function sequence(m) { return Monad(m) ? traverse(id, a) : error.typeError(a, sequence); }
-
-function sequence_(m) { return Monad(m) ? foldr(chain(m, f), inject(m, unit), m) : error.typeError(m, sequence_); }
+/**
+ * Evaluate each monadic action in the structure from left to right, and collect the results. Example:
+ * {@code let lst = list(1,2,3);
+ *        let llst = list(lst);
+ *        sequence(llst); // [[1:[]]:[2:[]]:[3:[]]:[]]
+ * }
+ * Haskell> sequence :: Monad m => t (m a) -> m (t a)
+ * @param {*} m - The monadic collection of actions.
+ * @return {*} - A collection of the results.
+ */
+function sequence(m) { return Monad(m) ? traverse(id, m) : error.typeError(m, sequence); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Maybe
