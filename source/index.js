@@ -182,7 +182,7 @@ function partial(f, ...as) {
  *        $(multHund)(addTen, 10) // 2000
  *        $(addTen)(addTwenty)()  // 30
  * }
- * Haskell: (.) :: (b -> c) -> (a -> b) -> a -> c
+ * Haskell> (.) :: (b -> c) -> (a -> b) -> a -> c
  * @param {function()} f - The outermost function to compose.
  * @return {function()} - The composed function, called only if a value is bound to f.
  */
@@ -196,7 +196,7 @@ function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
  *        subtract(10, 5); // 5
  *        flipped(10, 5);  // -5
  * }
- * Haskell: flip :: (a -> b -> c) -> b -> a -> c
+ * Haskell> flip :: (a -> b -> c) -> b -> a -> c
  * @param {function()} f - Any function.
  * @return {function()} - The function with its arguments reversed.
  */
@@ -205,7 +205,7 @@ function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
 /**
  * The identity function.
  * Example: {@code id(1); // 1 }
- * Haskell: id :: a -> a
+ * Haskell> id :: a -> a
  * @param {*} a - Any value.
  * @return {*} a - The same value.
  */
@@ -214,7 +214,7 @@ function id(a) { return a; }
 /**
  * Return the value of the first argument, throwing away the value of the second argument.
  * Example: {@code constant(2, 3); // 2 }
- * Haskell: const :: a -> b -> a
+ * Haskell> const :: a -> b -> a
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {*} a - The first value.
@@ -231,7 +231,7 @@ function constant(a, b) {
  *        let u = until(pred, f);
  *        u(1); // 11
  * }
- * Haskell: until :: (a -> Bool) -> (a -> a) -> a -> a
+ * Haskell> until :: (a -> Bool) -> (a -> a) -> a -> a
  * @param {function()} pred - A predicate function that returns a boolean.
  * @param {function()} f - The function to apply.
  * @param {*} x - The value to apply to f.
@@ -245,7 +245,7 @@ function until(pred, f, x) {
 /**
  * Boolean and. Return true if both arguments are true, false otherwise.
  * Example: {@code and(true, true) // true }
- * Haskell: (&&) :: Bool -> Bool -> Bool
+ * Haskell> (&&) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
  * @return {boolean} - a && b.
@@ -262,7 +262,7 @@ function and(a, b) {
 /**
  * Boolean or. Return true if either argument is true, false otherwise.
  * Example: {@code or(true, false) // true }
- * Haskell: (||) :: Bool -> Bool -> Bool
+ * Haskell> (||) :: Bool -> Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @param {boolean} b - A boolean value.
  * @return {boolean} - a || b.
@@ -279,7 +279,7 @@ function or(a, b) {
 /**
  * Boolean not. Return true if the argument is false, false otherwise.
  * Example: {@code not(false) // true }
- * Haskell: not :: Bool -> Bool
+ * Haskell> not :: Bool -> Bool
  * @param {boolean} a - A boolean value.
  * @return {boolean} - !a.
  */
@@ -334,7 +334,7 @@ const Eq = defines(`isEq`);
 /**
  * Compare two objects for equality. Both objects must be instances of the Eq type class (i.e. they
  * both define an {@code isEq} static method).
- * Haskell: (==) :: a -> a -> Bool
+ * Haskell> (==) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a === b
@@ -350,7 +350,7 @@ function isEq(a, b) {
 /**
  * Compare two objects for inequality. Both objects must be instances of the Eq type class (i.e. they
  * both define an isEq static method).
- * Haskell: (/=) :: a -> a -> Bool
+ * Haskell> (/=) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a !== b
@@ -410,7 +410,7 @@ const GT = new Ordering(`GT`);
  * Compare two objects and return an ordering. Both values must be instances of the Ord type class (i.e. they
  * both define a {@code compare} static method). Only a single comparison is required to determine the precise
  * ordering of two objects.
- * Haskell: compare :: a -> a -> Ordering
+ * Haskell> compare :: a -> a -> Ordering
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {Ordering} - The Ordering value (EQ for equality, LT for less than, and GT for greater than).
@@ -430,7 +430,7 @@ function compare(a, b) {
 
 /**
  * Determine whether one value is less than another.
- * Haskell: (<) :: a -> a -> Bool
+ * Haskell> (<) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a < b.
@@ -442,7 +442,7 @@ function lessThan(a, b) {
 
 /**
  * Determine whether one value is less than or equal to another.
- * Haskell: (<=) :: a -> a -> Bool
+ * Haskell> (<=) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a <= b.
@@ -454,7 +454,7 @@ function lessThanOrEqual(a, b) {
 
 /**
  * Determine whether one value is greater than another.
- * Haskell: (>) :: a -> a -> Bool
+ * Haskell> (>) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a > b.
@@ -466,7 +466,7 @@ function greaterThan(a, b) {
 
 /**
  * Determine whether one value is greater than or equal to another.
- * Haskell: (>=) :: a -> a -> Bool
+ * Haskell> (>=) :: a -> a -> Bool
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {boolean} - a >= b.
@@ -478,7 +478,7 @@ function greaterThanOrEqual(a, b) {
 
 /**
  * Return the higher in value of two objects.
- * Haskell: max :: a -> a -> a
+ * Haskell> max :: a -> a -> a
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {*} - a or b, whichever is greater.
@@ -490,7 +490,7 @@ function max(a, b) {
 
 /**
  * Return the lower in value of two objects.
- * Haskell: min :: a -> a -> a
+ * Haskell> min :: a -> a -> a
  * @param {*} a - Any value.
  * @param {*} b - Any value.
  * @return {*} - a or b, whichever is lesser.
@@ -512,7 +512,7 @@ const Monoid = defines(`mempty`, `mappend`);
 
 /**
  * Return the identity (or "empty") value for the monoid.
- * Haskell: mempty :: a
+ * Haskell> mempty :: a
  * @param {Object} a - Any monoid.
  * @return {Object} - Identity of mappend.
  */
@@ -528,7 +528,7 @@ function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typeError(
  *        mappend(l1, (mappend(l2, l3))); // [1:2:3:4:5:6:7:8:9:[]]
  *        mappend(mappend(l1, l2), l3);   // [1:2:3:4:5:6:7:8:9:[]]
  * }
- * Haskell: mappend :: a -> a -> a
+ * Haskell> mappend :: a -> a -> a
  * @param {Object} a - Any monoid.
  * @param {Object} b - Any monoid.
  * @return {Object} - A new monoid of the same type, the result of the associative operation.
@@ -550,7 +550,7 @@ function mappend(a, b) {
  *        let ls = list(l1,l2,l3); // [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
  *        mconcat(ls);             // [1:2:3:4:5:6:7:8:9:[]]
  * }
- * Haskell: mconcat :: [a] -> a
+ * Haskell> mconcat :: [a] -> a
  * @param {Object} - Any monoid.
  * @return {Object} - A new monoid of the same type.
  */
@@ -573,7 +573,7 @@ const Functor = defines(`fmap`);
  *        $(fmap(f))(fmap(g))(lst) // [1100:2200:3300:[]]
  *        fmap($(f)(g))(lst)       // [1100:2200:3300:[]]
  * }
- * Haskell: fmap :: (a -> b) -> f a -> f b
+ * Haskell> fmap :: (a -> b) -> f a -> f b
  * @param {function()} f - The function to map.
  * @param {Object} - The functor to map over.
  * @return {Object} - A new functor of the same type, the result of the mapping.
@@ -588,7 +588,7 @@ function fmap(f, a) {
  * {@code let lst = list(1,2,3); // [1:2:3:[]]
  *        fmapReplaceBy(5, lst)  // [5:5:5:[]]
  * }
- * Haskell: (<$) :: a -> f b -> f a
+ * Haskell> (<$) :: a -> f b -> f a
  * @param {*} a - The value to inject into the functor.
  * @param {Object} b - The functor to map over.
  * @return {Object} - A new functor of the same type, with the values of the original replaced by the new value.
@@ -610,7 +610,7 @@ const Applicative = defines(`fmap`, `pure`, `ap`);
  * {@code let lst = list(1,2,3); // [1:2:3:[]]
  *        let p = pure(lst, 5);  // [5:[]]
  * }
- * Haskell: pure :: a -> f a
+ * Haskell> pure :: a -> f a
  * @param {Object} f - An applicative functor.
  * @param {*} a - Any value.
  * @return {Object} - An applicative functor with the value injected.
@@ -639,7 +639,7 @@ function pure(f, a) {
  *        let a = pure(lst, 3);
  *        ap(pf, a);                   // [6:[]] proves interchange (not really possible?)
  * }
- * Haskell: (<*>) :: f (a -> b) -> f a -> f b
+ * Haskell> (<*>) :: f (a -> b) -> f a -> f b
  * @param {function()} f - A function lifted into an applicative context.
  * @param {Object} a - An applicative functor.
  * @return {Object} - A new applicative functor of the same type, the result of the application.
@@ -655,7 +655,7 @@ function ap(f, a) {
 
 /**
  * A variant of {@code ap} with the arguments reversed.
- * Haskell: (<**>) :: Applicative f => f a -> f (a -> b) -> f b
+ * Haskell> (<**>) :: Applicative f => f a -> f (a -> b) -> f b
  * @param {function()} f - A function lifted into an applicative context.
  * @param {Object} a - The first argument to f.
  * @param {Object} b - The second argument to f.
@@ -671,7 +671,7 @@ function apFlip(f, a, b) {
  *        let l2 = list(4,5,6);
  *        then(l1, l2); // [4:5:6:4:5:6:4:5:6:[]]
  * }
- * Haskell: (*>) :: f a -> f b -> f b
+ * Haskell> (*>) :: f a -> f b -> f b
  * @param {Object} a1 - The action to skip.
  * @param {Object} a2 - The action to perform.
  */
@@ -686,7 +686,7 @@ function then(a1, a2) {
  *        let l2 = list(4,5,6);
  *        skip(l1, l2); // [1:1:1:2:2:2:3:3:3:[]]
  * }
- * Haskell: (<*) :: f a -> f b -> f a
+ * Haskell> (<*) :: f a -> f b -> f a
  * @param {Object} a1 - The action to perform.
  * @param {Object} a2 - The action to skip.
  */
@@ -697,7 +697,7 @@ function skip(a1, a2) {
 
 /**
  * Lift a function to actions.
- * Haskell: liftA :: Applicative f => (a -> b) -> f a -> f b
+ * Haskell> liftA :: Applicative f => (a -> b) -> f a -> f b
  * @param {function()} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the context to lift the function into.
  */
@@ -708,7 +708,7 @@ function liftA(f, a) {
 
 /**
  * Lift a binary function to actions.
- * Haskell: liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+ * Haskell> liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
  * @param {function()} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
@@ -720,7 +720,7 @@ function liftA2(f, a, b) {
 
 /**
  * Lift a ternary function to actions.
- * Haskell: liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+ * Haskell> liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
  * @param {function()} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
@@ -740,10 +740,10 @@ const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
 /**
  * Inject a value into the monadic type.
- * Haskell: return :: a -> m a
- * @param {Monad} m - A monad.
+ * Haskell> return :: a -> m a
+ * @param {Object} m - A monad.
  * @param {*} a - The value to inject.
- * @return {Monad} - A new monad of the same type with the value injected.
+ * @return {Object} - A new monad of the same type with the value injected.
  */
 function inject(m, a) {
   let p = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
@@ -752,10 +752,10 @@ function inject(m, a) {
 
 /**
  * Sequentially compose two actions, passing any value produced by the first as an argument to the second.
- * Haskell: (>>=) :: m a -> (a -> m b) -> m b
- * @param {Monad} m - A monad.
- * @param {function()} f - A function to bind to the injected value of the monad.
- * @return {Monad} - A new monad of the same type, the result of binding the function to the original injected value.
+ * Haskell> (>>=) :: m a -> (a -> m b) -> m b
+ * @param {Object} m - A monad.
+ * @param {function()} f - A function to bind to the injected value of the monad. This function must return a monad.
+ * @return {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 function bind(m, f) {
   let p = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
@@ -765,10 +765,10 @@ function bind(m, f) {
 /**
  * Sequentially compose two actions, discarding any value produced by the first, like sequencing operators
  * (such as the semicolon) in imperative languages.
- * @param {Monad} m - A monad.
+ * @param {Object} m - A monad.
  * @param {function()} f - A function to call that ignores the injected value of the monad.
- * @return {Monad} - A new monad of the same type, the result of calling the function.
- * Haskell: (>>) :: m a -> m b -> m b
+ * @return {Object} - A new monad of the same type, the result of calling the function.
+ * Haskell> (>>) :: m a -> m b -> m b
  */
 function chain(m, f) {
   let p = (m, f) => Monad(m) ? then(m, f) : error.typeError(m, chain);
@@ -777,10 +777,10 @@ function chain(m, f) {
 
 /**
  * Same as {@code bind} but with the arguments interchanged.
- * Haskell: (=<<) :: Monad m => (a -> m b) -> m a -> m b
+ * Haskell> (=<<) :: Monad m => (a -> m b) -> m a -> m b
  * @param {function()} f - A function to bind to the injected value of the monad.
- * @param {Monad} m - A monad.
- * @return {Monad} - A new monad of the same type, the result of binding the function to the original injected value.
+ * @param {Object} m - A monad.
+ * @return {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 function bindFlip(f, m) {
   let p = (f, m) => bind(m, f);
@@ -794,18 +794,18 @@ function bindFlip(f, m) {
  *        join(n);          // Just 10
  *        join(m);          // 10 (is this a bug?)
  * }
- * Haskell: join :: Monad m => m (m a) -> m a
- * @param {Monad} m - A monad (wrapping another monad).
- * @return {Monad} - The wrapped monad on its own.
+ * Haskell> join :: Monad m => m (m a) -> m a
+ * @param {Object} m - A monad (wrapping another monad).
+ * @return {Object} - The wrapped monad on its own.
  */
 function join(m) { return Monad(m) ? bind(m, id) : error.typeError(m, join); }
 
 /**
  * Promote a function to a monad.
- * Haskell: liftM :: Monad m => (a1 -> r) -> m a1 -> m r
+ * Haskell> liftM :: Monad m => (a1 -> r) -> m a1 -> m r
  * @param {function()} f - The function to lift into a monad.
- * @param {Monad} m - The monad to lift the function into.
- * @return {Monad} - A new monad containing the result of mapping the function over the monad.
+ * @param {Object} m - The monad to lift the function into.
+ * @return {Object} - A new monad containing the result of mapping the function over the monad.
  */
 function liftM(f, m) {
   let p = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
@@ -816,7 +816,7 @@ function liftM(f, m) {
  * Since there is no way to exactly replicate Haskell's 'do' notation for monadic chaining, but it
  * would be useful to have a similar affordance, this class provides such a mechanism. See {@code Do}
  * below for an example of how it works.
- * @param {Monad} m - A monad.
+ * @param {Object} m - A monad.
  * @class
  * @private
  */
@@ -831,8 +831,32 @@ class DoBlock {
 /**
  * Wrap a monad in a special container for the purpose of chaining actions, in imitation of the
  * syntactic sugar provided by Haskell's 'do' notation. Example:
- *
- * @param {Monad} m - A monad.
+ * {@code let m = just(10);
+ *        let f = x => just(x * 2);
+ *        let g = x => just(x - 1);
+ *        Do(m).bind(f).bind(g);              // Maybe >>= Just 19
+ *        Do(m).bind(f).chain(m).bind(g);     // Maybe >>= Just 9
+ *        let lst = list(1,2,3);
+ *        let m = x => list(x + 1);
+ *        let n = x => list(x * 2);
+ *        Do(lst).bind(m).bind(n);            // List >>= [4:6:8:[]]
+ *        Do(lst).bind(m).chain(lst).bind(n); // List >>= [2:4:6:2:4:6:2:4:6:[]]
+ *        let put = x => {
+ *          print(x);
+ *          return just(x);
+ *        }
+ *        Do(m)
+ *        .bind(put)  // 10
+ *        .bind(f)
+ *        .bind(put)  // 20
+ *        .chain(m)
+ *        .bind(put)  // 10
+ *        .bind(g)
+ *        .bind(put)  // 9
+ *        .bind(f)
+ *        .bind(put); // 18
+ * }
+ * @param {Object} m - A monad.
  * @return {DoBlock} - A monadic context in which to chain actions.
  */
 function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
@@ -840,18 +864,50 @@ function Do(m) { return Monad(m) ? new DoBlock(m) : error.typeError(Do, m); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Foldable
 
+// A foldable is a data structure that can be folded to a summary value. Lists are a common form of foldable.
+// Instances of Foldable must define a {@code foldr} function.
 const Foldable = defines(`foldr`);
 
-fold :: Monoid m => t m -> m
+/**
+ * Combine the elements of a structure using a monoid. For example, fold a list of lists into a list:
+ * {@code let lst = list(1,2,3);  // [1:2:3:[]]
+ *        let llst = list(lst);   // [[1:2:3:[]]:[]]
+ *        fold(llst);             // [1:2:3:[]]
+ * }
+ * Haskell> fold :: Monoid m => t m -> m
+ * @param {*} a - The monoid to fold.
+ * @return {*} - The folded monoid.
+ */
 function fold(a) { return foldMap(id, a); }
 
-foldMap :: Monoid m => (a -> m) -> t a -> m
+/**
+ * Map each element of the structure to a monoid, and combine the results. Example:
+ * {@code let lst = list(1,2,3);
+ *        let f = x => list(x * 3);
+ *        foldMap(f, lst); // [3:6:9:[]]
+ * }
+ * Haskell> foldMap :: Monoid m => (a -> m) -> t a -> m
+ * @param {function()} f - The function to map.
+ * @param {*} a - The monoid to map over.
+ * @return {*} - A new monoid of the same type, the result of the mapping.
+ */
 function foldMap(f, a) {
   let p = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
   return partial(p, f, a);
 }
 
-foldr :: (a -> b -> b) -> b -> t a -> b
+/**
+ * Right-associative fold of a structure. This is the work horse function of Foldable. Example:
+ * {@code let lst = list(1,2,3);
+ *        let f = (x, y) => x + y;
+ *        foldr(f, 0, lst); // 6
+ * }
+ * Haskell> foldr :: (a -> b -> b) -> b -> t a -> b
+ * @param {function()} f - A binary function.
+ * @param {*} z - A base accumulator value.
+ * @param {*} t - A foldable value.
+ * @return {*} - The result of applying the function to the foldable and the accumulator.
+ */
 function foldr(f, z, t) {
   let p = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
   return partial(p, f, z, t);
@@ -860,14 +916,17 @@ function foldr(f, z, t) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Traversable
 
+// Traversables are functors representing data structures that can be traversed from left to right. They
+// must define a {@code traverse} function and also be instances of Functor and Foldable.
 const Traversable = defines(`fmap`, `foldr`, `traverse`);
+
 
 function traverse(f, a) {
   let p = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
   return partial(p, f, a);
 }
 
-// I think these are wrong, because the functions should take traversable types that contain monads, no just monads?:
+// I think these are wrong, because the functions should take traversable types that contain monads, not just monads?:
 
 function mapM(f, m) {
   let p = (f, m) => Monad(m) ? traverse(f, dataType(m).bind(f)) : error.typeError(m, mapM);
@@ -1205,7 +1264,7 @@ class List extends Type {
     return f(x, foldr(f, acc, xs));
   }
   // Traversable
-  static traverse(f, as) { return isEmpty(as) ? pure(this, emptyList) : ap(fmap(cons)(f(as.head)))(traverse(f, as.tail)); }
+  static traverse(f, as) { return isEmpty(as) ? pure(as, emptyList) : ap(fmap(cons)(f(as.head)))(traverse(f, as.tail)); }
   // Functor
   static fmap(f, as) { return map(f, as); }
   // Applicative
