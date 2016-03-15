@@ -2264,14 +2264,17 @@ function dropWhile(pred, as) {
  * Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])
  * @param {Function} pred - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
- * @return {Tuple} - The `Tuple` of results.
+ * @returns {Tuple} - The `Tuple` of results.
  * @example
  * let lst = list(1,2,3,4,1,2,3,4);
  * let f = x => x < 3;
  * span(f, lst);                    // => ([1:2:[]],[3:4:1:2:3:4:[]])
  */
 function span(pred, as) {
-  let p = (pred, as) => tuple(takeWhile(pred, as), dropWhile(pred, as));
+  let p = (pred, as) => {
+    if (isList(as) === false) { return error.listError(as, span); }
+    tuple(takeWhile(pred, as), dropWhile(pred, as));
+  }
   return partial(p, pred, as);
 }
 
@@ -2282,7 +2285,7 @@ function span(pred, as) {
  * Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])
  * @param {Function} pred - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
- * @return {Tuple} - The `Tuple` of results.
+ * @returns {Tuple} - The `Tuple` of results.
  * @example
  * let lst = list(1,2,3,4,1,2,3,4);
  * let f = x => x > 3;
@@ -2293,8 +2296,107 @@ function spanNot(pred, as) {
   return partial(p, pred, as);
 }
 
+/**
+ * Drops the given prefix from a `List`. Returns `Nothing` if the list did not
+ * start with the prefix given, or `Just` the `List` after the prefix, if it does.
+ * Haskell> stripPrefix :: Eq a => [a] -> [a] -> Maybe [a]
+ * @param {List} as - The prefix `List` to strip.
+ * @param {List} bs - The `List` from which to strip the prefix.
+ * @returns {Maybe} - The result `List` contained in a `Just`, or `Nothing`.
+ * @example
+ * let prefix = fromStringToList(`foo`);
+ * stripPrefix(prefix, fromStringToList(`foobar`));    // => Just [bar]
+ * stripPrefix(prefix, fromStringToList(`foo`));       // => Just [[]]
+ * stripPrefix(prefix, fromStringToList(`barfoo`));    // => Nothing
+ * stripPrefix(prefix, fromStringToList(`barfoobaz`)); // => Nothing
+ */
+function stripPrefix(as, bs) {
+  let p = (as, bs) => {
+    if (isList(as) === false) { return error.listError(as, stripPrefix); }
+    if (isList(bs) === false) { return error.listError(bs, stripPrefix); }
+    if (isEmpty(as)) { return just(bs); }
+    let x = head(as);
+    let xs = tail(as);
+    let y = head(bs);
+    let ys = tail(bs);
+    if (x === y) { return stripPrefix(xs, ys); }
+    return Nothing;
+  }
+  return partial(p, as, bs);
+}
+
+/**
+ * Take a `List` and return a `List` of lists such that the concatenation of the result
+ * is equal to the argument. Each sublist in the result contains only equal values.
+ * Haskell> group :: Eq a => [a] -> [[a]]
+ * @param {List} as - A `List`.
+ * @returns {List} - A `List` of result lists.
+ * @example
+ * let str = fromStringToList(`Mississippi`);
+ * group(str); // => [[M]:[i]:[ss]:[i]:[ss]:[i]:[pp]:[i]:[]]
+ */
+function group(as) { return groupBy(isEq, as); }
+
+/**
+ * Take a `List` and return a `List` of lists such that the concatenation of the result
+ * is equal to the argument. Each sublist in the result is grouped according to the
+ * the supplied equality function.
+ * Haskell> groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
+ * @param {Function} eq - A function to test the equality of elements (must return `boolean`).
+ * @param {List} as - A `List`.
+ * @returns {List} - A `List` of result lists.
+ */
+function groupBy(eq, as) {
+  let p = (eq, as) => {
+    if (isList(as) === false) { return error.listError(as, groupBy); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = head(as);
+    let xs = tail(as);
+    let t = span(eq(x), xs);
+    let ys = fst(t);
+    let zs = snd(t);
+    return cons(cons(x)(ys))(groupBy(eq, zs));
+  }
+  return partial(p, eq, as);
+}
+
 // Searching
 
+/**
+ * Look up a key in an association list. For a list of `Tuple` objects, returns the
+ * second element of the first tuple for which the key matches the first element.
+ * Haskell> lookup :: Eq a => a -> [(a, b)] -> Maybe b
+ * @param {*} key - The key value to lookup.
+ * @param {List} assocs - A `List` of `Tuple` objects.
+ * @returns {Maybe} - The matching value in a `Just` or `Nothing`, otherwise.
+ * @example
+ * let assocs = list(tuple(1,2), tuple(3,4), tuple(3,3), tuple(4,2)); // [(1,2):(3,4):(3,3):(4,2):[]]
+ * lookup(3, assocs);                                                 // => Just 4
+ * lookup(5, assocs);                                                 // => Nothing
+ */
+function lookup(key, assocs) {
+  let p = (key, assocs) => {
+    if (isList(assocs) === false) { return error.listError(as, lookup); }
+    if (isEmpty(assocs)) { return Nothing; }
+    let xy = head(assocs);
+    let xys = tail(assocs);
+    let x = fst(xy);
+    let y = snd(xy);
+    if (key === x) { return just(y); }
+    return lookup(key, xys);
+  }
+  return partial(p, key, assocs);
+}
+
+/**
+ * Return the `List` of elements in a `List` that satisfy the predicate.
+ * Haskell> filter :: (a -> Bool) -> [a] -> [a]
+ * @param {Function} f - The predicate function.
+ * @param {List} as - The `List` to filter.
+ * @returns {List} - The filtered `List`.
+ * @example
+ *
+ */
 function filter(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, filter); }
@@ -2520,6 +2622,10 @@ export default {
   dropWhile: dropWhile,
   span: span,
   spanNot: spanNot,
+  stripPrefix: stripPrefix,
+  group: group,
+  groupBy: groupBy,
+  lookup: lookup,
   filter: filter,
   index: index,
   zip: zip,
