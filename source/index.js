@@ -1585,17 +1585,20 @@ function fromTupleToArray(p) {
 // List
 
 /**
- * A data constructor for a list. In Haskell, unlike in JavaScript, the default collection type is a
+ * A data constructor for a `List`. In Haskell, unlike in JavaScript, the default collection type is a
  * linked list, not an array. Obviously, there are benefits and drawbacks to both, and native Arrays
  * in JavaScript have certain performance advantages that a custom linked list implementation may not
  * be able to outperform, even when performing operations for which linked lists, all other things
  * being equal, have an advantage. Lists may only contain values of a single type.
- * @param {*} head - The value to put at the head of the list, which will also determine the list's type.
- * @param {List} tail - The tail of the list, which is also a list (possibly the empty list).
- * @class
+ * @extends Type
  * @private
  */
 class List extends Type {
+  /**
+   * Create a new `List`.
+   * @param {*} head - The value to put at the head of the list, which will also determine the list's type.
+   * @param {List} tail - The tail of the list, which is also a list (possibly the empty list).
+   */
   constructor(head, tail) {
     super();
     this.head = () => head || null;
@@ -1644,8 +1647,19 @@ class List extends Type {
   }
 }
 
+/**
+ * The empty list, or [] in Haskell (represented as [[]] in this library).
+ * @const
+ */
 const emptyList = new List();
 
+/**
+ * Create a new `List` from a series of zero or more values.
+ * @param {...*} as - Values to put into a new `List`.
+ * @returns {List} - The new `List`.
+ * @example
+ * list(1,2,3); // => [1:2:3:[]]
+ */
 function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct(List, [as.shift(), list(...as)]); }
 
 /**
