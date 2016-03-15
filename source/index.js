@@ -343,7 +343,8 @@ function and(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, and); }
     if (type(b) !== `boolean`) { return error.typeError(b, and); }
-    return true && b ? b : false;
+    if (a) { return b; }
+    return false;
   }
   return partial(p, a, b);
 }
@@ -364,7 +365,8 @@ function or(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, or); }
     if (type(b) !== `boolean`) { return error.typeError(b, or); }
-    return a ? true : b;
+    if (a)  { return true; }
+    return b;
   }
   return partial(p, a, b);
 }
@@ -384,9 +386,9 @@ function or(a, b) {
  * not(b);        // => true
  */
 function not(a) {
-  if (a === true) { return false; }
-  if (a === false) { return true; }
-  return error.typeError(a, not);
+  if (type(a) !== `boolean`) { return error.typeError(a, not); }
+  if (a) { return false; }
+  return true;
 }
 
 /**
@@ -2395,7 +2397,9 @@ function lookup(key, assocs) {
  * @param {List} as - The `List` to filter.
  * @returns {List} - The filtered `List`.
  * @example
- *
+ * let lst = listRange(1,50);
+ * let f = x => and(odd(x), greaterThan(x, 10));
+ * filter(f, lst); // => [11:13:15:17:19:21:23:25:27:29:31:33:35:37:39:41:43:45:47:49:[]]
  */
 function filter(f, as) {
   let p = (f, as) => {
