@@ -1915,6 +1915,16 @@ function fromStringToList(str) {
 
 // List transformations
 
+/**
+ * Map a function over a `List` and put the results into a new list.
+ * @param {Function} f - The function to map.
+ * @param {List} as - The `List` to map over.
+ * @returns {List} - The list of results.
+ * @example
+ * let lst = list(1,2,3,4,5);
+ * let f = x => x * 3;
+ * map(f, lst));              // => [3:6:9:12:15:[]]
+ */
 function map(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, map); }
@@ -1926,11 +1936,30 @@ function map(f, as) {
   return partial(p, f, as);
 }
 
+/**
+ * Return a new `List` with its elements reversed.
+ * @param {List} as - A `List`.
+ * @returns {List} - The reversed list.
+ * @example
+ * let lst = list(1,2,3,4,5);
+ * reverse(lst);              // => [5:4:3:2:1:[]]
+ */
 function reverse(as) {
   let rev = (as, a) => isEmpty(as) ? a : rev(tail(as), cons(head(as))(a));
   return rev(as, emptyList);
 }
 
+/**
+ * Take a separator and a `List` and intersperse the separator between the elements of the list.
+ * @param {*} sep - The seperator value.
+ * @param {List} as - The `List` into which to intersperse the `sep` value.
+ * @returns {List} - A new `List` in which the elements of `as` are interspersed with `sep`.
+ * @example
+ * let lst = list(1,2,3,4,5);
+ * intersperse(0, lst);        // => [1:0:2:0:3:0:4:0:5:[]]
+ * let str = fromStringToList(`abcdefghijklmnopqrstuvwxyz`);
+ * intersperse(`|`, str)       // => [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z]
+ */
 function intersperse(sep, as) {
   let p = (sep, as) => {
     if (isList(as) === false) { return error.listError(as, intersperse); }
@@ -1944,20 +1973,51 @@ function intersperse(sep, as) {
   return partial(p, sep, as);
 }
 
-function intercalate(xs, xss) { return concat(intersperse(xs, xss)); }
+/**
+ * Insert a `List` in between the lists in a `List` of lists. Equivalent to `(concat (intersperse xs xss)).`
+ * @param {List} xs - The `List` to intercalate.
+ * @param {List} xss - A `List` of lists.
+ * @returns {List} - The intercalated `List`.
+ * @example
+ * let lst1 = list(1,1,1,1,1);
+ * let lst2 = list(2,2,2,2,2);
+ * let lst3 = list(3,3,3,3,3);
+ * let lst4 = list(4,4,4,4,4);
+ * let lst5 = list(5,5,5,5,5);
+ * let xss = list(lst1, lst2, lst3, lst4, lst5); // [[1:1:1:1:1:[]]:[2:2:2:2:2:[]]:[3:3:3:3:3:[]]:[4:4:4:4:4:[]]:[5:5:5:5:5:[]]:[]]
+ * let xs = list(0,0,0);
+ * intercalate(xs, xss); // => [1:1:1:1:1:0:0:0:2:2:2:2:2:0:0:0:3:3:3:3:3:0:0:0:4:4:4:4:4:0:0:0:5:5:5:5:5:[]]
+ */
+function intercalate(xs, xss) {
+  let p = (xs, xss) => concat(intersperse(xs, xss));
+  return partial(p, xs, xss);
+}
 
-function transpose(xss) {
-  if (isList(xss) === false) { return error.listError(xss, transpose); }
-  if (isEmpty(xss)) { return emptyList; }
-  let head = head(xss);
-  let tail = tail(xss);
-  if (isList(head) === false) { return error.listError(head, transpose); }
-  if (isEmpty(head)) { return transpose(tail); }
-  let x = head(head);
-  let xs = tail(head);
-  let headComp = fromArrayToList(fromListToArray(tail).map(xs => head(xs)));
-  let tailComp = fromArrayToList(fromListToArray(tail).map(xs => tail(xs)));
-  return cons(cons(x)(headComp))(transpose(cons(xs)(tailComp)));
+/**
+ * Transpose the "rows" and "columns" of a `List` of lists. If some of the rows are shorter than the following rows,
+ * their elements are skipped.
+ * @param {List} xss - A `List` of lists.
+ * @returns {List} - A new `List` of lists, with the rows and columns transposed.
+ * @example
+ * let lst1 = list(1,2,3);
+ * let lst2 = list(4,5,6);
+ * let xss1 = list(lst1, lst2);
+ * transpose(xss1);             // => [[1:4:[]]:[2:5:[]]:[3:6:[]]:[]]
+ * let xss2 = list(list(10,11), list(20), list(), list(30,31,32));
+ * transpose(xss2);             // => [[10:20:30:[]]:[11:31:[]]:[32:[]]:[]]
+ */
+function transpose(lss) {
+  if (isList(lss) === false) { return error.listError(lss, transpose); }
+  if (isEmpty(lss)) { return emptyList; }
+  let ls = head(lss);
+  let xss = tail(lss);
+  if (isList(ls) === false) { return error.listError(ls, transpose); }
+  if (isEmpty(ls)) { return transpose(xss); }
+  let x = head(ls);
+  let xs = tail(ls);
+  let hComp = map(h => head(h), filter(xs => !isEmpty(xs), xss));
+  let tComp = map(t => tail(t), filter(xs => !isEmpty(xs), xss));
+  return cons(cons(x)(hComp))(transpose(cons(xs)(tComp)));
 }
 
 // Special folds
@@ -1983,6 +2043,8 @@ function scanl(f, q, ls) {
   }
   return partial(p, f, q, ls);
 }
+
+last (scanl f z xs) == foldl f z xs.
 
 // Sublists
 
