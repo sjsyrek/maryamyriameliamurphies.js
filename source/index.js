@@ -1465,7 +1465,7 @@ const unit = new Tuple();
  * @param {...*} as - The values to put into a `Tuple`.
  * @returns {Tuple} - A new `Tuple`.
  * @example
- * tuple(10, 20); // => (10,20)
+ * tuple(10,20); // => (10,20)
  */
 function tuple(...as) {
   let [x, y] = as;
@@ -1479,7 +1479,7 @@ function tuple(...as) {
  * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The first value of the tuple.
  * @example
- * let tup = tuple(10, 20);
+ * let tup = tuple(10,20);
  * fst(tup);                // => 10
  */
 function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
@@ -1488,7 +1488,7 @@ function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
  * Extract the second value of a tuple.
  * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The second value of the tuple.
- * let tup = tuple(10, 20);
+ * let tup = tuple(10,20);
  * snd(tup);                // => 20
  */
 function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
@@ -1507,7 +1507,7 @@ function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
  * let a = curry(f);       // a === f()()
  * let b = a(100);         // b === f(100)()
  * let c = b(15);          // c === f(100)(15) === 85
- * let p = tuple(100, 15);
+ * let p = tuple(100,15);
  * let A = curry(f);       // A(100)(15) === 85
  * let B = uncurry(A);     // B(p) === 85
  * let C = curry(B);       // A(100)(15) === C(100)(15) === 85
@@ -1528,10 +1528,10 @@ function curry(f, x, y) {
  * @returns {Function} - The uncurried function.
  * @example
  * let f = function(p) { return fst(p) - snd(p); };
- * let p = tuple(100, 15);
+ * let p = tuple(100,15);
  * let a = curry(f);       // a === f()()
  * let b = uncurry(a);     // b === f()
- * let c = b(p);           // c === f({`1`: 100, `2`: 15}) === 85
+ * let c = b(p);           // c === f({`1`:100,`2`:15}) === 85
  * let d = uncurry(a, p)   // d === 85
  */
 function uncurry(f, p) {
@@ -1544,7 +1544,7 @@ function uncurry(f, p) {
  * @param {Tuple} p - A `Tuple`.
  * @returns {Tuple} - A new `Tuple`, with the values of the first tuple swapped.
  * @example
- * let tup = tuple(10, 20);
+ * let tup = tuple(10,20);
  * swap(tup);               // => (20,10)
  */
 function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
@@ -1704,7 +1704,7 @@ function listRange(start, end, f, filter) {
  * @example
  * let f = x => x + 5;
  * let filt = x => even(x);
- * listFilter(1, 50, filt)  // [2:4:6:8:10:12:14:16:18:20:22:24:26:28:30:32:34:36:38:40:42:44:46:48:[]]
+ * listFilter(1, 50, filt)  // => [2:4:6:8:10:12:14:16:18:20:22:24:26:28:30:32:34:36:38:40:42:44:46:48:[]]
  */
 function listFilter(start, end, filter) {
  let f = x => x + 1;
@@ -1712,6 +1712,17 @@ function listFilter(start, end, filter) {
  return partial(p, start, end, filter);
 }
 
+/**
+ * Append one `List` to another.
+ * Haskell> (++) :: [a] -> [a] -> [a]
+ * @param {List} as - A `List`.
+ * @param {List} bs - A `List`.
+ * @returns {List} - The new list, the result of the append.
+ * @example
+ * let lst1 = list(1,2,3);
+ * let lst2 = list(4,5,6);
+ * listAppend(lst1, lst2); // => [1:2:3:4:5:6:[]]
+ */
 function listAppend(as, bs) {
   let p = (as, bs) => {
     if (isList(as) === false ) { return error.listError(as, listAppend); }
@@ -1724,6 +1735,16 @@ function listAppend(as, bs) {
   return partial(p, as, bs);
 }
 
+/**
+ * Create a new `List` from a head and tail. As in Haskell, `cons` is based on the classic Lisp function.
+ * Haskell> (:) :: a -> [a] -> [a]
+ * @param {*} x - Any value, the head of the new list.
+ * @param {List} xs - A `List`, the tail of the new list.
+ * @returns {List} - The new `List`, constructed from `x` and `xs`.
+ * @example
+ * let lst = list(4,5,6);
+ * cons(3)(lst);          // => [3:4:5:6:[]]
+ */
 function cons(x, xs) {
   let p = (x, xs) => {
     if (xs === undefined || isEmpty(xs)) { return Reflect.construct(List, [x, emptyList]); }
@@ -1734,11 +1755,29 @@ function cons(x, xs) {
   return partial(p, x, xs);
 }
 
+/**
+ * Extract the first element of a `List`.
+ * Haskell> head :: [a] -> a
+ * @param {List} as - A `List`.
+ * @returns {*} - The head of the list.
+ * @example
+ * let lst = list(1,2,3);
+ * head(lst);             // => 1
+ */
 function head(as) {
   if (isList(as)) { return isEmpty(as) ? error.emptyList(as, head) : as.head(); }
   return error.listError(as, head);
 }
 
+/**
+ * Extract the last element of a `List`.
+ * Haskell> last :: [a] -> a
+ * @param {List} as - A `List`.
+ * @returns {*} - The last element of the list.
+ * @example
+ * let lst = list(1,2,3);
+ * last(lst);             // => 3
+ */
 function last(as) {
   if (isList(as)) {
     if (isEmpty(as)) { return error.emptyList(as, last); }
@@ -1747,11 +1786,29 @@ function last(as) {
   return error.listError(as, last);
 }
 
+/**
+ * Extract the elements after the head of a `List`.
+ * Haskell> tail :: [a] -> [a]
+ * @param {List} as - A `List`.
+ * @returns {List} - The tail of the list.
+ * @example
+ * let lst = list(1,2,3);
+ * tail(lst);             // => [2:3:[]]
+ */
 function tail(as) {
   if (isList(as)) { return isEmpty(as) ? error.emptyList(as, tail) : as.tail(); }
   return error.listError(as, tail);
 }
 
+/**
+ * Return all the elements of a `List` except the last one.
+ * Haskell> tail :: [a] -> [a]
+ * @param {List} as - A `List`.
+ * @returns {List} - A new list, without the original list's last element.
+ * @example
+ * let lst = list(1,2,3);
+ * init(lst);             // => [1:2:[]]
+ */
 function init(as) {
   if (isList(as)) {
     if (isEmpty(as)) { return error.emptyList(as, init); }
@@ -1761,26 +1818,26 @@ function init(as) {
 }
 
 /**
- * Decompose a list into its head and tail. If the list is empty, returns {@code Nothing}.
- * If the list is non-empty, returns {@code Just (x, xs)}, where {@code x} is the head of
- * the list and {@code xs} its tail. Example:
- * {@code let lst = list(1,2,3);
- *        uncons(lst); // Just (1,[2:3:[]])
- * }
+ * Decompose a `List` into its head and tail. If the list is empty, returns `Nothing`.
+ * If the list is non-empty, returns `Just (x, xs)`, where `x` is the head of
+ * the list and `xs` its tail.
  * Haskell> uncons :: [a] -> Maybe (a, [a])
- * @param {List} as - The list to decompose.
- * @returns {Maybe} - The decomposed list wrapped in a Just or Nothing if the list is empty.
+ * @param {List} as - The `List` to decompose.
+ * @returns {Maybe} - The decomposed `List` wrapped in a `Just`, or `Nothing` if the list is empty.
+ * @example
+ * let lst = list(1,2,3);
+ * uncons(lst);           // => Just (1,[2:3:[]])
  */
 function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(head(as), tail(as))); }
 
 /**
- * Test whether a structure is empty. Example:
- * {@code empty(list(1,2,3)); // false
- *        empty(emptyList);   // true
- * }
+ * Test whether a `Foldable` structure (such as a `List`) is empty.
  * Haskell> null :: t a -> Bool
- * @param {Object} t - The Foldable structure to test.
- * @returns {boolean} - True if the structure is empty, false otherwise.
+ * @param {Object} t - The `Foldable` structure to test.
+ * @returns {boolean} - `true` if the structure is empty, `false` otherwise.
+ * @example
+ * empty(list(1,2,3)); // => false
+ * empty(emptyList);   // => true
  */
 function empty(t) { return foldr(x => x === undefined, true, t); }
 
