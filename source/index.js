@@ -2416,6 +2416,16 @@ function filter(f, as) {
 
 // Indexing
 
+/**
+ * Return the value from a `List` at the specified index, starting at 0.
+ * Haskell> (!!) :: [a] -> Int -> a
+ * @param {List} as - The `List` to index into.
+ * @param {number} n - The index to return.
+ * @returns {*} - The value at the specified index.
+ * @example
+ * let lst = list(1,2,3,4,5);
+ * index(lst, 3));            // => 4
+ */
 function index(as, n) {
   let p = (as, n) => {
     if (isList(as) === false ) { return error.listError(as, index); }
