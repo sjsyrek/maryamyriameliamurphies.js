@@ -1246,7 +1246,8 @@ function just(a) { return a === undefined || a === null || a !== a ? Nothing : n
  * Haskell> maybe :: b -> (a -> b) -> Maybe a -> b
  * @param {*} n - The default value to return if `m` is `Nothing`.
  * @param {Function} f - The function to apply to the value inside `m` if it is a `Just`.
- * @param {Maybe} m - A Maybe.
+ * @param {Maybe} m - A `Maybe`.
+ * @returns {*} - `f` applied to the value contained in the `Just` or `n` if the `Maybe` is `Nothing`.
  * @example
  * let m1 = just(100);
  * let m2 = just(null);
@@ -1263,14 +1264,17 @@ function maybe(n, f, m) {
 }
 
 /**
- *
- * @param
+ * Determine whether an object is a `Maybe`.
+ * @param {*} a - Any object.
+ * @returns {boolean} - `true` if the object is a `Maybe` and `false` otherwise.
  */
 function isMaybe(a) { return a instanceof Maybe ? true : false; }
 
 /**
+ * Determine whether an object is a `Just`.
  * Haskell> isJust :: Maybe a -> Bool
- * @param
+ * @param {Maybe} m - Any object.
+ * @returns {boolean} - `true` is the object is a `Just` and `false` otherwise.
  */
 function isJust(m) {
   if (isMaybe(m) === false) { return error.typeError(m, isJust); }
@@ -1278,8 +1282,10 @@ function isJust(m) {
 }
 
 /**
+ * Determine whether an object is `Nothing`.
  * Haskell> isNothing :: Maybe a -> Bool
- * @param
+ * @param {Maybe} m - Any object.
+ * @returns {boolean} - `true` is the object is `Nothing` and `false` otherwise.
  */
 function isNothing(m) {
   if (isMaybe(m) === false) { return error.typeError(m, isNothing); }
@@ -1287,8 +1293,10 @@ function isNothing(m) {
 }
 
 /**
+ * Extract the value from a `Just`. Throws an error if the `Maybe` is `Nothing`.
  * Haskell> fromJust :: Maybe a -> a
- * @param
+ * @param {Maybe} m - A `Maybe`.
+ * @returns {*} - The value contained in the `Just`.
  */
 function fromJust(m) {
   if (isMaybe(m) === false) { return error.typeError(m, fromJust); }
@@ -1296,8 +1304,12 @@ function fromJust(m) {
 }
 
 /**
+ * Return the value contained in a `Maybe` if it is a `Just` or a default value if
+ * the `Maybe` is `Nothing`.
  * Haskell> fromMaybe :: a -> Maybe a -> a
- * @param
+ * @param {*} d - The default value to return if `m` is `Nothing`.
+ * @param {Maybe} m - A `Maybe`.
+ * @returns {*} - The value contained in the `Maybe` or `d` if it is `Nothing`.
  */
 function fromMaybe(d, m) {
   let p = (d, m) => {
@@ -1308,8 +1320,14 @@ function fromMaybe(d, m) {
 }
 
 /**
+ * Return `Nothing` on an empty list or `Just a` where `a` is the first element of the list.
  * Haskell> listToMaybe :: [a] -> Maybe a
- * @param
+ * @param {List} as - A list.
+ * @returns {Maybe} - A `Just` containing the head of `as` or `Nothing` if `as` is an empty list.
+ * @example
+ * let lst = list(1,2,3);
+ * listToMaybe(lst);         // => Just 1
+ * listToMaybe(emptyList);   // => Nothing
  */
 function listToMaybe(as) {
   if (isList(as) === false) { return error.listError(as, listToMaybe); }
@@ -1317,8 +1335,15 @@ function listToMaybe(as) {
 }
 
 /**
+ * Return an empty list when given `Nothing` or a singleton list when not given `Nothing`.
  * Haskell> maybeToList :: Maybe a -> [a]
- * @param
+ * @param {Maybe} m - A `Maybe`.
+ * @returns {List} - A new list.
+ * @example
+ * let l = list(1,2,3);
+ * let m = just(10);
+ * maybeToList(m);       // => [10:[]]
+ * maybeToList(Nothing); // =>  [[]]
  */
 function maybeToList(m) {
   if (isMaybe(m) === false) { return error.typeError(m, maybeToList); }
@@ -1326,31 +1351,47 @@ function maybeToList(m) {
 }
 
 /**
+ * Take a list of `Maybe` objects and return a list of all the `Just` values.
  * Haskell> catMaybes :: [Maybe a] -> [a]
- * @param
+ * @param {List} as - A List.
+ * @returns {List} - A list of the `Just` values from `as`.
+ * @example
+ * let lst = list(just(1), just(2), just(null), just(3), Nothing, just(undefined), just(4), Nothing, just(5));
+ * catMaybes(lst); // => [1:2:3:4:5:[]]
  */
 function catMaybes(as) {
   if (isList(as) === false) { return error.listError(as, catMaybes); }
   if (isMaybe(head(as)) === false) { return error.typeError(m, catMaybes); }
-  let pred = as => isJust(x);
-  return filter(pred, as);
+  let pred = x => isJust(x);
+  let f = x => fromJust(x);
+  return map(f, filter(pred, as));
 }
 
 /**
+ * Map a function `f` that returns a `Maybe` over a list. For each element of the list, if the result of
+ * applying the function is a `Just`, then the value it contains is included in the result list. If it is
+ * `Nothing`, then no element is added to the result list.
  * Haskell> mapMaybe :: (a -> Maybe b) -> [a] -> [b]
- * @param
+ * @param {Function} f - A function that returns a `Maybe`.
+ * @param {List} as - A list to map over.
+ * @returns {List} - A list of `Just` values returned from `f` mapped over `as`.
+ * @example
+ * let lst = list(1,2,3);
+ * mapMaybe(just, lst);                          // => [1:2:3:[]]
+ * let f = x => even(x) ? just(x * 2) : Nothing;
+ * let lst = listRange(1, 25);
+ * mapMaybe(f, lst);                             // => [4:8:12:16:20:24:28:32:36:40:44:48:[]]
  */
 function mapMaybe(f, as) {
   let p = (f, as) => {
     if (isList(as) === false) { return error.listError(as, mapMaybe); }
     if (isEmpty(as)) { return emptyList; }
-    if (isMaybe(head(as)) === false) { return error.typeError(m, mapMaybe); }
     let x = head(as);
     let xs = tail(as);
     let r = f(x);
     let rs = mapMaybe.bind(this, f, xs);
     if (isNothing(r)) { return rs(); }
-    if (isJust(r)) { return cons(r)(rs); }
+    if (isJust(r)) { return cons(fromJust(r))(rs()); }
     return error.returnError(f, mapMaybe);
   }
   return partial(p, f, as);
@@ -1360,16 +1401,19 @@ function mapMaybe(f, as) {
 // Tuple
 
 /**
- * A data constructor for a tuple. Unlike Haskell, which provides a separate constructor
+ * A data constructor for a `Tuple`. Unlike Haskell, which provides a separate constructor
  * for every possible number of tuple values, this class will construct tuples of any size.
- * Empty Tuples, however, are a special type called {@code unit}, and single values passed to
+ * Empty tuples, however, are a special type called `unit`, and single values passed to
  * this constructor will be returned unmodified. In order for them be useful, it is recommended
- * that you create Tuples with primitive values.
- * @param {*} values - The values to put into the tuple.
- * @class
+ * that you create tuples with primitive values.
+ * @extends Type
  * @private
  */
 class Tuple extends Type {
+  /**
+   * Create a new `Tuple`.
+   * @param {...*} values - The values to construct into a `Tuple`.
+   */
   constructor(...as) {
     super();
     if (as.length === 0) { this[0] = null; }
@@ -1410,17 +1454,18 @@ class Tuple extends Type {
 }
 
 /**
- * The {@code unit} object: an empty tuple. Note that {@code isTuple(unit) === false}.
+ * The `unit` object, an empty tuple. Note that `isTuple(unit) === false`.
  * @const {Tuple}
  */
 const unit = new Tuple();
 
 /**
- * Create a new tuple from any number of values. A single value will be returned unaltered,
- * and {@code unit}, the empty tuple, will be returned if no arguments are passed.
- * Usage: tuple(10, 20) -> {"1": 10, "2": 20}
- * @param {...*} values - The values to put into a tuple.
- * @returns {Tuple} - A new tuple.
+ * Create a new `Tuple` from any number of values. A single value will be returned unaltered,
+ * and `unit`, the empty tuple, will be returned if no arguments are passed.
+ * @param {...*} as - The values to put into a `Tuple`.
+ * @returns {Tuple} - A new `Tuple`.
+ * @example
+ * tuple(10, 20); // => (10,20)
  */
 function tuple(...as) {
   let [x, y] = as;
@@ -1431,15 +1476,20 @@ function tuple(...as) {
 
 /**
  * Extract the first value of a tuple.
- * @param {Tuple} p - A tuple.
+ * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The first value of the tuple.
+ * @example
+ * let tup = tuple(10, 20);
+ * fst(tup);                // => 10
  */
 function fst(p) { return isTuple(p) ? p[1] : error.tupleError(p, fst); }
 
 /**
  * Extract the second value of a tuple.
- * @param {Tuple} p - A tuple.
+ * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The second value of the tuple.
+ * let tup = tuple(10, 20);
+ * snd(tup);                // => 20
  */
 function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
 
@@ -1447,20 +1497,20 @@ function snd(p) { return isTuple(p) ? p[2] : error.tupleError(p, snd); }
  * Convert an uncurried function to a curried function. For example, a function that expects
  * a tuple as an argument can be curried into a function that binds one value and returns another
  * function that binds the other value. This function can then be called with or without arguments
- * bound, or with arguments partially applied. Currying and uncurrying are transitive. Example:
- * {@code let f = function(p) { return fst(p) - snd(p); };
- *        let a = curry(f);       // a === f()()
- *        let b = a(100);         // b === f(100)()
- *        let c = b(15);          // c === f(100)(15) === 85
- *        let p = tuple(100, 15);
- *        let A = curry(f);       // A(100)(15) === 85
- *        let B = uncurry(A);     // B(p) === 85
- *        let C = curry(B);       // A(100)(15) === C(100)(15) === 85
- * }
+ * bound, or with arguments partially applied. Currying and uncurrying are transitive.
  * @param {Function} f - The function to curry.
  * @param {*} x - Any value, the first value of the new tuple argument.
  * @param {*} y - Any value, the second value of the new tuple argument.
  * @returns {Function} - The curried function.
+ * @example
+ * let f = function(p) { return fst(p) - snd(p); };
+ * let a = curry(f);       // a === f()()
+ * let b = a(100);         // b === f(100)()
+ * let c = b(15);          // c === f(100)(15) === 85
+ * let p = tuple(100, 15);
+ * let A = curry(f);       // A(100)(15) === 85
+ * let B = uncurry(A);     // B(p) === 85
+ * let C = curry(B);       // A(100)(15) === C(100)(15) === 85
  */
 function curry(f, x, y) {
   if (x === undefined) { return x => y => f.call(f, tuple(x, y)); }
@@ -1470,20 +1520,19 @@ function curry(f, x, y) {
 
 /**
  * Convert a curried function to a single function that takes a tuple as an argument.
- * Mostly useful for uncurrying functions previously curried with the {@code curry()}
- * function from this library. This will not work if any arguments are bound to the
- * curried function (it would resulted in a type error in Haskell). Currying and
- * uncurrying are transitive. Example:
- * {@code let f = function(p) { return fst(p) - snd(p); };
- *        let p = tuple(100, 15); //
- *        let a = curry(f);       // a === f()()
- *        let b = uncurry(a);     // b === f()
- *        let c = b(p);           // c === f({`1`: 100, `2`: 15}) === 85
- *        let d = uncurry(a, p)   // d === 85
- * }
+ * Mostly useful for uncurrying functions previously curried with the `curry` function.
+ * This will not work if any arguments are bound to the curried function (it would
+ * result in a type error in Haskell). Currying and uncurrying are transitive.
  * @param {Function} f - The function to uncurry.
  * @param {Tuple} p - The tuple from which to extract argument values for the function.
  * @returns {Function} - The uncurried function.
+ * @example
+ * let f = function(p) { return fst(p) - snd(p); };
+ * let p = tuple(100, 15);
+ * let a = curry(f);       // a === f()()
+ * let b = uncurry(a);     // b === f()
+ * let c = b(p);           // c === f({`1`: 100, `2`: 15}) === 85
+ * let d = uncurry(a, p)   // d === 85
  */
 function uncurry(f, p) {
   if (p === undefined) { return p => isTuple(p) ? f.call(f, fst(p)).call(f, snd(p)) : error.tupleError(p, uncurry); }
@@ -1492,32 +1541,41 @@ function uncurry(f, p) {
 
 /**
  * Swap the values of a tuple. This function does not modify the original tuple.
- * @param {Tuple} p - A tuple.
- * @returns {Tuple} - A new tuple, with the values of the first tuple swapped.
+ * @param {Tuple} p - A `Tuple`.
+ * @returns {Tuple} - A new `Tuple`, with the values of the first tuple swapped.
+ * @example
+ * let tup = tuple(10, 20);
+ * swap(tup);               // => (20,10)
  */
 function swap(p) { return isTuple(p) ? Reflect.construct(Tuple, [snd(p), fst(p)]) : error.tupleError(p, swap); }
 
 /**
- * Determine whether an object is a tuple. The {@code unit}, or empty tuple, returns false.
+ * Determine whether an object is a `Tuple`. The empty tuple, `unit`, returns `false`.
  * @param {*} a - Any object.
- * @returns {boolean} - True if the object is a tuple.
+ * @returns {boolean} - `true` if the object is a `Tuple` and `false` otherwise.
  */
 function isTuple(a) { return a instanceof Tuple && a !== unit ? true : false; }
 
 /**
- * Convert an array into a tuple. Returns {@code unit}, the empty tuple, if no arguments or
+ * Convert an array into a `Tuple`. Returns `unit`, the empty tuple, if no arguments or
  * arguments other than an array are passed. This function will not work on array-like objects.
  * @param {Array<*>} array - The array to convert.
- * @returns {Tuple} - The new tuple.
+ * @returns {Tuple} - The new `Tuple`.
+ * @example
+ * let arr = [10,20];
+ * fromArrayToTuple(arr); // => (10,20)
  */
 function fromArrayToTuple(a) {
   return Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
 }
 
 /**
- * Convert a tuple into an array.
- * @param {Tuple} p - The tuple to convert.
+ * Convert a `Tuple` into an array.
+ * @param {Tuple} p - The `Tuple` to convert.
  * @returns {Array<*>} - The new array.
+ * @example
+ * let tup = tuple(10,20);
+ * fromTupleToArray(tup);  // => [10,20]
  */
 function fromTupleToArray(p) {
   return isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
