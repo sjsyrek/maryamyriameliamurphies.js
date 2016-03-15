@@ -1601,8 +1601,10 @@ class List extends Type {
    */
   constructor(head, tail) {
     super();
-    this.head = () => head || null;
-    this.tail = () => tail || null;
+    this.head = null;
+    this.tail = null;
+    this.head = () => head;
+    this.tail = () => tail;
   }
   // Eq
   static isEq(as, bs) {
@@ -1970,6 +1972,18 @@ function concat(xss) {
   return error.listError(xss, concat);
 }
 
+// Building lists
+
+function scanl(f, q, ls) {
+  let p = (f, q, ls) => {
+    if (isEmpty(ls)) { return cons(q)(emptyList); }
+    let x = head(ls);
+    let xs = tail(ls);
+    return cons(q)(p(f, f(q, x), xs));
+  }
+  return partial(p, f, q, ls);
+}
+
 // Sublists
 
 function take(n, as) {
@@ -2256,6 +2270,7 @@ export default {
   intercalate: intercalate,
   transpose: transpose,
   concat: concat,
+  scanl: scanl,
   take: take,
   drop: drop,
   splitAt: splitAt,
