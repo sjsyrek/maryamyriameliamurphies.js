@@ -1841,25 +1841,71 @@ function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(head(as), tail(a
  */
 function empty(t) { return foldr(x => x === undefined, true, t); }
 
+/**
+ * Return the length of a `List`.
+ * Haskell> length :: Foldable t => t a -> Int
+ * @param {List} as - A `List`.
+ * @returns {number} - The length of the list.
+ * @example
+ * let lst = list(1,2,3);
+ * length(lst);           // => 3
+ */
 function length(as) {
   let lenAcc = (xs, n) => isEmpty(xs) ? n : lenAcc(tail(xs), n + 1);
   return isList(as) ? lenAcc(as, 0) : error.listError(as, length);
 }
 
+/**
+ * Determine whether a given object is a `List`.
+ * @param {*} a - Any object.
+ * @returns {boolean} - `true` if the object is a `List` and `false` otherwise.
+ */
 function isList(a) { return a instanceof List ? true : false; }
 
+/**
+ * Convert an array into a `List`.
+ * @param {Array<*>} a - An array to convert into a `List`.
+ * @returns {List} - A new `List`, the converted array.
+ * @example
+ * let arr = [1,2,3];
+ * fromArrayToList(arr); // => [1:2:3:[]]
+ */
 function fromArrayToList(a) { return Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList); }
 
+/**
+ * Convert a `List` into an array.
+ * @param {List} as - A `List` to convert into an array.
+ * @returns {Array} - A new array, the converted list.
+ * @example
+ * let lst = list(1,2,3);
+ * fromListToArray(lst);  // => [1,2,3]
+ */
 function fromListToArray(as) {
   if (isList(as)) { return isEmpty(as) ? [] : [head(as)].concat(fromListToArray(tail(as))); }
   return error.listError(as, fromListToArray);
 }
 
+/**
+ * Convert a `List` into a string.
+ * @param {List} as - A `List` to convert into a string.
+ * @returns {string} - A new string, the converted list.
+ * @example
+ * let str = list('a','b','c');
+ * fromListToString(str);       // => "abc"
+ */
 function fromListToString(as) {
   if (isList(as)) { return fromListToArray(as).join(``); }
   return error.listError(as, fromListToString);
 }
 
+/**
+ * Convert a string into a `List`.
+ * @param {string} str - A string to convert into a `List`.
+ * @returns {List} - A new `List`, the converted string.
+ * @example
+ * let str = `abc`;
+ * fromStringToList(str);       // => [abc]
+ */
 function fromStringToList(str) {
   if (typeof str === 'string') { return fromArrayToList(str.split(``)); }
   return error.typeError(as, fromStringToList);
