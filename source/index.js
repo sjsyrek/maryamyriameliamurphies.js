@@ -1844,7 +1844,8 @@ function uncons(as) { return isEmpty(as) ? Nothing : just(tuple(head(as), tail(a
 function empty(t) { return foldr(x => x === undefined, true, t); }
 
 /**
- * Return the length of a `List`.
+ * Return the length of a `List`. In the future, this function should work on all
+ * `Foldable` structures.
  * Haskell> length :: Foldable t => t a -> Int
  * @param {List} as - A `List`.
  * @returns {number} - The length of the list.
@@ -1917,6 +1918,7 @@ function fromStringToList(str) {
 
 /**
  * Map a function over a `List` and put the results into a new list.
+ * Haskell> map :: (a -> b) -> [a] -> [b]
  * @param {Function} f - The function to map.
  * @param {List} as - The `List` to map over.
  * @returns {List} - The list of results.
@@ -1938,6 +1940,7 @@ function map(f, as) {
 
 /**
  * Return a new `List` with its elements reversed.
+ * Haskell> reverse :: [a] -> [a]
  * @param {List} as - A `List`.
  * @returns {List} - The reversed list.
  * @example
@@ -1951,6 +1954,7 @@ function reverse(as) {
 
 /**
  * Take a separator and a `List` and intersperse the separator between the elements of the list.
+ * Haskell> reverse :: [a] -> [a]
  * @param {*} sep - The seperator value.
  * @param {List} as - The `List` into which to intersperse the `sep` value.
  * @returns {List} - A new `List` in which the elements of `as` are interspersed with `sep`.
@@ -1975,6 +1979,7 @@ function intersperse(sep, as) {
 
 /**
  * Insert a `List` in between the lists in a `List` of lists. Equivalent to `(concat (intersperse xs xss)).`
+ * Haskell> intercalate :: [a] -> [[a]] -> [a
  * @param {List} xs - The `List` to intercalate.
  * @param {List} xss - A `List` of lists.
  * @returns {List} - The intercalated `List`.
@@ -1996,6 +2001,7 @@ function intercalate(xs, xss) {
 /**
  * Transpose the "rows" and "columns" of a `List` of lists. If some of the rows are shorter than the following rows,
  * their elements are skipped.
+ * Haskell> transpose :: [[a]] -> [[a]]
  * @param {List} xss - A `List` of lists.
  * @returns {List} - A new `List` of lists, with the rows and columns transposed.
  * @example
@@ -2020,8 +2026,42 @@ function transpose(lss) {
   return cons(cons(x)(hComp))(transpose(cons(xs)(tComp)));
 }
 
+// Reducing lists
+
+/**
+ * Left-associative fold of a structure (i.e. fold from the end to the beginning,
+ * rather than from the beginning to the end, as with `foldr`). This function
+ * currently only works with `List` objects but should be generalized to work with
+ * all `Foldable` types, as in Haskell.
+ * Haskell> foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+ * @param {Function} f - The function to map over the list.
+ * @param {*} z - An accumulator value.
+ * @param {List} as - The `List` to fold.
+ * @example
+ * let lst = list(1,2,3);
+ * let f = (x ,y) => x - y;
+ * foldl(f, 0, lst);        // => -6
+ */
+function foldl(f, z, as) {
+  let p = (f, z, as) => last(scanl(f, z, as));
+  return partial(p, f, z, as);
+}
+
 // Special folds
 
+/**
+ * Concatenate the elements in a container of lists. Currently, this function only
+ * works on `List` objects, though it should in the future work on all `Foldable` types.
+ * Haskell> concat :: Foldable t => t [a] -> [a]
+ * @param {List} xss - A `List` of lists.
+ * @returns {List} - The concatenated `List`.
+ * @example
+ * let lst1 = list(1,2,3);
+ * let lst2 = list(4,5,6);
+ * let lst3 = list(7,8,9);
+ * let xss = list(lst1, lst2, lst3); // [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
+ * concat(xss);                      // => [1:2:3:4:5:6:7:8:9:[]]
+ */
 function concat(xss) {
   if (isList(xss)) {
     if (isEmpty(xss)) { return emptyList; }
@@ -2032,10 +2072,41 @@ function concat(xss) {
   return error.listError(xss, concat);
 }
 
+/**
+ * Map a function that takes a value and returns a `List` over a `List` of values and
+ * concatenate the resulting list. In the future, should work on all `Foldable` types.
+ * Haskell> concatMap :: Foldable t => (a -> [b]) -> t a -> [b]
+ * @param {Function} f - The function to map.
+ * @param {List} as - The `List` to map over.
+ * @returns {List} - The `List` of results of mapping `f` over `as`, concatenated.
+ * @example
+ * let f = x => list(x * 3);
+ * let lst = list(1,2,3);    // [1:2:3:[]]
+ * map(f, lst);              // => [[3:[]]:[6:[]]:[9:[]]:[]]
+ * concatMap(f, lst);        // => [3:6:9:[]]
+ */
+function concatMap(f, as) {
+  let p = (f, as) => concat(map(f, as));
+  return partial(p, f, as);
+}
+
 // Building lists
 
+/**
+ * Scan a `List` from the right to left and return a `List` of successive reduced values.
+ * Haskell> scanl :: (b -> a -> b) -> b -> [a] -> [b]
+ * @param {Function} f - The function to map over the `List`.
+ * @param {*} q - An accumulator value.
+ * @param {List} ls - The `List` to scan.
+ * @returns {List} - The `List` of reduced values.
+ * @example
+ * let lst = list(1,2,3)
+ * let f = (x, y) => x - y;
+ * scanl(f, 0, lst);        // => [0:-1:-3:-6:[]]
+ */
 function scanl(f, q, ls) {
   let p = (f, q, ls) => {
+    if (isList(ls) === false) { return error.listError(ls, scanl); }
     if (isEmpty(ls)) { return cons(q)(emptyList); }
     let x = head(ls);
     let xs = tail(ls);
@@ -2044,10 +2115,43 @@ function scanl(f, q, ls) {
   return partial(p, f, q, ls);
 }
 
-last (scanl f z xs) == foldl f z xs.
+/**
+ * Like `scanl` but scans left to right instead of right to left.
+ * Haskell> scanr :: (a -> b -> b) -> b -> [a] -> [b]
+ * @param {Function} f - The function to map over the `List`.
+ * @param {*} q0 - An accumulator value.
+ * @param {List} as - The `List` to scan.
+ * @returns {List} - The `List` of reduced values.
+ * @example
+ * let lst = list(1,2,3);
+ * let f = (x ,y) => x - y;
+ * scanr(f, 0, lst);        // => [2:-1:3:0:[]]
+ */
+function scanr(f, q0, as) {
+  let p = (f, q0, as) => {
+    if (isList(as) === false) { return error.listError(ls, scanr); }
+    if (isEmpty(as)) { return list(q0); }
+    let x = head(as);
+    let xs = tail(as);
+    let qs = scanr(f, q0, xs);
+    let q = head(qs);
+    return cons(f(x, q))(qs);
+  }
+  return partial(p, f, q0, as);
+}
 
 // Sublists
 
+/**
+ * Return the prefix of a `List` of a given length.
+ * Haskell> take :: Int -> [a] -> [a]
+ * @param {number} n - The length of the prefix to take.
+ * @param {List} as - The `List` to take from.
+ * @returns {List} - A new `List`, the desired prefix of the original list.
+ * @example
+ * let lst = list(1,2,3);
+ * take(2, lst);          // => [1:2:[]]
+ */
 function take(n, as) {
   let p = (n, as) => {
     if (isList(as) === false) { return error.listError(as, take); }
@@ -2060,6 +2164,16 @@ function take(n, as) {
   return partial(p, n, as);
 }
 
+/**
+ * Return the suffix of a `List` after discarding a specified number of values.
+ * Haskell> drop :: Int -> [a] -> [a]
+ * @param {number} n - The number of values to drop.
+ * @param {List} as - The `List` to drop from.
+ * @returns {List} - A new `List`, the desired suffix of the original list.
+ * @example
+ * let lst = list(1,2,3);
+ * drop(2, lst);          // => [3:[]]
+ */
 function drop(n, as) {
   let p = (n, as) => {
     if (isList(as) === false) { return error.listError(as, drop); }
@@ -2072,10 +2186,25 @@ function drop(n, as) {
   return partial(p, n, as);
 }
 
+/**
+ * Return a `Tuple` in which the first element is the prefix of a `List` of a given
+ * length and the second element is the remainder of the list.
+ * Haskell> splitAt :: Int -> [a] -> ([a], [a])
+ * @param {number} n - The length of the prefix.
+ * @param {List} as - The `List` to split.
+ * @returns {Tuple} - The split list.
+ * @example
+ * let lst = list(1,2,3);
+ * splitAt(2, lst);       // => ([1:2:[]],[3:[]])
+ */
 function splitAt(n, as) {
-  let p = (n, as) => tuple(take(n, as), drop(n, as));
+  let p = (n, as) => {
+    if (isList(as) === false) { return error.listError(as, splitAt); }
+    return tuple(take(n, as), drop(n, as));
+  }
   return partial(p, n, as);
 }
+
 
 function takeWhile(pred, as) {
   let p = (pred, as) => {
@@ -2117,7 +2246,6 @@ function spanNot(pred, as) {
 
 // Searching
 
-// use this in places where I'm mimicking list comprehensions
 function filter(f, as) {
   let p = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, filter); }
@@ -2146,7 +2274,7 @@ function index(as, n) {
   return partial(p, as, n);
 }
 
-// Zipping and unzipping
+// Zipping and unzipping lists
 
 function zip(as, bs) {
   let p = (as, bs) => {
@@ -2331,8 +2459,11 @@ export default {
   intersperse: intersperse,
   intercalate: intercalate,
   transpose: transpose,
+  foldl: foldl,
   concat: concat,
+  concatMap: concatMap,
   scanl: scanl,
+  scanr: scanr,
   take: take,
   drop: drop,
   splitAt: splitAt,
