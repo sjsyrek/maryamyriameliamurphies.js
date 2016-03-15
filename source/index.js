@@ -2168,7 +2168,7 @@ function take(n, as) {
  * Return the suffix of a `List` after discarding a specified number of values.
  * Haskell> drop :: Int -> [a] -> [a]
  * @param {number} n - The number of values to drop.
- * @param {List} as - The `List` to drop from.
+ * @param {List} as - The `List` to drop values from.
  * @returns {List} - A new `List`, the desired suffix of the original list.
  * @example
  * let lst = list(1,2,3);
@@ -2205,7 +2205,18 @@ function splitAt(n, as) {
   return partial(p, n, as);
 }
 
-
+/**
+ * Return the longest prefix (possibly empty) of a `List` of values that satisfy a
+ * predicate function.
+ * Haskell> takeWhile :: (a -> Bool) -> [a] -> [a]
+ * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {List} as - The `List` to take from.
+ * @returns {List} - The `List` of values that satisfy the predicate function.
+ * @example
+ * let lst = list(1,2,3,4,1,2,3,4);
+ * let f = x => x < 3;
+ * takeWhile(f, lst);               // => [1:2:[]]
+ */
 function takeWhile(pred, as) {
   let p = (pred, as) => {
     if (isList(as) === false) { return error.listError(as, takeWhile); }
@@ -2220,6 +2231,18 @@ function takeWhile(pred, as) {
   return partial(p, pred, as);
 }
 
+/**
+ * Drop values from a `List` while a given predicate function returns `true` for
+ * each value.
+ * Haskell> dropWhile :: (a -> Bool) -> [a] -> [a]
+ * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {List} as - The `List` to drop values from.
+ * @returns {List} - The `List` of values that do not satisfy the predicate function.
+ * @example
+ * let lst = list(1,2,3,4,5,1,2,3);
+ * let f = x => x < 3;
+ * dropWhile(f, lst);               // => [3:4:5:1:2:3:[]]
+ */
 function dropWhile(pred, as) {
   let p = (pred, as) => {
     if (isList(as) === false) { return error.listError(as, dropWhile); }
@@ -2234,11 +2257,37 @@ function dropWhile(pred, as) {
   return partial(p, pred, as);
 }
 
+/**
+ * Return a `Tuple` in which the first element is the longest prefix (possibly empty)
+ * of a `List` of values that satisfy a predicate function and the second element is
+ * the rest of the list.
+ * Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])
+ * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {List} as - A `List`.
+ * @return {Tuple} - The `Tuple` of results.
+ * @example
+ * let lst = list(1,2,3,4,1,2,3,4);
+ * let f = x => x < 3;
+ * span(f, lst);                    // => ([1:2:[]],[3:4:1:2:3:4:[]])
+ */
 function span(pred, as) {
   let p = (pred, as) => tuple(takeWhile(pred, as), dropWhile(pred, as));
   return partial(p, pred, as);
 }
 
+/**
+ * Return a `Tuple` in which the first element is the longest prefix (possibly empty)
+ * of a `List` of values that do not satisfy a predicate function and the second element
+ * is the rest of the list.
+ * Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])
+ * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {List} as - A `List`.
+ * @return {Tuple} - The `Tuple` of results.
+ * @example
+ * let lst = list(1,2,3,4,1,2,3,4);
+ * let f = x => x > 3;
+ * spanNot(f, lst);                 // => ([1:2:3:[]],[4:1:2:3:4:[]])
+ */
 function spanNot(pred, as) {
   let p = (pred, as) => span($(not)(pred), as);
   return partial(p, pred, as);
