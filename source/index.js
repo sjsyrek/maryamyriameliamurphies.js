@@ -2044,22 +2044,22 @@ function zip(as, bs) {
 // Ordered lists
 
 /**
- * Sort a list using regular value comparison. Use {@code sortBy} to supply your own
- * comparison function. Example:
- * {@code lst = list(9,8,7,6,5,4,3,10,13,11,14,23,24,26,25,2,1);
- *        sort(lst) // [1:2:3:4:5:6:7:8:9:10:11:13:14:23:24:25:26:[]]
- * }
+ * Sort a list using regular value comparison. Use `sortBy` to supply your own
+ * comparison function.
  * Haskell> sort :: Ord a => [a] -> [a]
- * @param {List} as - The list to sort.
+ * @param {List} as - The `List` to sort.
  * @returns {List} - The sorted list.
+ * @example
+ * lst = list(9,8,7,6,5,4,3,10,13,11,14,23,24,26,25,2,1);
+ * sort(lst) // => [1:2:3:4:5:6:7:8:9:10:11:13:14:23:24:25:26:[]]
  */
 function sort(as) { return sortBy(compare, as); }
 
 /**
  * Sort a list using a comparison function of your choice.
  * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
- * @param {Function} cmp - The comparison function—must return an Ordering.
- * @param {List} as - The list to sort.
+ * @param {Function} cmp - The comparison function—must return an `Ordering`.
+ * @param {List} as - The `List` to sort.
  * @returns {List} - The sorted list.
  */
 function sortBy(cmp, as) {
@@ -2068,14 +2068,16 @@ function sortBy(cmp, as) {
 }
 
 /**
- * The {@code insert} function takes an element and a list and inserts the element into the
+ * The `insert` function takes an element and a `List` and inserts the element into the
  * list at the first position where it is less than or equal to the next element.
  * In particular, if the list is sorted before the call, the result will also be sorted.
- * Example: {@code insert(7, list(1,2,3,4,5,6,8,9,10)) // [1:2:3:4:5:6:7:8:9:10:[]] }
  * Haskell> insert :: Ord a => a -> [a] -> [a]
  * @param {*} e - The element to insert.
- * @param {List} ls - The list to insert into.
- * @returns {List} - A new list, with the element inserted.
+ * @param {List} ls - The `List` to insert into.
+ * @returns {List} - A new `List`, with the element inserted.
+ * @example
+ * let lst = list(1,2,3,4,5,6,8,9,10);
+ * insert(7, lst); // => [1:2:3:4:5:6:7:8:9:10:[]]
  */
 function insert(e, ls) {
   let p = (e, ls) => insertBy(compare, e, ls);
@@ -2085,10 +2087,10 @@ function insert(e, ls) {
 /**
  * Insert an element into a list using a comparison function of your choice.
  * Haskell> insertBy :: (a -> a -> Ordering) -> a -> [a] -> [a]
- * @param {Function} cmp - The comparison function—must return an Ordering.
+ * @param {Function} cmp - The comparison function—must return an `Ordering`.
  * @param {*} e - The element to insert.
- * @param {List} ls - The list to insert into.
- * @returns {List} - A new list, with the element inserted.
+ * @param {List} ls - The `List` to insert into.
+ * @returns {List} - A new `List`, with the element inserted.
  */
 function insertBy(cmp, e, ls) {
   let p = (cmp, e, ls) => {
