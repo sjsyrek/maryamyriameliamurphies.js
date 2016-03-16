@@ -2499,6 +2499,71 @@ function zip3(as, bs, cs) {
   return partial(p, as, bs, cs);
 }
 
+/**
+ * A generalization of the `zip` function. Zip two `List` objects using a
+ * provided function.
+ * Haskell> zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+ * @param {Function} f - The zipping function.
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @returns {List} - The zipped `List`.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(5,4,3,2,1);
+ * let f = (x, y) => tuple(x * 3, y ** 2);
+ * let g = (x, y) => x + y;
+ * zipWith(f, lst1, lst2); // => [(3,25):(6,16):(9,9):(12,4):(15,1):[]]
+ * zipWith(g, lst1, lst2); // => [6:6:6:6:6:[]]
+ */
+function zipWith(f, as, bs) {
+  let p = (f, as, bs) => {
+    if (isList(as) === false) { return error.listError(as, zipWith); }
+    if (isList(bs) === false) { return error.listError(bs, zipWith); }
+    if (isEmpty(as) || isEmpty(bs)) { return emptyList; }
+    let x = head(as);
+    let xs = tail(as);
+    let y = head(bs);
+    let ys = tail(bs);
+    return cons(f(x, y))(zipWith(f, xs, ys));
+  }
+  return partial(p, f, as, bs);
+}
+
+/**
+ * A generalization of the `zip3` function. Zip three `List` objects using a
+ * provided function.
+ * Haskell> zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
+ * @param {Function} f - The zipping function.
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @param {List} cs - The third `List`.
+ * @returns {List} - The zipped `List`.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(5,4,3,2,1);
+ * let lst3 = list(6,7,8,9,10);
+ * let f = (x, y, z) => tuple(x * 3, y ** 2, z % 2);
+ * let g = (x, y, z) => x + y + z;
+ * zipWith3(f, lst1, lst2, lst3); // => [(3,25,0):(6,16,1):(9,9,0):(12,4,1):(15,1,0):[]]
+ * zipWith3(g, lst1, lst2, lst3); // => [12:13:14:15:16:[]]
+ */
+function zipWith3(f, as, bs, cs) {
+  let p = (f, as, bs, cd) => {
+    if (isList(as) === false) { return error.listError(as, zipWith3); }
+    if (isList(bs) === false) { return error.listError(bs, zipWith3); }
+    if (isList(cs) === false) { return error.listError(cs, zipWith3); }
+    if (isEmpty(as) || isEmpty(bs) || isEmpty(cs)) { return emptyList; }
+    let x = head(as);
+    let xs = tail(as);
+    let y = head(bs);
+    let ys = tail(bs);
+    let z = head(cs);
+    let zs = tail(cs);
+    return cons(f(x, y, z))(zipWith3(f, xs, ys, zs));
+  }
+  return partial(p, f, as, bs, cs);
+}
+
 // Ordered lists
 
 /**
@@ -2687,6 +2752,8 @@ export default {
   index: index,
   zip: zip,
   zip3: zip3,
+  zipWith: zipWith,
+  zipWith3: zipWith3,
   sort: sort,
   sortBy: sortBy,
   insert: insert,
