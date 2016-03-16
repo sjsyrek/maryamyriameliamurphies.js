@@ -2759,6 +2759,51 @@ function deleteLBy(eq, a, as) {
   return partial(p, eq, a, as);
 }
 
+/**
+ * Non-associative list difference: remove the first occurrence of each value of a
+ * `List` in turn from another `List`.
+ * Haskell> (\\) :: Eq a => [a] -> [a] -> [a]
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @returns {List} - The difference of `as` and `bs`.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(6,7,8,9,10);
+ * let lst3 = listAppend(lst2, lst2);
+ * deleteFirsts(lst3, lst1);                            // => [6:7:8:9:10:[]]
+ * deleteFirsts(listAppend(lst1, lst2), lst1) === lst2; // => true
+ */
+function deleteFirsts(as, bs) {
+  let p = (as, bs) => {
+    if (isList(as) === false) { return error.listError(as, deleteFirsts); }
+    if (isList(ab) === false) { return error.listError(ab, deleteFirsts); }
+    return foldl(flip(deleteL), as, bs);
+  }
+  return partial(p, as, bs);
+}
+
+/**
+ * Non-associative list difference: remove the first occurrence of each value of a
+ * `List` in turn from another `List` using a provided function to check for equality.
+ * Haskell> deleteFirstsBy :: (a -> a -> Bool) -> [a] -> [a] -> [a]
+ * @param {Function} eq - A function to test for equality (must return `boolean`).
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @returns {List} - The difference of `as` and `bs`.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(6,7,8,9,10);
+ * let lst3 = listAppend(lst1, lst2);
+ * let eq = (x, y) => even(x * y);
+ * deleteFirstsBy(eq, lst3, lst1);    // => [5:7:8:9:10:[]]
+ */
+function deleteFirstsBy(eq, as, bs) {
+  let p = (eq, as, bs) => {
+    return foldl(flip(deleteLBy(eq)), as, bs);
+  }
+  return partial(p, eq, as, bs);
+}
+
 // Ordered lists
 
 /**
@@ -2962,6 +3007,8 @@ export default {
   nubBy: nubBy,
   deleteL: deleteL,
   deleteLBy: deleteLBy,
+  deleteFirsts: deleteFirsts,
+  deleteFirstsBy: deleteFirstsBy,
   sort: sort,
   sortBy: sortBy,
   insert: insert,
