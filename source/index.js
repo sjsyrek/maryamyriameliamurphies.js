@@ -2329,7 +2329,8 @@ function stripPrefix(as, bs) {
 
 /**
  * Take a `List` and return a `List` of lists such that the concatenation of the result
- * is equal to the argument. Each sublist in the result contains only equal values.
+ * is equal to the argument. Each sublist in the result contains only equal values. Use
+ * `groupBy` to supply your own equality function.
  * Haskell> group :: Eq a => [a] -> [[a]]
  * @param {List} as - A `List`.
  * @returns {List} - A `List` of result lists.
@@ -2681,6 +2682,7 @@ function zipWith3(f, as, bs, cs) {
 
 /**
  * Remove duplicate values from a `List` by dropping all occurrences after the first.
+ * Use `nubBy` to supply your own equality function.
  * Haskell> nub :: Eq a => [a] -> [a]
  * @param {List} as - A `List`.
  * @returns {List} - The essence of `as`.
@@ -2718,7 +2720,8 @@ function nubBy(eq, as) {
 }
 
 /**
- * Remove the first occurrence of a value from a `List`.
+ * Remove the first occurrence of a value from a `List`. Use `deleteLBy` to supply
+ * your own equality function.
  * Haskell> delete :: (Eq a) => a -> [a] -> [a]
  * @param {*} a - The value to delete.
  * @param {List} as - A `List`.
@@ -2761,7 +2764,8 @@ function deleteLBy(eq, a, as) {
 
 /**
  * Non-associative list difference: remove the first occurrence of each value of a
- * `List` in turn from another `List`.
+ * `List` in turn from another `List`. Use `deleteFirstsBy` to supply your own
+ * equality function.
  * Haskell> (\\) :: Eq a => [a] -> [a] -> [a]
  * @param {List} as - The first `List`.
  * @param {List} bs - The second `List`.
@@ -2808,10 +2812,11 @@ function deleteFirstsBy(eq, as, bs) {
 
 /**
  * Sort a list using regular value comparison. Use `sortBy` to supply your own
- * comparison function.
+ * comparison function. Uses an insertion sort algorithm. The `mergeSort` function
+ * is probably more efficient for larger lists.
  * Haskell> sort :: Ord a => [a] -> [a]
  * @param {List} as - The `List` to sort.
- * @returns {List} - The sorted list.
+ * @returns {List} - The sorted list. The original list is unmodified.
  * @example
  * lst = list(9,8,7,6,5,4,3,10,13,11,14,23,24,26,25,2,1);
  * sort(lst) // => [1:2:3:4:5:6:7:8:9:10:11:13:14:23:24:25:26:[]]
@@ -2819,11 +2824,18 @@ function deleteFirstsBy(eq, as, bs) {
 function sort(as) { return sortBy(compare, as); }
 
 /**
- * Sort a list using a comparison function of your choice.
+ * Sort a list using a comparison function of your choice. Uses an insertion sort
+ * algorithm. The `mergeSortBy` function is probably more efficient for larger lists.
  * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
  * @param {Function} cmp - The comparison function—must return an `Ordering`.
  * @param {List} as - The `List` to sort.
- * @returns {List} - The sorted list.
+ * @returns {List} - The sorted list. The original list is unmodified.
+ * @example
+ * let notCompare = (x, y) => compare(x, y) === EQ ? EQ : (GT ? LT : GT);
+ * let lst1 = listRange(1, 11);
+ * let lst2 = reverse(lst1);       // [10:9:8:7:6:5:4:3:2:1:[]]
+ * sortBy(notCompare, lst1);       // => [1:2:3:4:5:6:7:8:9:10:[]]
+ * sortBy(notCompare, lst2);       // => [10:9:8:7:6:5:4:3:2:1:[]]
  */
 function sortBy(cmp, as) {
   let p = (cmp, as) => {
@@ -2834,9 +2846,101 @@ function sortBy(cmp, as) {
 }
 
 /**
+ * Sort a list using regular value comparison. Use `mergeSortBy` to supply your own
+ * comparison function. Uses a merge sort algorithm, which may be more efficient
+ * than `sort` for larger lists. Use `mergeSortBy` to supply your own comparison
+ * function.
+ * Haskell> sort :: Ord a => [a] -> [a]
+ * @param {List} as - The `List` to sort.
+ * @returns {List} - The sorted `List`. The original list is unmodified.
+ * @example
+ * let lst1 = list(20,19,18,17,16,15,14,13,12,11,10,1,2,3,4,5,6,7,8,9);
+ * mergeSort(lst1); // => [1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:[]]
+ * let f = x => x + 1;
+ * let lst2 = reverse(listRange(1, 11, f)); // [10:9:8:7:6:5:4:3:2:1:[]]
+ * mergeSort(lst2);                         // => [1:2:3:4:5:6:7:8:9:10:[]]
+ */
+function mergeSort(as) {
+  if (isList(as) === false) { return error.listError(as, mergeSort); }
+  return mergeSortBy(compare, as);
+}
+
+/**
+ * Sort a list using a comparison function of your choice. Uses a merge sort algorithm,
+ * which may be more efficient than `sortBy` for larger lists.
+ * than `sort` for larger lists.
+ * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
+ * @param {Function} cmp - The comparison function—must return an `Ordering`.
+ * @param {List} as - The `List` to sort.
+ * @returns {List} - The sorted `List`. The original list is unmodified.
+ * @example
+ * let notCompare = (x, y) => compare(x, y) === EQ ? EQ : (GT ? LT : GT);
+ * let lst1 = listRange(1, 11);
+ * let lst2 = reverse(lst1);       // [10:9:8:7:6:5:4:3:2:1:[]]
+ * mergeSortBy(notCompare, lst1);  // => [1:2:3:4:5:6:7:8:9:10:[]]
+ * mergeSortBy(notCompare, lst2);  // => [10:9:8:7:6:5:4:3:2:1:[]]
+ */
+function mergeSortBy(cmp, as) {
+  let p = (cmp, as) => {
+    if (isList(as) === false) { return error.listError(as, mergeSortBy); }
+    let sequences = as => {
+      if (isEmpty(as)) { return list(as); }
+      let xs = tail(as);
+      if (isEmpty(xs)) { return list(as); }
+      let a = head(as);
+      let b = head(xs);
+      xs = tail(xs);
+      if (cmp(a, b) === GT) { return descending(b, list(a), xs); }
+      return ascending(b, cons(a), xs);
+    }
+    let descending = (a, as, bbs) => {
+      if (isEmpty(bbs)) { return cons(cons(a)(as))(sequences(bbs)); }
+      let b = head(bbs);
+      let bs = tail(bbs);
+      if (cmp(a, b) === GT) { return descending(b, cons(a)(as), bs); }
+      return cons(cons(a)(as))(sequences(bbs));
+    }
+    let ascending = (a, as, bbs) => {
+      if (isEmpty(bbs)) { return cons(as(list(a)))(sequences(bbs)); }
+      let b = head(bbs);
+      let bs = tail(bbs);
+      let ys = ys => as(cons(a)(ys));
+      if (cmp(a, b) !== GT) { return ascending(b, ys, bs); }
+      return cons(as(list(a)))(sequences(bbs));
+    }
+    let mergeAll = xs => {
+      if (isEmpty(tail(xs))) { return head(xs); }
+      return mergeAll(mergePairs(xs));
+    }
+    let mergePairs = as => {
+      if (isEmpty(as)) { return as; }
+      let xs = tail(as);
+      if (isEmpty(xs)) { return as; }
+      let a = head(as);
+      let b = head(xs);
+      xs = tail(xs);
+      return cons(merge(a, b))(mergePairs(xs));
+    }
+    let merge = (as, bs) => {
+      if (isEmpty(as)) { return bs; }
+      if (isEmpty(bs)) { return as; }
+      let a = head(as);
+      let as1 = tail(as);
+      let b = head(bs);
+      let bs1 = tail(bs);
+      if (cmp(a, b) === GT) { return cons(b)(merge(as, bs1)); }
+      return cons(a)(merge(as1, bs));
+    }
+    return $(mergeAll)(sequences)(as);
+  }
+  return partial(p, cmp, as);
+}
+
+/**
  * The `insert` function takes an element and a `List` and inserts the element into the
  * list at the first position where it is less than or equal to the next element.
  * In particular, if the list is sorted before the call, the result will also be sorted.
+ * Use `insertBy` to supply your own comparison function.
  * Haskell> insert :: Ord a => a -> [a] -> [a]
  * @param {*} e - The element to insert.
  * @param {List} ls - The `List` to insert into.
@@ -3011,6 +3115,8 @@ export default {
   deleteFirstsBy: deleteFirstsBy,
   sort: sort,
   sortBy: sortBy,
+  mergeSort: mergeSort,
+  mergeSortBy: mergeSortBy,
   insert: insert,
   insertBy: insertBy
 }
