@@ -2439,6 +2439,119 @@ function index(as, n) {
   return partial(p, as, n);
 }
 
+/**
+ * Return the index of the first value of a `List` equal to a query value, or
+ * `Nothing` if there is no such value.
+ * Haskell> elemIndex :: Eq a => a -> [a] -> Maybe Int
+ * @param {*} a - The query value.
+ * @param {List} as - The `List` to evaluate.
+ * @returns {Maybe} - `Just a` or `Nothing`.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,8);
+ * elemIndex(8, lst);                       // => Just 11
+ * elemIndex(10, lst);                      // => Nothing
+ */
+function elemIndex(a, as) {
+  let p = (a, as) => {
+    if(isList(as) === false) { return listError(xs, elemIndex); }
+    return findIndex(isEq(a), as);
+  }
+  return partial(p, a, as);
+}
+
+/**
+ * Return the indices of all values in a `List` equal to a query value, in
+ * ascending order.
+ * Haskell> elemIndices :: Eq a => a -> [a] -> [Int]
+ * @param {*} a - The query value.
+ * @param {List} as - The `List` to evaluate.
+ * @returns {List} as - A `List` of values equal to `a`.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,8);
+ * elemIndices(2, lst);                     // => [1:2:4:6:7:9:[]]
+ * elemIndices(10, lst);                    // => [[]]
+ */
+function elemIndices(a, as) {
+  let p = (a, as) => {
+    if(isList(as) === false) { return listError(xs, elemIndices); }
+    return findIndices(isEq(a), as);
+  }
+  return partial(p, a, as);
+}
+
+/**
+ * Take a predicate function and a `List` and return the first value in the list
+ * that satisfies the predicate, or `Nothing` if there is no such element. This
+ * function currently only works on `List` objects, but should in the future work
+ * for all `Foldable` types.
+ * Haskell> find :: Foldable t => (a -> Bool) -> t a -> Maybe a
+ * @param {Function} pred - The predicate function.
+ * @param {List} xs - The `List` to evaluate.
+ * @returns {Maybe} - The value inside a `Just` or `Nothing`, otherwise.
+ * @example
+ * let lst = list(1,2,3,4,5,6,7,8,9,10);
+ * let pred1 = x => x % 3 === 0;
+ * let pred2 = x => x > 10;
+ * find(pred1, lst);                      // => Just 3
+ * find(pred2, lst);                      // => Nothing
+ */
+function find(pred, xs) {
+  let p = (pred, xs) => {
+    if (isList(xs) === false) { return listError(xs, find); }
+    return $(listToMaybe)(filter(pred))(xs);
+  }
+  return partial(p, pred, xs);
+}
+
+/**
+ * Take a predicate function and a `List` and return the index of the first value
+ * in the list that satisfies the predicate, or `Nothing` if there is no such element.
+ * Haskell> findIndex :: (a -> Bool) -> [a] -> Maybe Int
+ * @param {Function} pred - The predicate function.
+ * @param {List} xs - The `List` to evaluate.
+ * @returns {Maybe} - The index inside a `Just` or `Nothing`, otherwise.
+ * @example
+ * let lst = list(1,2,3,4,5,6,7,8,9,10);
+ * let pred1 = x => x % 3 === 0;
+ * let pred2 = x => x > 10;
+ * findIndex(pred1, lst);                 // => Just 2
+ * findIndex(pred2, lst);                 // => Nothing
+ */
+function findIndex(pred, xs) {
+  let p = (pred, xs) => {
+    if (isList(xs) === false) { return listError(xs, findIndex); }
+    return $(listToMaybe)(findIndices(pred))(xs);
+  }
+  return partial(p, pred, xs);
+}
+
+/**
+ * Return the indices of all values in a `List` that satisfy a predicate function,
+ * in ascending order.
+ * Haskell> findIndices :: (a -> Bool) -> [a] -> [Int]
+ * @param {Function} pred - The predicate function.
+ * @param {List} xs - The `List` to evaluate.
+ * @returns {List} - The `List` of matching indices.
+ * @example
+ * let lst1 = list(1,2,3,4,5,6,7,8,9,10);
+ * let pred = x => even(x);
+ * findIndices(pred, lst1); // => [1:3:5:7:9:[]]
+ */
+function findIndices(pred, xs) {
+  let p = (pred, xs) => {
+    if (isList(xs) === false) { return listError(xs, findIndices); }
+    let z = zip(xs, listRange(0, length(xs)));
+    let f = xs => {
+      let x = fst(xs);
+      let i = snd(xs);
+      return pred(x) ? true : false;
+    }
+    let m = t => snd(t);
+    return map(m, filter(f, z));
+  }
+  return partial(p, pred, xs);
+}
+
 // Zipping and unzipping lists
 
 /**
@@ -2586,7 +2699,10 @@ function sort(as) { return sortBy(compare, as); }
  * @returns {List} - The sorted list.
  */
 function sortBy(cmp, as) {
-  let p = (cmp, as) => foldr(insertBy(cmp), emptyList, as);
+  let p = (cmp, as) => {
+    if (isList(as) === false) { return error.listError(as, sortBy); }
+    return foldr(insertBy(cmp), emptyList, as);
+  }
   return partial(p, cmp, as);
 }
 
@@ -2617,6 +2733,7 @@ function insert(e, ls) {
  */
 function insertBy(cmp, e, ls) {
   let p = (cmp, e, ls) => {
+    if (isList(ls) === false) { return error.listError(ls, insertBy); }
     if (isEmpty(ls)) { return list(e); }
     let y = head(ls);
     let ys = tail(ls);
@@ -2750,6 +2867,11 @@ export default {
   lookup: lookup,
   filter: filter,
   index: index,
+  elemIndex: elemIndex,
+  elemIndices: elemIndices,
+  find: find,
+  findIndex: findIndex,
+  findIndices: findIndices,
   zip: zip,
   zip3: zip3,
   zipWith: zipWith,
@@ -2760,10 +2882,8 @@ export default {
   insertBy: insertBy
 }
 
-function listGenerator(f = (x => x += 1), a = 1) {
-  function* as() { yield cons(f(a))(listGenerator(this, f, f(a))); }
-  return cons(a)(as);
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Experimental
 
 function* listGenerator(f = (x => x += 1), start = 1, end = Infinity) {
   let i = start;
