@@ -2677,6 +2677,88 @@ function zipWith3(f, as, bs, cs) {
   return partial(p, f, as, bs, cs);
 }
 
+// "Set" operations
+
+/**
+ * Remove duplicate values from a `List` by dropping all occurrences after the first.
+ * Haskell> nub :: Eq a => [a] -> [a]
+ * @param {List} as - A `List`.
+ * @returns {List} - The essence of `as`.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
+ * nub(lst); // => [1:2:3:4:5:6:7:8:9:10:[]]
+ */
+function nub(as) {
+  if (isList(as) === false) { return error.listError(as, nub); }
+  return nubBy(isEq, as);
+}
+
+/**
+ * Remove duplicate values from a `List` by dropping all occurrences after the first.
+ * This function generalizes `nub` by allowing you to supply your own equality test.
+ * Haskell> nubBy :: (a -> a -> Bool) -> [a] -> [a]
+ * @param {Function} eq - A function to test for equality (must return `boolean`).
+ * @param {List} as - A `List`.
+ * @returns {List} - The essence of `as`.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
+ * let eq = (x, y) => odd(x + y);
+ * nubBy(eq, lst); // => [1:3:5:7:7:9:[]]
+ */
+function nubBy(eq, as) {
+  let p = (eq, as) => {
+    if (isList(as) === false) { return error.listError(as, nubBy); }
+    if (isEmpty(as)) { return emptyList; }
+    let x = head(as);
+    let xs = tail(as);
+    let y = y => not(eq(x, y));
+    return cons(x)(nubBy(eq, filter(y, xs)));
+    }
+  return partial(p, eq, as);
+}
+
+/**
+ * Remove the first occurrence of a value from a `List`.
+ * Haskell> delete :: (Eq a) => a -> [a] -> [a]
+ * @param {*} a - The value to delete.
+ * @param {List} as - A `List`.
+ * @returns {List} - The `List` with the first `a` deleted.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
+ * deleteL(2, lst5); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
+ */
+function deleteL(a, as) {
+  let p = (a, as) => {
+    if (isList(as) === false) { return error.listError(as, deleteL); }
+    return deleteLBy(isEq, a, as);
+  }
+  return partial(p, a, as);
+}
+
+/**
+ * Remove the first occurrence of a value from a `List` using a provided function
+ * to check for equality.
+ * Haskell> deleteBy :: (a -> a -> Bool) -> a -> [a] -> [a]
+ * @param {Function} eq - A function to test for equality (must return `boolean`).
+ * @param {List} as - A `List`.
+ * @returns {List} - The `List` with the first `a` deleted.
+ * @example
+ * let lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
+ * let eq = (x, y) => odd(x + y);
+ * deleteLBy(eq, 2, lst); // => [2:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
+ */
+function deleteLBy(eq, a, as) {
+  let p = (eq, a, as) => {
+    if (isList(as) === false) { return error.listError(as, deleteLBy); }
+    if (isEmpty(as)) { return emptyList; }
+    let y = head(as);
+    let ys = tail(as);
+    let x = eq(a, y) ? ys : y;
+    return eq(a, y) ? ys : cons(y)(deleteLBy(eq, a, ys));
+  }
+  return partial(p, eq, a, as);
+}
+
 // Ordered lists
 
 /**
@@ -2876,6 +2958,10 @@ export default {
   zip3: zip3,
   zipWith: zipWith,
   zipWith3: zipWith3,
+  nub: nub,
+  nubBy: nubBy,
+  deleteL: deleteL,
+  deleteLBy: deleteLBy,
   sort: sort,
   sortBy: sortBy,
   insert: insert,
