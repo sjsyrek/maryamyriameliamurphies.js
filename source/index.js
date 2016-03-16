@@ -2441,6 +2441,18 @@ function index(as, n) {
 
 // Zipping and unzipping lists
 
+/**
+ * Take two `List` objects and return a `List` of corresponding pairs. If one input
+ * list is short, excess elements of the longer list are discarded.
+ * Haskell> zip :: [a] -> [b] -> [(a, b)]
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @returns {List} - The zipped `List` of `Tuple` objects.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(5,4,3,2,1);
+ * zip(lst1, lst2);            // => [(1,5):(2,4):(3,3):(4,2):(5,1):[]]
+ */
 function zip(as, bs) {
   let p = (as, bs) => {
     if (isList(as) === false) { return error.listError(as, zip); }
