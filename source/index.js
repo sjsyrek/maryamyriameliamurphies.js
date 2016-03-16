@@ -2468,6 +2468,37 @@ function zip(as, bs) {
   return partial(p, as, bs);
 }
 
+/**
+ * Take three `List` objects and return a `List` of triples (`Tuple` objects
+ * with three values). Analogous to the `zip` function.
+ * Haskell> zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
+ * @param {List} as - The first `List`.
+ * @param {List} bs - The second `List`.
+ * @param {List} cs - The third `List`.
+ * @returns {List} - The zipped `List` of `Tuple` objects.
+ * @example
+ * let lst1 = list(1,2,3,4,5);
+ * let lst2 = list(5,4,3,2,1);
+ * let lst3 = list(6,7,8,9,10);
+ * zip3(lst1, lst2, lst3);      // => [(1,5,6):(2,4,7):(3,3,8):(4,2,9):(5,1,10):[]]
+ */
+function zip3(as, bs, cs) {
+  let p = (as, bs, cs) => {
+    if (isList(as) === false) { return error.listError(as, zip3); }
+    if (isList(bs) === false) { return error.listError(bs, zip3); }
+    if (isList(cs) === false) { return error.listError(cs, zip3); }
+    if (isEmpty(as) || isEmpty(bs) || isEmpty(cs)) { return emptyList; }
+    let x = head(as);
+    let xs = tail(as);
+    let y = head(bs);
+    let ys = tail(bs);
+    let z = head(cs);
+    let zs = tail(cs);
+    return cons(tuple(x, y, z))(zip3(xs, ys, zs));
+  }
+  return partial(p, as, bs, cs);
+}
+
 // Ordered lists
 
 /**
@@ -2655,6 +2686,7 @@ export default {
   filter: filter,
   index: index,
   zip: zip,
+  zip3: zip3,
   sort: sort,
   sortBy: sortBy,
   insert: insert,
