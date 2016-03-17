@@ -582,6 +582,8 @@ const GT = new Ordering(`GT`);
  */
 function compare(a, b) {
   let p = (a, b) => {
+    if (a === Infinity) { return GT; }
+    if (b === Infinity) { return LT; }
     if (typeCheck(a, b)) {
       if (Ord(a)) { return dataType(a).compare(a, b); }
       if (isEq(a, b)) { return EQ; }
@@ -1717,6 +1719,55 @@ function listFilter(start, end, filter) {
 }
 
 /**
+ * Build a finite list from a range of values using lazy evaluation (i.e. each
+ * successive value is only computed on demand, making infinite lists feasible).
+ * To supply your own function for determining the increment, use `listRangeLazyBy`.
+ * @param {*} start - The starting value.
+ * @param {*} end - The end value.
+ * @returns {List} - The lazy evaluated `List`.
+ */
+function listRangeLazy(start, end) {
+  let p = (start, end) => listRangeLazyBy(start, end, (x => x + 1));
+  return partial(p, start, end);
+}
+
+/**
+ * Build a finite list from a range of values using lazy evaluation and incrementing
+ * it using a given step function.
+ * @param {*} start - The starting value.
+ * @param {*} end - The end value.
+ * @param {Function} step - The increment function.
+ * @returns {List} - The lazy evaluated `List`.
+ */
+function listRangeLazyBy(start, end, step) {
+  let p = (start, end, step) => {
+    if (start === end) { return list(start); }
+    if (greaterThan(start, end)) { return emptyList; }
+    let x = start;
+    let xs = list(x);
+    let listGenerator = function* () {
+      do {
+        x = step(x);
+        yield list(x);
+      } while (lessThan(x, end));
+    }
+    let gen = listGenerator();
+    let handler = {
+      get: function (target, prop) {
+        if (prop === `tail` && isEmpty(tail(target))) {
+          let next = gen.next();
+          if (next.done === false) { target[prop] = () => new Proxy(next.value, handler); }
+        }
+        return Reflect.get(target, prop);
+      }
+    };
+    let proxy = new Proxy(xs, handler);
+    return proxy;
+  }
+  return partial(p, start, end, step);
+}
+
+/**
  * Append one `List` to another.
  * Haskell> (++) :: [a] -> [a] -> [a]
  * @param {List} as - A `List`.
@@ -2144,7 +2195,77 @@ function scanr(f, q0, as) {
 
 // Infinite lists
 
+/**
+ * Generate an infinite list. Use `listInfBy` to supply your own step function.
+ * @param {*} start - The value with which to start the list.
+ * @returns {List} - An infinite `List` of consecutive values, incremented from `start`.
+ */
+function listInf(start) { return listInfBy(start, (x => x + 1)); }
 
+/**
+ * Generate an infinite list, incremented using a given step function.
+ * @param {*} start - The value with which to start the list.
+ * @param {Function} step - A unary step function.
+ * @returns {List} - An infinite `List` of consecutive values, incremented from `start`.
+ */
+function listInfBy(start, step) {
+  let p = (start, step) => listRangeLazyBy(start, Infinity, step);
+  return partial(p, start, step);
+}
+
+/**
+ * Return an infinite `List` of repeated applications of a function to a value.
+ * Haskell> iterate :: (a -> a) -> a -> [a]
+ * @param {Function} f - The function to apply.
+ * @param {*} x - The value to apply the function to.
+ * @returns {List} - An infinite `List` of repeated applications of `f` to `x`.
+ * @example
+ * let f = x => x * 2;
+ * let lst = iterate(f, 1);
+ * take(10, lst);           // => [1:2:4:8:16:32:64:128:256:512:[]]
+ */
+function iterate(f, x) {
+  let p = (f, x) => listInfBy(x, (x => f(x)));
+  return partial(p, f, x);
+}
+
+/**
+ * Build an infinite list of identical values.
+ * Haskell> repeat :: a -> [a]
+ * @param {*} a - The value to repeat.
+ * @returns {List} - The infinite `List` of repeated values.
+ * @example
+ * let lst = repeat(3);
+ * take(10, lst);       // => [3:3:3:3:3:3:3:3:3:3:[]]
+ */
+function repeat(a) { return cons(a)(listInfBy(a, id)); }
+
+/**
+ * Return a `List` of a specified length in which every value is the same.
+ * Haskell> replicate :: Int -> a -> [a]
+ * @param {number} n - The length of the `List`.
+ * @param {*} x - The value to replicate.
+ * @returns {List} - The `List` of values.
+ */
+function replicate(n, x) {
+  let p = (n, x) => take(n, repeat(x));
+  return partial(p, n, x);
+}
+
+/**
+ * Return the infinite repetition of a `List` (i.e. the "identity" of infinite lists).
+ * Haskell> cycle :: [a] -> [a]
+ * @param {List} as - A finite `List`.
+ * @returns {List} - A circular `List`, the original list infinitely repeated.
+ * @example
+ * let lst = list(1,2,3);
+ * let c = cycle(lst);
+ * take(9, c);            // => [1:2:3:1:2:3:1:2:3:[]]
+ */
+function cycle(as) {
+  if (isEmpty(as)) { return error.emptyList(as, cycle); }
+  return listInfBy(as, listAppend(as));
+}
 
 // Sublists
 
@@ -3065,6 +3186,8 @@ export default {
   list: list,
   listRange: listRange,
   listFilter: listFilter,
+  listRangeLazy: listRangeLazy,
+  listRangeLazyBy: listRangeLazyBy,
   listAppend: listAppend,
   cons: cons,
   head: head,
@@ -3089,6 +3212,12 @@ export default {
   concatMap: concatMap,
   scanl: scanl,
   scanr: scanr,
+  listInf: listInf,
+  listInfBy: listIntBy,
+  iterate: iterate,
+  repeat: repeat,
+  replicate: replicate,
+  cycle: cycle,
   take: take,
   drop: drop,
   splitAt: splitAt,
@@ -3124,90 +3253,3 @@ export default {
   insert: insert,
   insertBy: insertBy
 }
-
-/**
- *
- *
- */
-function listInf(start) { return listInfBy(start, (x => x + 1)); }
-
-/**
- *
- *
- */
-function listInfBy(start, step) {
-  let p = (start, step) => listRangeLazyBy(start, Infinity, step);
-  return partial(p, start, step);
-}
-
-/**
- *
- *
- */
-function listRangeLazy(start, end) {
-  let p = (start, end) => listRangeLazyBy(start, end, (x => x + 1));
-  return partial(p, start, end);
-}
-
-/**
- *
- *
- */
-function listRangeLazyBy(start, end, step) {
-  let p = (start, end, step) => {
-    if (start === end) { return list(start); }
-    if (start > end) { return emptyList; }
-    let x = start;
-    let xs = list(x);
-    let listGenerator = function* () {
-      do {
-        x = step(x);
-        yield list(x);
-      } while (x < end);
-    }
-    let gen = listGenerator();
-    let handler = {
-      get: function (target, prop) {
-        if (prop === `tail` && isEmpty(tail(target))) {
-          let next = gen.next();
-          if (next.done === false) { target[prop] = () => new Proxy(next.value, handler); }
-        }
-        return Reflect.get(target, prop);
-      }
-    };
-    let proxy = new Proxy(xs, handler);
-    return proxy;
-  }
-  return partial(p, start, end, step);
-}
-
-/**
- *
- * Haskell> iterate :: (a -> a) -> a -> [a]
- */
-function iterate(f, x) {
-  let p = (f, x) => listInfBy(x, (x => f(x)));
-  return partial(p, f, x);
-}
-
-/**
- *
- * Haskell> repeat :: a -> [a]
- */
-function repeat(a) { return cons(a)(listInfBy(a, id)); }
-
-
-////////////////////////////////////////////////
-replicate               :: Int -> a -> [a]
-replicate n x           =  take n (repeat x)
-
-function replicate(n, x) {
-  let p = (n, x) => take(n, repeat(x));
-  return partial(p, n, x);
-}
-
-function cycle(as) { return isEmpty(as) ? error.emptyList(as, cycle) : concat(listInfBy(as, listAppend(as))); }
-
-cycle                   :: [a] -> [a]
-cycle []                = errorEmptyList "cycle"
-cycle xs                = xs' where xs' = xs ++ xs'
