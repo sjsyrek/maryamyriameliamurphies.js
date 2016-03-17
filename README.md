@@ -23,7 +23,7 @@ maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-st
 2. `git clone` this repo and `import` it into your projects.
 3. Install with npm locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
 
-If you install with npm or at least have it on your system, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
+If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
 
 - `npm run compile` - run babel on `/source/index.js` and output to `/distribution/index.js`
 - `npm run lint` - run eslint on `/source/index.js` and `/distribution/index.js`
@@ -118,7 +118,7 @@ See Haskell [Functor](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-
 * `fmapReplaceBy(a, b)` Replace all `b` with `a` in a functor.
 
 ## Applicative
-See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Applicative.html)
+See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Applicative.html).
 
 * `pure(f, a)` Lift `a` into applicative context `f`.
 * `ap(f, a)` Apply applicative function `f` to applicative value `a`.
@@ -130,7 +130,7 @@ See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/
 * `liftA3(f, a, b, c)` Lift ternary function `f` into applicative context `a`.
 
 ## Monad
-See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Monad.html)
+See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Monad.html).
 
 * `inject(m, a)` Inject value `a` into monadic context `m`.
 * `bind(m, f)` Bind function `f` to the value contained in monadic context `m`.
@@ -141,21 +141,21 @@ See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Contro
 * `Do(m)` Wrap a monad `m` in a special container for the purpose of chaining actions, in imitation of Haskell's "do" notation.
 
 ## Foldable
-See Haskell [Foldable](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Foldable.html)
+See Haskell [Foldable](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Foldable.html).
 
 * `fold(a)` Combine the elements of a structure using a monoid.
 * `foldMap(f, a)` Map `f` to each element in monoid `a`.
 * `foldr(f, z, t)` Fold function `f` over monoid `t` with accumulator `z`.
 
 ## Traversable
-See Haskell [Traversable](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Traversable.html)
+See Haskell [Traversable](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Traversable.html).
 
 * `traverse(f, a)` Map `f` over each element in monoid `a` and collect the results of evaluating each action.
 * `mapM(f, m)` `traverse` for monads.
 * `sequence(m)` Evaluate each action in monadic structure `m` and collect the results.
 
 ## Maybe
-See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Maybe.html)
+See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Maybe.html).
 
 * `just(a)` Insert a value into a Maybe monad, returning `Just a` or `Nothing`.
 * `maybe(n, f, m)` Apply `f` to the value in Maybe `m` or return `n` if `m` is `Nothing`.
@@ -170,7 +170,7 @@ See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-M
 * `mapMaybe(f, as)` Map `f` (that returns a Maybe) over a list and return a list of each `Just` result.
 
 ## Tuple
-See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tuple.html)
+See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tuple.html).
 
 * `tuple(...as)` Create a new tuple from any number of values.
 * `fst(p)` Return the first element of a tuple.
@@ -183,7 +183,7 @@ See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tu
 * `fromTupleToArray(p)` Convert a tuple into an array.
 
 ## List
-See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-List.html)
+See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-List.html).
 
 ### Basic functions
 
