@@ -3237,7 +3237,7 @@ export default {
   scanl: scanl,
   scanr: scanr,
   listInf: listInf,
-  listInfBy: listIntBy,
+  listInfBy: listInfBy,
   iterate: iterate,
   repeat: repeat,
   replicate: replicate,

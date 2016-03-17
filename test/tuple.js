@@ -9,15 +9,12 @@ describe('Tuple', function() {
   });
   it('should return a tuple string, e.g. "(1, 2)", as its value.', function() {
     let p = murphies.tuple(1, 2);
-    p.valueOf().should.equal(`(1, 2)`);
+    p.valueOf().should.equal(`(1,2)`);
   });
   describe('#curry()', function() {
     let f = function subtract(p) { return x - y; };
     let x = 10;
     let y = 2;
-    it('should return itself when a function is not applied as the first argument.', function() {
-      murphies.curry().should.equal(murphies.curry);
-    });
     it('should return a function when no arguments are applied as arguments to the applied function.', function() {
       let curried = murphies.curry(f);
       curried.should.be.a.Function;
@@ -47,14 +44,6 @@ describe('Tuple', function() {
       let p = murphies.fromArrayToTuple([100, 2]);
       p.should.have.properties({'1': 100, '2': 2});
     });
-    it('should return unit if no arguments or arguments other than an array are passed.', function() {
-      let p = murphies.fromArrayToTuple();
-      let q = murphies.fromArrayToTuple(0);
-      let r = murphies.fromArrayToTuple('nothing');
-      p.should.have.properties({'0': null});
-      q.should.have.properties({'0': null});
-      r.should.have.properties({'0': null});
-    });
   });
   describe('#fromTupleToArray()', function() {
     it('should create a new array from the values of a tuple.', function() {
@@ -63,7 +52,7 @@ describe('Tuple', function() {
       arr.should.eql([1, 2]);
     });
     it('should throw a type error if a value other than a tuple is passed as an argument.', function() {
-      murphies.fromTupleToArray.bind(null).should.throw(`I expected a value of type 'Tuple' but I got undefined.`);
+      murphies.fromTupleToArray.bind(null).should.throw();
       murphies.fromTupleToArray.bind(null, {}).should.throw();
     });
   });
@@ -73,7 +62,7 @@ describe('Tuple', function() {
       murphies.fst(p).should.equal(1);
     });
     it('should throw a type error if a value other than a tuple is passed as an argument.', function() {
-      murphies.fst.bind(null, unit).should.throw(`I expected a value of type 'Tuple' but I got ().`);
+      murphies.fst.bind(null, unit).should.throw();
       murphies.fst.bind(null, {}).should.throw();
       murphies.fst.bind(null).should.throw();
     });
@@ -105,7 +94,7 @@ describe('Tuple', function() {
       murphies.snd(p).should.equal(2);
     });
     it('should throw a type error if a value other than a tuple is passed as an argument.', function() {
-      murphies.snd.bind(null, unit).should.throw(`I expected a value of type 'Tuple' but I got ().`);
+      murphies.snd.bind(null, unit).should.throw();
       murphies.snd.bind(null, {}).should.throw();
       murphies.snd.bind(null).should.throw();
     });
@@ -116,7 +105,7 @@ describe('Tuple', function() {
       murphies.swap(p).should.have.properties({'1': 2, '2': 1});
     });
     it('should throw a type error if a value other than a tuple is passed as an argument.', function() {
-      murphies.swap.bind(null, unit).should.throw(`I expected a value of type 'Tuple' but I got ().`);
+      murphies.swap.bind(null, unit).should.throw();
       murphies.swap.bind(null, {}).should.throw();
       murphies.swap.bind(null).should.throw();
     });
@@ -140,9 +129,6 @@ describe('Tuple', function() {
     let p = murphies.tuple(10, 2);
     let curried = murphies.curry(f);
     let uncurried = murphies.uncurry(curried);
-    it('should return itself when a function is not applied as the first argument.', function() {
-      murphies.uncurry().should.equal(murphies.uncurry);
-    });
     it('should return a function when no argument is applied as the second argument to the applied function.', function() {
       uncurried.should.be.a.Function;
     });
@@ -155,7 +141,7 @@ describe('Tuple', function() {
   describe('#typeOf()', function() {
     it('should return a string representing the type of the tuple, e.g. "(1, 2)" is type "(number, number)."', function() {
       let p = murphies.tuple(1, 2);
-      murphies.typeOf(p).should.equal(`(number, number)`);
+      murphies.type(p).should.equal(`(number,number)`);
     });
   });
   describe('#isEq(Tuple, Tuple)', function() {
@@ -173,7 +159,7 @@ describe('Tuple', function() {
     });
     it('should throw a type error if the two tuples are not the same type.', function() {
       let p = murphies.tuple(1, 2, 3);
-      murphies.isEq.bind(null, a, p).should.throw(`I expected a value of type '(number, number)' but I got (1, 2, 3).`);
+      murphies.isEq.bind(null, a, p).should.throw();
     });
   });
   describe('#isNotEq(Tuple, Tuple)', function() {
@@ -191,7 +177,7 @@ describe('Tuple', function() {
     });
     it('should throw a type error if the two tuples are not the same type.', function() {
       let p = murphies.tuple(1, 2, 3);
-      murphies.isNotEq.bind(null, a, p).should.throw(`I expected a value of type '(number, number)' but I got (1, 2, 3).`);
+      murphies.isNotEq.bind(null, a, p).should.throw();
     });
   });
   describe('#compare(Tuple, Tuple)', function() {
@@ -200,13 +186,13 @@ describe('Tuple', function() {
     let c = murphies.swap(a);
     let d = murphies.fromArrayToTuple([2, 1]);
     it('should return the Ordering of the tuples if they are the same type.', function() {
-      murphies.compare(a, b).should.equal(`LT`);
-      murphies.compare(c, b).should.equal(`GT`);
-      murphies.compare(c, d).should.equal(`EQ`);
+      murphies.compare(a, b).should.equal(murphies.LT);
+      murphies.compare(c, b).should.equal(murphies.GT);
+      murphies.compare(c, d).should.equal(murphies.EQ);
     });
     it('should throw a type error if the two tuples are not the same type.', function() {
       let p = murphies.tuple(1, 2, 3);
-      murphies.compare.bind(null, a, p).should.throw(`I expected a value of type '(number, number)' but I got (1, 2, 3).`);
+      murphies.compare.bind(null, a, p).should.throw();
     });
     it('should work with the other Ordering functions.', function() {
       murphies.lessThan(a, b).should.be.true;

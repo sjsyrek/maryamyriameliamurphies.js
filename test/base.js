@@ -25,10 +25,10 @@ describe('Base', function() {
       let b = murphies.tuple(3, 4, 5);
       let c = `text`;
       let d = murphies.tuple(c, 10)
-      murphies.typeOf(a).should.equal(`(number, number)`);
-      murphies.typeOf(b).should.equal(`(number, number, number)`);
-      murphies.typeOf(c).should.equal(`string`);
-      murphies.typeOf(d).should.equal(`(string, number)`);
+      murphies.type(a).should.equal(`(number,number)`);
+      murphies.type(b).should.equal(`(number,number,number)`);
+      murphies.type(c).should.equal(`string`);
+      murphies.type(d).should.equal(`(string,number)`);
     });
   });
   describe('#isEq()', function() {
@@ -42,7 +42,7 @@ describe('Base', function() {
     it('should throw a type error if the two objects passed as arguments are not the same type.', function() {
       let a = 5;
       let b = 'text';
-      murphies.isEq.bind(null, a, b).should.throw(`I expected a value of type 'number' but I got text.`);
+      murphies.isEq.bind(null, a, b).should.throw();
     });
   });
   describe('#isNotEq()', function() {
@@ -56,7 +56,7 @@ describe('Base', function() {
     it('should throw a type error if the two objects passed as arguments are not the same type.', function() {
       let a = 5;
       let b = 'text';
-      murphies.isNotEq.bind(null, a, b).should.throw(`I expected a value of type 'number' but I got text.`);
+      murphies.isNotEq.bind(null, a, b).should.throw();
     });
   });
   describe('#compare()', function() {
@@ -65,12 +65,12 @@ describe('Base', function() {
     let c = 2;
     let d = 2;
     it('should return the Ordering of two values if they are the same type.', function() {
-      murphies.compare(a, b).should.equal('LT');
-      murphies.compare(b, a).should.equal('GT');
-      murphies.compare(b, c).should.equal('EQ');
+      murphies.compare(a, b).should.equal(murphies.LT);
+      murphies.compare(b, a).should.equal(murphies.GT);
+      murphies.compare(b, c).should.equal(murphies.EQ);
     });
     it('should throw a type error if the two tuples are not the same type.', function() {
-      murphies.compare.bind(null, c, 'text').should.throw(`I expected a value of type 'number' but I got text.`);
+      murphies.compare.bind(null, c, 'text').should.throw();
     });
     it('should work with the other Ordering functions.', function() {
       murphies.lessThan(a, b).should.be.true;
