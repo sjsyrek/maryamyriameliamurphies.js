@@ -1659,6 +1659,8 @@ class List extends Type {
  */
 const emptyList = new List();
 
+// Basic functions
+
 /**
  * Create a new `List` from a series of zero or more values.
  * @param {...*} as - Values to put into a new `List`.
