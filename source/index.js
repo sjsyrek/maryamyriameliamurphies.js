@@ -2263,8 +2263,30 @@ function replicate(n, x) {
  * take(9, c);            // => [1:2:3:1:2:3:1:2:3:[]]
  */
 function cycle(as) {
+  if (isList(as) === false) { return error.listError(as, cycle); }
   if (isEmpty(as)) { return error.emptyList(as, cycle); }
-  return listInfBy(as, listAppend(as));
+  let x = head(as);
+  let xs = tail(as);
+  let c = list(x);
+  let listGenerator = function* () {
+    do {
+    x = isEmpty(xs) ? head(as) : head(xs);
+    xs = isEmpty(xs) ? tail(as) : tail(xs);
+    yield list(x);
+    } while (true);
+  }
+  let gen = listGenerator();
+  let handler = {
+    get: function (target, prop) {
+      if (prop === `tail` && isEmpty(tail(target))) {
+        let next = gen.next();
+        target[prop] = () => new Proxy(next.value, handler);
+      }
+      return Reflect.get(target, prop);
+    }
+  };
+  let proxy = new Proxy(c, handler);
+  return proxy;
 }
 
 // Sublists
