@@ -12,7 +12,7 @@
  * - [purescript](https://github.com/purescript/purescript)
  * - [lazy.js](https://github.com/dtao/lazy.js)
  * - [pointfree-fantasy](https://github.com/DrBoolean/pointfree-fantasy)
- * - [casualjs](https://github.com/casualjs/f)
+ * - [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
  *
  * Reading the code:
  *
@@ -2142,6 +2142,10 @@ function scanr(f, q0, as) {
   return partial(p, f, q0, as);
 }
 
+// Infinite lists
+
+
+
 // Sublists
 
 /**
@@ -3121,16 +3125,89 @@ export default {
   insertBy: insertBy
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Experimental
+/**
+ *
+ *
+ */
+function listInf(start) { return listInfBy(start, (x => x + 1)); }
 
-function* listGenerator(f = (x => x += 1), start = 1, end = Infinity) {
-  let i = start;
-  let lst = emptyList;
-  do {
-    let newList = listAppend(lst)(list(i));
-    lst = newList;
-    yield lst.tail;
-    i = f(i);
-  } while (i < end)
+/**
+ *
+ *
+ */
+function listInfBy(start, step) {
+  let p = (start, step) => listRangeLazyBy(start, Infinity, step);
+  return partial(p, start, step);
 }
+
+/**
+ *
+ *
+ */
+function listRangeLazy(start, end) {
+  let p = (start, end) => listRangeLazyBy(start, end, (x => x + 1));
+  return partial(p, start, end);
+}
+
+/**
+ *
+ *
+ */
+function listRangeLazyBy(start, end, step) {
+  let p = (start, end, step) => {
+    if (start === end) { return list(start); }
+    if (start > end) { return emptyList; }
+    let x = start;
+    let xs = list(x);
+    let listGenerator = function* () {
+      do {
+        x = step(x);
+        yield list(x);
+      } while (x < end);
+    }
+    let gen = listGenerator();
+    let handler = {
+      get: function (target, prop) {
+        if (prop === `tail` && isEmpty(tail(target))) {
+          let next = gen.next();
+          if (next.done === false) { target[prop] = () => new Proxy(next.value, handler); }
+        }
+        return Reflect.get(target, prop);
+      }
+    };
+    let proxy = new Proxy(xs, handler);
+    return proxy;
+  }
+  return partial(p, start, end, step);
+}
+
+/**
+ *
+ * Haskell> iterate :: (a -> a) -> a -> [a]
+ */
+function iterate(f, x) {
+  let p = (f, x) => listInfBy(x, (x => f(x)));
+  return partial(p, f, x);
+}
+
+/**
+ *
+ * Haskell> repeat :: a -> [a]
+ */
+function repeat(a) { return cons(a)(listInfBy(a, id)); }
+
+
+////////////////////////////////////////////////
+replicate               :: Int -> a -> [a]
+replicate n x           =  take n (repeat x)
+
+function replicate(n, x) {
+  let p = (n, x) => take(n, repeat(x));
+  return partial(p, n, x);
+}
+
+function cycle(as) { return isEmpty(as) ? error.emptyList(as, cycle) : concat(listInfBy(as, listAppend(as))); }
+
+cycle                   :: [a] -> [a]
+cycle []                = errorEmptyList "cycle"
+cycle xs                = xs' where xs' = xs ++ xs'
