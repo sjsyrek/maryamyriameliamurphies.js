@@ -1,7 +1,7 @@
 {
   "name": "maryamyriameliamurphies",
   "version": "0.9.0",
-  "description": "maryamyriameliamurphies.js is a library of Haskell-style morphisms ported to JavaScript",
+  "description": "maryamyriameliamurphies.js is a library of Haskell-style morphisms ported to JavaScript.",
   "main": "./distribution/index.js",
   "directories": {
     "test": "test"
