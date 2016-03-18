@@ -30,6 +30,8 @@ If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and tes
 - `npm run test` - run mocha using babel on all files imported into `/test/index.js`
 - `npm run build` - compile and test
 
+These commands required certain npm packages. See below.
+
 ## Description
 
 Since the average explanation of functional programming terminology makes about as much sense to the average reader as the average page of _Finnegans Wake_, I gave this library a whimsical, literary name. Also, I'm an English literature Ph.D. student, and functional code strikes me as poetic (as "composed" in multiple senses) even though the technical explanations are impenetrably obtuse. All you need to know—in fact, all I understand—is that a pure function (or a morphism in general) simply describes how one thing can predictably transform into another. So a functional program, much like Joyce's final work, is an extended description of how things change.
@@ -67,7 +69,7 @@ ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text
 See the code comments for more extensive documentation and examples.
 
 ### Basic functions
-See Haskell [Data.Function](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Function.html#v:-46-) and [Prelude](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html)
+See Haskell [Data.Function](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Function.html#v:-46-) and [Prelude](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html).
 
 * `partial(f, ...as)` Partially applies arguments `as` to function `f`.
 * `$(f)` Composes function `f` with another function `g`.
