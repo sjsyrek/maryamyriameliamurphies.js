@@ -1,9 +1,7 @@
 # maryamyriameliamurphies.js
 [![Apache 2.0 licensed](https://img.shields.io/badge/license-Apache2.0-blue.svg)](./LICENSE.txt)
-[![npm](https://img.shields.io/npm/v/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
-[![npm](https://img.shields.io/npm/dt/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
-[![David](https://img.shields.io/david/dev/strongloop/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
-[![David](https://img.shields.io/david/strongloop/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
+[![npm](https://img.shields.io/npm/v/maryamyriameliamurphies-orange.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
+[![npm](https://img.shields.io/npm/dt/maryamyriameliamurphies-orange.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 
 > All told, a monad in _X_ is just a monoid in the category of endofunctors of _X_, with product × replaced by composition of endofunctors and unit set by the identity endofunctor.
