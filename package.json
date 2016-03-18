@@ -43,7 +43,7 @@
     "compile": "babel source --out-dir distribution",
     "lint": "eslint ./source/index.js && eslint ./distribution/index.js",
     "test": "mocha --compilers js:babel-core/register ./test/index.js",
-    "build": "npm run compile && mocha --compilers js:babel-core/register ./test/index.js",
+    "build": "npm run compile && npm test",
     "prepublish": "npm run compile"
   }
 }
