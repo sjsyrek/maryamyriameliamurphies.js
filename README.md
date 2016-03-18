@@ -30,7 +30,7 @@ If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and tes
 - `npm run test` - run mocha using babel on all files imported into `/test/index.js`
 - `npm run build` - compile and test
 
-These commands required certain npm packages. See below.
+These commands requires certain npm packages. See below.
 
 ## Description
 
