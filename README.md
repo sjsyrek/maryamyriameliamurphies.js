@@ -18,13 +18,13 @@
 
 ## About
 
-maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax.
+maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Also available as a Node.js package on npm: [https://www.npmjs.com/package/maryamyriameliamurphies](https://www.npmjs.com/package/maryamyriameliamurphies)
 
 ## How to Install
 
 1. Copy and paste the code. Go nuts.
 2. `git clone` this repo and `import` it into your projects.
-3. Install with npm locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
+3. [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
 
 If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
 
@@ -43,7 +43,7 @@ These functions are experimental, as Haskell's type system translates only awkwa
 closely as I could and as made sense given each implementation, resulting in a style that is sometimes
 extremely straightforward and sometimes bewilderingly terse.
 
-I developed the code using the [Babel](http://babeljs.io/) package on [node.js](https://nodejs.org/en/), linted both source and distribution code with the [babel-eslint](https://github.com/babel/babel-eslint) parser for the latest version of [ESLint](http://eslint.org), and tested the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since it uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in [node](https://nodejs.org/en/) or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
+I developed the code using the [Babel](http://babeljs.io/) package on [Node.js](https://nodejs.org/en/), linted both source and distribution code with the [babel-eslint](https://github.com/babel/babel-eslint) parser for the latest version of [ESLint](http://eslint.org), and tested the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since it uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in [Node](https://nodejs.org/en/) or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
 
 ES2015 code is located in the `/source` directory and babel-transpiled ES5 code in the `/distribution` directory. Mocha tests are in `/test` and example projects are in `/examples`.
 
