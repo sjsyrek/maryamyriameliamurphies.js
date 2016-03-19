@@ -23,7 +23,7 @@ maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-st
 ## How to Install
 
 1. Copy and paste the code. Go nuts.
-2. `git clone` this repo and `import` it into your projects.
+2. `git clone` this repo, `npm install && npm run compile`, and `import` it into your projects.
 3. [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
 
 If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
