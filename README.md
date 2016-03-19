@@ -122,7 +122,7 @@ See Haskell [Functor](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-
 * `fmap(f, a)` Map the function `f` over the functor `a`.
 * `fmapReplaceBy(a, b)` Replace all `b` with `a` in a functor.
 
-## Applicative
+### Applicative
 See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Applicative.html).
 
 * `pure(f, a)` Lift `a` into applicative context `f`.
@@ -134,7 +134,7 @@ See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/
 * `liftA2(f, a, b)` Lift binary function `f` into applicative context `a`.
 * `liftA3(f, a, b, c)` Lift ternary function `f` into applicative context `a`.
 
-## Monad
+### Monad
 See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Monad.html).
 
 * `inject(m, a)` Inject value `a` into monadic context `m`.
@@ -145,21 +145,21 @@ See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Contro
 * `liftM(f, m)` Lift a function `f` into monadic context `m`.
 * `Do(m)` Wrap a monad `m` in a special container for the purpose of chaining actions, in imitation of Haskell's "do" notation.
 
-## Foldable
+### Foldable
 See Haskell [Foldable](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Foldable.html).
 
 * `fold(a)` Combine the elements of a structure using a monoid.
 * `foldMap(f, a)` Map `f` to each element in monoid `a`.
 * `foldr(f, z, t)` Fold function `f` over monoid `t` with accumulator `z`.
 
-## Traversable
+### Traversable
 See Haskell [Traversable](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Traversable.html).
 
 * `traverse(f, a)` Map `f` over each element in monoid `a` and collect the results of evaluating each action.
 * `mapM(f, m)` `traverse` for monads.
 * `sequence(m)` Evaluate each action in monadic structure `m` and collect the results.
 
-## Maybe
+### Maybe
 See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Maybe.html).
 
 * `just(a)` Insert a value into a Maybe monad, returning `Just a` or `Nothing`.
@@ -174,7 +174,7 @@ See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-M
 * `catMaybes(as)` Return a list of all `Just` values from a list of Maybes.
 * `mapMaybe(f, as)` Map `f` (that returns a Maybe) over a list and return a list of each `Just` result.
 
-## Tuple
+### Tuple
 See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tuple.html).
 
 * `tuple(...as)` Create a new tuple from any number of values.
@@ -187,10 +187,10 @@ See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tu
 * `fromArrayToTuple(a)` Convert an array into a tuple.
 * `fromTupleToArray(p)` Convert a tuple into an array.
 
-## List
+### List
 See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-List.html).
 
-### Basic functions
+#### Basic functions
 
 * `list(...as)` Create a new list from a series of values.
 * `listRange(start, end, f, filter)` Create a new list from `start` to `end` using step function `f` with values optionally filtered by `filter`.
@@ -212,7 +212,7 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `fromListToString(as)` Convert a list into a string.
 * `fromStringToList(as)` Convert a string into a list.
 
-### List transformations
+#### List transformations
 
 * `map(f, as)` Map the function `f` over the elements in list `as`.
 * `reverse(as)` Reverse the elements of a list.
@@ -220,21 +220,21 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `intercalate(xs, xss)` Intersperse the list `xs` between the lists in `xss` (a list of lists).
 * `transpose(lss)` Transpose the "rows" and "columns" of a list of lists.
 
-### Reducing lists
+#### Reducing lists
 
 * `foldl(f, z, as)` Fold a list `as` from right to left, using function `f` and accumulator `z`.
 
-### Special folds
+#### Special folds
 
 * `concat(xss)` Concatenate the elements in a list of lists.
 * `concatMap(f, as)` Map the function `f` (that returns a list) over the list `as` and concatenate the result list.
 
-### Building lists
+#### Building lists
 
 * `scanl(f, q, ls)` Reduce a list `ls` from right to left using function `f` and accumulator `q` and return a list of successive reduced values.
 * `scanr(f, q0, as)` Like `scanl` but scans the list `as` from right to left.
 
-### Infinite lists
+#### Infinite lists
 
 * `listInf(start)` Return an infinite list of consecutive values beginning with `start`.
 * `listInfBy(start, step)` Return an infinite list of values, incremented with function `step`, beginning with `start`.
@@ -243,7 +243,7 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `replicate(n, x)` Return a list of length `n` in which all values are `x`.
 * `cycle(as)` Return the infinite repetition of a list.
 
-### Sublists
+#### Sublists
 
 * `take(n, as)` Return the prefix of a list of length `n`.
 * `drop(n, as)` Return the suffix of a list after discarding `n` values.
@@ -256,12 +256,12 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `group(as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result contains only equal values.
 * `groupBy(eq, as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result is grouped according to function `eq`.
 
-### Searching
+#### Searching
 
 * `lookup(key, assocs)` Look up `key` in the association list `assocs`.
 * `filter(f, as)` Return the list of elements from `as` to satisfy the predicate function `f`.
 
-### Indexing
+#### Indexing
 
 * `index(as, n)` Return the value in `as` at index `n`.
 * `elemIndex(a, as)` Return the index of the first value in `as` equal to `a` or `Nothing` if there is no such value.
@@ -270,14 +270,14 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `findIndex(pred, xs)` Return the index of the first value in `xs` that satisfies the predicate function `pred` or `Nothing` if there is no such value.
 * `findIndices(pred, xs)` Return the indices of all values in `xs` that satisfy `pred`, in ascending order.
 
-### Zipping and unzipping lists
+#### Zipping and unzipping lists
 
 * `zip(as, bs)` Take two lists and return a list of corresponding pairs.
 * `zip3(as, bs, cs)` `zip` for three lists.
 * `zipWith(f, as, bs)` Zip `as` and `bs` using function `f`.
 * `zipWith3(f, as, bs, cs)` Zip three lists using function `f`.
 
-### "Set" operations
+#### "Set" operations
 
 * `nub(as)` Remove duplicate values from a list.
 * `nubBy(eq, as)` Remove duplicate values from a list, testing equality using function `eq`.
@@ -286,7 +286,7 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `deleteFirsts(as, bs)` Remove the first occurrence of each value of `as` from `bs`.
 * `deleteFirsts(eq, as, bs)` Remove the first occurrence of each value of `as` from `bs`, using function `eq` to test for equality.
 
-### Ordered lists
+#### Ordered lists
 
 * `sort(as)` Sort a list.
 * `sortBy(cmp, as)` Sort a list using comparison function `cmp`.
@@ -295,7 +295,7 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `insert(e, ls)` Insert `e` at the first position in `ls` where it is less than or equal to the next element.
 * `insertBy(cmp, e, ls)` Insert `e` at the first position in `ls` using comparison function `cmp`.
 
-### Utility functions
+#### Utility functions
 
 * `throwError(e)` Throws an error with message `e`.
 * `defines(...methods)` Defines a type class that requires implementations of `methods`.
