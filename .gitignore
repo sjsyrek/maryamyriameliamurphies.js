@@ -1,1 +1,5 @@
-.DS_STOREdistribution/node_modules/npm-debug.log*~
+.DS_STORE
+distribution
+node_modules
+npm-debug.log
+*~
