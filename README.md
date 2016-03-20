@@ -20,6 +20,8 @@
 
 maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Also available as a Node.js package on npm: [https://www.npmjs.com/package/maryamyriameliamurphies](https://www.npmjs.com/package/maryamyriameliamurphies)
 
+First published entirely by chance on St. Patrick's Day, 2016.
+
 ## How to Install
 
 1. Copy and paste the code. Go nuts.
