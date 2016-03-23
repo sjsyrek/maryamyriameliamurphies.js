@@ -66,7 +66,7 @@ ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text
 - [ghcjs](https://github.com/ghcjs/ghcjs)
 - [purescript](https://github.com/purescript/purescript)
 - [lazy.js](https://github.com/dtao/lazy.js)
-- [pointfree-fantasy](https://github.com/DrBoolean/pointfree-fantasy)
+- [fantasy-land](https://github.com/fantasyland/fantasy-land)
 - [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
 
 ## API
