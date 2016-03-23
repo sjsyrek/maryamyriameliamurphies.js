@@ -1,31 +1,42 @@
 import m from '../distribution/index';
 
-describe(`Do`, function() {
+let just = m.just;
+let Do = m.Do;
+let tuple = m.tuple;
+let list = m.list;
+let print = m.print;
+
+describe(`Do()`, function() {
   it(`should allow for chaining of monadic functions`, function() {
-    let monad = m.just(10);
-    let f = x => m.just(x * 2);
-    let g = x => m.just(x - 1);
-    m.Do(monad).bind(f).bind(g).valueOf().should.equal(`Maybe number >>= Just 19`);
-    m.Do(monad).bind(f).chain(monad).bind(g).valueOf().should.equal(`Maybe number >>= Just 9`);
-    let lst = m.list(1,2,3);
-    let h = x => m.list(x + 1);
-    let n = x => m.list(x * 2);
-    m.Do(lst).bind(h).bind(n).valueOf().should.equal(`[number] >>= [4:6:8:[]]`);
-    m.Do(lst).bind(h).chain(lst).bind(n).valueOf().should.equal(`[number] >>= [2:4:6:2:4:6:2:4:6:[]]`);
+    let j = just(10);
+    let doubleJust = x => just(x * 2);
+    let minusOne = x => just(x - 1);
+    let lst = list(1,2,3);
+    let plusOne = x => list(x + 1);
+    let doubleList = x => list(x * 2);
     let put = x => {
-      m.show(x);
-      return m.just(x);
+      print(x);
+      return just(x);
     }
-    m.Do(monad)
+    let b1 = Do(j).bind(doubleJust).bind(minusOne);
+    let b2 = Do(j).bind(doubleJust).chain(j).bind(minusOne);
+    let b3 = Do(lst).bind(plusOne).bind(doubleList);
+    let b4 = Do(lst).bind(plusOne).chain(lst).bind(doubleList);
+    b1.valueOf().should.equal(`Maybe number >>= Just 19`);
+    b2.valueOf().should.equal(`Maybe number >>= Just 9`);
+    b3.valueOf().should.equal(`[number] >>= [4:6:8:[]]`);
+    b4.valueOf().should.equal(`[number] >>= [2:4:6:2:4:6:2:4:6:[]]`);
+    let b5 =
+    Do(j)
     .bind(put)                          // => 10
-    .bind(f)
+    .bind(doubleJust)
     .bind(put)                          // => 20
-    .chain(h)
+    .chain(j)
     .bind(put)                          // => 10
-    .bind(g)
+    .bind(minusOne)
     .bind(put)                          // => 9
-    .bind(f)
-    .bind(put)
-    .valueOf().should.equal(18);
+    .bind(doubleJust)
+    .bind(put);                         // => 18
+    b5.valueOf().should.equal(`Maybe number >>= Just 18`);
   });
 });
