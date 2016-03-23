@@ -311,9 +311,7 @@
  * @example
  * let lst = list(1,2,3);
  * let tup = tuple(1,2);
- * lst;                   // => {"head":1,"tail":{"head":2,"tail":{"head":3,"tail":{"head":null,"tail":null}}}}
  * show(lst);             // => [1:2:3:[]]
- * tup;                   // => {"1":1,"2":2}
  * show(tup);             // => (1,2)
  */function show(a){return a instanceof Tuple?'('+Object.values(a).map(function(e){return e.valueOf();})+')':a.valueOf();} /**
  * A utility function for displaying the results of show on the console. One could imagine a more generalized

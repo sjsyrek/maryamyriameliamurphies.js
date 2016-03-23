@@ -42,7 +42,7 @@ describe(`Tuple`, function() {
   describe(`fromArrayToTuple()`, function() {
     it(`should create a new tuple from the values of an array.`, function() {
       let p = m.fromArrayToTuple([100, 2]);
-      p.should.have.properties({`1`: 100, `2`: 2});
+      p.should.have.properties({"1": 100, "2": 2});
     });
   });
   describe(`fromTupleToArray()`, function() {
@@ -102,7 +102,7 @@ describe(`Tuple`, function() {
   describe(`swap()`, function() {
     it(`should swap the values of a tuple and return a new tuple.`, function() {
       let p = m.tuple(1, 2);
-      m.swap(p).should.have.properties({`1`: 2, `2`: 1});
+      m.swap(p).should.have.properties({"1": 2, "2": 1});
     });
     it(`should throw a type error if a value other than a tuple is passed as an argument.`, function() {
       m.swap.bind(null, unit).should.throw();
@@ -113,7 +113,7 @@ describe(`Tuple`, function() {
   describe(`tuple()`, function() {
     it(`should return a new tuple if at least two values are passed as arguments.`, function() {
       let p = m.tuple(1, 2);
-      p.should.have.properties({`1`: 1, `2`: 2});
+      p.should.have.properties({"1": 1, "2": 2});
     });
     it(`should return the argument value if only one value is passed as an argument.`, function() {
       let p = m.tuple(7);
@@ -121,7 +121,7 @@ describe(`Tuple`, function() {
     });
     it(`should return unit (an empty tuple) if no values are passed as arguments.`, function() {
       let p = m.tuple();
-      p.should.have.properties({`0`: null});
+      p.should.have.properties({"0": null});
     });
   });
   describe(`uncurry()`, function() {
@@ -207,13 +207,13 @@ describe(`Tuple`, function() {
       m.greaterThanOrEqual(b, a).should.be.true;
       m.greaterThanOrEqual(c, d).should.be.true;
       m.greaterThanOrEqual(a, b).should.be.false;
-      m.max(a, b).should.have.properties({`1`: 1, `2`: 3});
-      m.min(b, c).should.have.properties({`1`: 1, `2`: 3});
+      m.max(a, b).should.have.properties({"1": 1, "2": 3});
+      m.min(b, c).should.have.properties({"1": 1, "2": 3});
     });
   });
   describe(`unit`, function() {
     it(`should be the empty tuple.`, function() {
-      unit.should.have.properties({`0`: null});
+      unit.should.have.properties({"0": null});
     });
     it(`isTuple(unit) should return false.`, function() {
       m.isTuple(unit).should.be.false;

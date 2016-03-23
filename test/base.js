@@ -2,14 +2,14 @@ import m from '../distribution/index';
 
 describe(`Base`, function() {
   describe(`dataType()`, function() {
-    it(`should return the constructor function of an object.`, function() {
+    it(`should return the constructor function of an object`, function() {
       m.dataType(0).should.be.a.Function();
       let lst = m.list(1,2,3);
       m.dataType(lst).should.be.a.Function();
     });
   });
   describe(`type()`, function() {
-    it(`should return the type of an object.`, function() {
+    it(`should return the type of an object`, function() {
       let a = m.tuple(1, 2);
       let b = m.tuple(3, 4, 5);
       let c = `text`;
@@ -25,10 +25,10 @@ describe(`Base`, function() {
     let t1 = m.tuple(1,2);
     let t2 = m.tuple(2,3);
     let lst = m.list(1,2,3);
-    it(`should return true if two objects are the same type.`, function() {
+    it(`should return true if two objects are the same type`, function() {
       m.typeCheck(t1, t2).should.be.true;
     });
-    it(`should return false if two objects are not the same type.`, function() {
+    it(`should return false if two objects are not the same type`, function() {
       m.typeCheck(t1, lst).should.be.false;
     });
   });
@@ -39,15 +39,15 @@ describe(`Base`, function() {
     }
     let partial = f(5);
     let applied = f(5, 5);
-    it(`should return a function if not all arguments are applied.`, function() {
+    it(`should return a function if not all arguments are applied`, function() {
       partial.should.be.a.Function();
     });
-    it(`should return a value if all arguments are applied.`, function() {
+    it(`should return a value if all arguments are applied`, function() {
       applied.should.equal(25);
     });
   });
   describe(`$()`, function() {
-    it(`should compose two functions and return the result.`, function() {
+    it(`should compose two functions and return the result`, function() {
       let addTen = x =>  x + 10;
       let multHund = x => x * 100;
       let addTwenty = x => addTen(10);
@@ -67,22 +67,22 @@ describe(`Base`, function() {
   describe(`flip()`, function() {
     let f = (x, y) => x - y;
     let flipped = m.flip(f);
-    it(`should return a function.`, function() {
+    it(`should return a function`, function() {
       flipped.should.be.a.Function();
     });
-    it(`should return the value of the original function with its arguments flipped.`, function() {
+    it(`should return the value of the original function with its arguments flipped`, function() {
       f(100, 50).should.equal(50);
       flipped(100, 50).should.equal(-50);
     });
   });
   describe(`id()`, function() {
-    it(`should return whatever is passed as an argument.`, function() {
+    it(`should return whatever is passed as an argument`, function() {
       m.id(1).should.equal(1);
       m.id(`A`).should.equal(`A`);
     });
   });
   describe(`constant()`, function() {
-    it(`should return the value of the second argument applied to it.`, function() {
+    it(`should return the value of the second argument applied to it`, function() {
       m.constant(2, 3).should.equal(2);
       let multHund = x => x * 100;
       let c = (x, y) => m.$(m.constant(x))(multHund)(y);
@@ -90,7 +90,7 @@ describe(`Base`, function() {
     });
   });
   describe(`until()`, function() {
-    it(`should yield the result of applying a function to a value until a predicate is true.`, function() {
+    it(`should yield the result of applying a function to a value until a predicate is true`, function() {
       let pred = x => x > 10;
       let f = x => x + 1;
       let u = m.until(pred, f);
@@ -98,21 +98,21 @@ describe(`Base`, function() {
     });
   });
   describe(`and()`, function() {
-    it(`should return true if both of two values are true.`, function() {
+    it(`should return true if both of two values are true`, function() {
       m.and(true, true).should.be.true;
     });
-    it(`should return false if either of two values is false.`, function() {
+    it(`should return false if either of two values is false`, function() {
       m.and(true, false).should.be.false;
       m.and(false, true).should.be.false;
     });
   });
   describe(`or()`, function() {
-    it(`should return true if either of two values are true.`, function() {
+    it(`should return true if either of two values are true`, function() {
       m.or(true, false).should.be.true;
       m.or(false, true).should.be.true;
       m.or(true, true).should.be.true;
     });
-    it(`should return false if both of two values are false.`, function() {
+    it(`should return false if both of two values are false`, function() {
       m.or(false, false).should.be.false;
     });
   });
@@ -154,7 +154,7 @@ describe(`Base`, function() {
     });
   });
   describe(`show()`, function() {
-    it(`should display the value of an object as a string.`, function() {
+    it(`should display the value of an object as a string`, function() {
       let lst = m.list(1,2,3);
       let tup = m.tuple(1,2);
       m.show(lst).should.equal(`[1:2:3:[]]`);
@@ -162,7 +162,7 @@ describe(`Base`, function() {
     });
   });
   describe(`print()`, function() {
-    it(`should display the value of an object on the console:`, function() {
+    it(`should display the value of an object on the console`, function() {
       let lst = m.list(1,2,3);
       let tup = m.tuple(1,2);
       m.print(lst);
@@ -175,13 +175,13 @@ describe(`Base`, function() {
     let b = 5;
     let c = 10;
     let d = `text`;
-    it(`should return true if the two objects passed as arguments are equatable and equal in value.`, function() {
+    it(`should return true if the two objects passed as arguments are equatable and equal in value`, function() {
       m.isEq(a, b).should.be.true;
     });
-    it(`should return false if the two objects passed as arguments are equatable and not equal in value.`, function() {
+    it(`should return false if the two objects passed as arguments are equatable and not equal in value`, function() {
       m.isEq(a, c).should.be.false;
     });
-    it(`should throw a type error if the two objects passed as arguments are not the same type.`, function() {
+    it(`should throw a type error if the two objects passed as arguments are not the same type`, function() {
       m.isEq.bind(null, a, d).should.throw();
     });
   });
@@ -190,13 +190,13 @@ describe(`Base`, function() {
     let b = 5;
     let c = 10;
     let d = `text`;
-    it(`should return true if the two objects passed as arguments are equatable and not equal in value.`, function() {
+    it(`should return true if the two objects passed as arguments are equatable and not equal in value`, function() {
       m.isEq(a, c).should.be.true;
     });
-    it(`should return false if the two objects passed as arguments are equatable and equal in value.`, function() {
+    it(`should return false if the two objects passed as arguments are equatable and equal in value`, function() {
       m.isEq(a, b).should.be.false;
     });
-    it(`should throw a type error if the two objects passed as arguments are not the same type.`, function() {
+    it(`should throw a type error if the two objects passed as arguments are not the same type`, function() {
       m.isEq.bind(null, a, d).should.throw();
     });
   });
@@ -206,15 +206,15 @@ describe(`Base`, function() {
     let b = 2;
     let c = 2;
     let d = 2;
-    it(`should return the Ordering of two values if they are the same type.`, function() {
+    it(`should return the Ordering of two values if they are the same type`, function() {
       m.compare(a, b).should.equal(m.LT);
       m.compare(b, a).should.equal(m.GT);
       m.compare(b, c).should.equal(m.EQ);
     });
-    it(`should throw a type error if two tuples are not the same type.`, function() {
+    it(`should throw a type error if two tuples are not the same type`, function() {
       m.compare.bind(null, c, `text`).should.throw();
     });
-    it(`should work with the other Ord functions.`, function() {
+    it(`should work with the other Ord functions`, function() {
       m.lessThan(a, b).should.be.true;
       m.lessThan(c, d).should.be.false;
       m.lessThan(b, a).should.be.false;
