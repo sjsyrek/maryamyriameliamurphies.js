@@ -2,8 +2,9 @@
  * maryamyriameliamurphies.js
  *
  * @name eq.js
- * @fileOverview
- * Eq type class
+ * @author Steven J. Syrek
+ * @file Eq type class.
+ * @license ISC
  */
 
  /** @module maryamyriameliamurphies.js/source/eq */
@@ -33,11 +34,11 @@ const Eq = defines(`isEq`);
  * isEq(0, 0);              // => true
  */
 function isEq(a, b) {
-  let p = (a, b) => {
+  const isEqP = (a, b) => {
     if (typeCheck(a, b)) { return Eq(a) ? dataType(a).isEq(a, b) : a === b; }
     return error.typeMismatch(a, b, isEq);
   }
-  return partial(p, a, b);
+  return partial(isEqP, a, b);
 }
 
 /**
@@ -56,6 +57,6 @@ function isEq(a, b) {
  * isNotEq(0, 0);              // => false
  */
 function isNotEq(a, b) {
-  let p = (a, b) => !isEq(a, b);
-  return partial(p, a, b);
+  let isNotEqP = (a, b) => !isEq(a, b);
+  return partial(isNotEqP, a, b);
 }
