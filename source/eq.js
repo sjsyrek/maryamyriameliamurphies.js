@@ -7,7 +7,7 @@
  * @license ISC
  */
 
- /** @module maryamyriameliamurphies.js/source/eq */
+/** @module maryamyriameliamurphies.js/source/eq */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Eq

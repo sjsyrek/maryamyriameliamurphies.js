@@ -7,7 +7,7 @@
  * @license ISC
  */
 
- /** @module maryamyriameliamurphies.js/source/base */
+/** @module maryamyriameliamurphies.js/source/base */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Error handling

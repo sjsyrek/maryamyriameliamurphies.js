@@ -2,9 +2,9 @@
  * maryamyriameliamurphies.js
  *
  * @name index.js
- * @fileOverview
- * maryamyriameliamurphies.js is a library of Haskell-style morphisms ported to JavaScript
- * using ECMAScript 2015 syntax.
+ * @author Steven J. Syrek
+ * @file A library of Haskell-style morphisms ported to ES2015 JavaScript using Babel.
+ * @license ISC
  *
  * Reading the code:
  *
@@ -21,11 +21,10 @@
  * For the sake of those interested, the comment for each function includes the type signature
  * of its Haskell original. My hope is that most of the functions are otherwise self-documenting,
  * though the style is admittedly terse and, therefore, potentially bewildering (or Joycean?).
- * The public API for this library is specified, following CommonJS style, in a default object
- * at the bottom of this file. Corrections, modifications, improvements, and additions welcome.
+ * Corrections, modifications, improvements, and additions welcome.
  */
 
- /** @module maryamyriameliamurphies.js/source/index */
+/** @module maryamyriameliamurphies.js/source/index */
 
 export * from './source/base';
 export * from './source/eq';
