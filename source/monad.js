@@ -126,7 +126,8 @@ class DoBlock {
  * const lst = list(1,2,3);
  * const plusOne = x => list(x + 1);
  * const doubleList = x => list(x * 2);
- * const put = x => { *    print(x);
+ * const put = x => {
+ *    print(x);
  *   return just(x);
  * }
  * const b1 = Do(j).bind(doubleJust).bind(minusOne);
