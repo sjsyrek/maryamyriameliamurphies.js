@@ -146,7 +146,7 @@ export function dataType = (a) => a.constructor;
  * let t = tuple(1,2);
  * type(t);                   // => (number,number)
  */
-function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
+export function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
 
 /**
  * Determine whether two objects are the same type, returning `true` if they are and `false` otherwise.
@@ -160,12 +160,12 @@ function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
  * typeCheck(0, 'a');       // => false
  */
 export function typeCheck(a, b) {
-  let p = (a, b) => {
+  const typeCheckP = (a, b) => {
     if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
     if (dataType(a) === dataType(b)) { return true; }
     return false;
   }
-  return partial(p, a, b);
+  return partial(typeCheckP, a, b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
