@@ -57,6 +57,6 @@ function isEq(a, b) {
  * isNotEq(0, 0);              // => false
  */
 function isNotEq(a, b) {
-  let isNotEqP = (a, b) => !isEq(a, b);
+  const isNotEqP = (a, b) => !isEq(a, b);
   return partial(isNotEqP, a, b);
 }
