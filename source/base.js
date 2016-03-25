@@ -1,9 +1,10 @@
 /**
  * maryamyriameliamurphies.js
  *
- * @name base.js
- * @fileOverview
- * Error handling, type system, and basic functions
+ * @name index.js
+ * @author Steven J. Syrek
+ * @file Error handling, type system, and basic functions.
+ * @license ISC
  */
 
  /** @module maryamyriameliamurphies.js/source/base */
@@ -38,7 +39,7 @@ const error = {
  * @param {string} e - The error message to display.
  * @private
  */
-function throwError(e) { throw Error(`*** Error: ${e}`); }
+export function throwError(e) { throw Error(`*** Error: ${e}`); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Type system
@@ -115,28 +116,26 @@ class Type {
  * by the type class are not verified.
  * @param {...string} methods
  * @returns {Function} - A closure that returns true if a given object declares all the given methods, false otherwise.
- * @const
  * @example
  * // requires that instances of the `Eq` type class define an `isEq` function
  * const Eq = defines(`isEq`);
  * // requires that instances of `Traversable` define `traverse` and also be instances of `Functor` and `Foldable`
  * const Traversable = defines(`fmap`, `foldr`, `traverse`);
  */
-const defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
+export function defines = (...methods) => a => methods.every(m => Reflect.has(dataType(a), m));
 
 /**
  * A utility function for returning the data type of a given object. In JavaScript, this is simply the object's
  * constructor, so this function really just serves as an alias for terminological clarification.
  * @param {*} a - Any object.
  * @returns {Function} - The object's constructor function.
- * @const
  * @example
  * dataType(0);               // function Number() { [native code] }
  * let lst = list(1,2,3);
  * dataType(lst)              // => function List(head, tail) { ... }
  * lst.typeOf();              // => List // more useful if you don't need a function pointer
  */
-const dataType = (a) => a.constructor;
+export function dataType = (a) => a.constructor;
 
 /**
  * Return the type of any object as specified by this library or, otherwise, its primitive type.
@@ -160,7 +159,7 @@ function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
  * typeCheck(0, 1);         // => true
  * typeCheck(0, 'a');       // => false
  */
-function typeCheck(a, b) {
+export function typeCheck(a, b) {
   let p = (a, b) => {
     if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
     if (dataType(a) === dataType(b)) { return true; }
@@ -195,7 +194,7 @@ function typeCheck(a, b) {
  * multiply(10);              // => function () { [native code] } // (with 10 applied to x)
  * multiply(10)(10);          // => 100
  */
-function partial(f, ...as) {
+export function partial(f, ...as) {
   if (isEmpty(as)) { return f.call(); }
   let a = as.shift();
   if (a === undefined) { return f; }
@@ -237,7 +236,7 @@ function partial(f, ...as) {
  * $(divByTen)(multHund)(10)          // => 0.01
  * }
  */
-function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
+export function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
 
 /**
  * Reverse the order in which arguments are applied to a function. Note that flip only works on functions
@@ -251,7 +250,7 @@ function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x)); }
  * subtract(10, 5);                // => 5
  * flipped(10, 5);                 // => -5
  */
-function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
+export function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
 
 /**
  * The identity function. Returns the value of the argument unchanged.
@@ -262,7 +261,7 @@ function flip(f) { return (x, y) => y === undefined ? y => f(y, x) : f(y, x); }
  * id(1);           // => 1
  * id(list(1,2,3)); // => [1:2:3:[]]
  */
-function id(a) { return a; }
+export function id(a) { return a; }
 
 /**
  * Return the value of the first argument, throwing away the value of the second argument.
@@ -276,7 +275,7 @@ function id(a) { return a; }
  * let c = (x, y) => $(constant(x))(multHund)(y);
  * c(5, 10);                                      // => 5
  */
-function constant(a, b) {
+export function constant(a, b) {
   let p = (a, b) => a;
   return partial(p, a, b);
 }
@@ -295,7 +294,7 @@ function constant(a, b) {
  * let u = until(pred, f);
  * u(1);                   // => 11
  */
-function until(pred, f, x) {
+export function until(pred, f, x) {
   let p = (pred, f, x) => pred(x) ? x : until(pred, f, f(x));
   return partial(p, pred, f, x);
 }
@@ -312,7 +311,7 @@ function until(pred, f, x) {
  * let b = 0 > 5;
  * and(a, b);       // => false
  */
-function and(a, b) {
+export function and(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, and); }
     if (type(b) !== `boolean`) { return error.typeError(b, and); }
@@ -334,7 +333,7 @@ function and(a, b) {
  * let b = 0 > 5;
  * or(a, b);        // => true
  */
-function or(a, b) {
+export function or(a, b) {
   let p = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, or); }
     if (type(b) !== `boolean`) { return error.typeError(b, or); }
@@ -358,7 +357,7 @@ function or(a, b) {
  * not(a);        // => false
  * not(b);        // => true
  */
-function not(a) {
+export function not(a) {
   if (type(a) !== `boolean`) { return error.typeError(a, not); }
   if (a) { return false; }
   return true;
@@ -370,7 +369,7 @@ function not(a) {
  * @param {*} a - Any value.
  * @returns {boolean} - `true` if even, `false` otherwise.
  */
-function even(a) { return a % 2 === 0; }
+export function even(a) { return a % 2 === 0; }
 
 /**
  * Return `true` if a value is odd, `false` otherwise.
@@ -378,7 +377,7 @@ function even(a) { return a % 2 === 0; }
  * @param {*} a - Any value.
  * @returns {boolean} - `true` if odd, `false` otherwise.
  */
-function odd(a) { return $(not)(even)(a); }
+export function odd(a) { return $(not)(even)(a); }
 
 /**
  * Check whether a value is an empty collection. Returns `true` if the value is an empty list, an empty tuple,
@@ -395,7 +394,7 @@ function odd(a) { return $(not)(even)(a); }
  * isEmpty(unit);              // => true
  * isEmpty(tuple(unit, unit)); // => false (warning!)
  */
-function isEmpty(a) {
+export function isEmpty(a) {
   if (isList(a)) { return a === emptyList; }
   if (isTuple(a)) { return false; }
   if (a === unit) { return true; }
@@ -414,7 +413,7 @@ function isEmpty(a) {
  * show(lst);             // => [1:2:3:[]]
  * show(tup);             // => (1,2)
  */
-function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
+export function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf(); }
 
 /**
  * A utility function for displaying the results of show on the console. One could imagine a more generalized
@@ -425,4 +424,4 @@ function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e => e.v
  * let lst = list(1,2,3);
  * print(lst);            // "[1:2:3:[]]"
  */
-function print(a) { return console.log(show(a)); }
+export function print(a) { return console.log(show(a)); }
