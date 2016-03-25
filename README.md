@@ -50,12 +50,12 @@ Requires:
 * [Babel](http://babeljs.io/)
 * [babel-polyfill](http://babeljs.io/docs/usage/polyfill/)
 * [Mocha](http://mochajs.org)
-* [should.js](http://shouldjs.github.io)
+* [Should.js](http://shouldjs.github.io)
 * [ESLint](http://eslint.org)
-* [babel-eslint](https://github.com/babel/babel-eslint)
+* [babel-eslint](https://www.npmjs.com/package/babel-eslint)
 * [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
 
-I develop the code on [Node.js](https://nodejs.org/en/) using [Babel](http://babeljs.io/), lint it with [ESLint](http://eslint.org) using the [babel-eslint](https://github.com/babel/babel-eslint) parser and [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb) rule set, and test the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since this library uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in Node or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
+I develop the code on [Node.js](https://nodejs.org/en/) using [Babel](http://babeljs.io/), lint it with [ESLint](http://eslint.org) using the [babel-eslint](https://www.npmjs.com/package/babel-eslint) parser and [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb) rule set, and test the transpiled ES5 output with [Mocha](http://mochajs.org) and the [Should.js](http://shouldjs.github.io) assertion library. Since this library uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in Node or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
 
 ES2015 code is located in the `/source` directory and babel-transpiled ES5 code in the `/distribution` directory. Mocha tests are in `/test` and example projects are in `/examples`.
 
