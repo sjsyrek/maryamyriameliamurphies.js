@@ -1,7 +1,7 @@
 {
   "name": "maryamyriameliamurphies",
   "version": "0.9.9",
-  "description": "maryamyriameliamurphies.js is a library of Haskell-style morphisms ported to JavaScript.",
+  "description": "A library of Haskell-style morphisms ported to ES2015 JavaScript using Babel.",
   "main": "./distribution/index.js",
   "directories": {
     "test": "test"
@@ -29,10 +29,11 @@
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.1",
-    "babel-eslint": "^5.0.0-beta10",
+    "babel-eslint": "git+https://github.com/babel/babel-eslint.git",
     "babel-polyfill": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",
     "eslint": "^2.4.0",
+    "eslint-config-airbnb": "^6.2.0",
     "mocha": "^2.4.5",
     "should": "^8.2.2"
   },

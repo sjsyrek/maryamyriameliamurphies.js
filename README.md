@@ -42,8 +42,7 @@ These commands require certain npm packages. See below.
 Since the average explanation of functional programming terminology makes about as much sense to the average reader as the average page of _Finnegans Wake_, I gave this library a whimsical, literary name. Also, I'm an English literature Ph.D. student, and functional code strikes me as poetic (as "composed" in multiple senses) even though the technical explanations are impenetrably obtuse. All you need to know—in fact, all I understand—is that a pure function (or a morphism in general) simply describes how one thing can predictably transform into another. So a functional program, much like Joyce's final work, is an extended description of how things change.
 
 These functions are experimental, as Haskell's type system translates only awkwardly to a JavaScript idiom, but I'd be delighted if any of them turn out to be useful. I tried hard to make them as pure as possible, which is why most (but not all) of them accept as arguments and return as values single values, and very few are defined as methods on prototypes. I also followed Haskell code patterns as
-closely as I could and as made sense given each implementation, resulting in a style that is sometimes
-extremely straightforward and sometimes bewilderingly terse.
+closely as I could for each implementation (as much as it made sense to do so), resulting in a style that is sometimes extremely straightforward and sometimes bewilderingly terse.
 
 I developed the code using the [Babel](http://babeljs.io/) package on [Node.js](https://nodejs.org/en/), linted both source and distribution code with the [babel-eslint](https://github.com/babel/babel-eslint) parser for the latest version of [ESLint](http://eslint.org), and tested the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since it uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in [Node](https://nodejs.org/en/) or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
 
@@ -61,7 +60,17 @@ Since JavaScript is not a strongly typed language by nature, it seemed unnecessa
 
 ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack. When it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls).
 
-## See also
+"maryamyriameliamurphies" is a word that occurs on pg. 293 of James Joyce's _Finnegans Wake_. The two brothers Kev and Dolph (surrogates for the archetypal brothers Shem and Shaun, who represent between them all rival brothers in history and myth) are having a math lesson. Dolph, the elder, is attempting to explain to Kev the [first postulate of Euclid](http://mathworld.wolfram.com/EuclidsPostulates.html), which results in a rather prurient diagram of circles and triangles. Happily for me, as a functional programmer, it contains a `λ`. If you want to find out about the naughtier significances of this diagram, you'll have to research that for yourself (hint: like functional programming, it involves "lifting"). In the middle of Dolph's explanation, Kev starts to daydream, hence all the invocations of "murphy," an allusion to Morpheus, the Greek god of dreams (also the common Irish surname, Murphy, as well as a slang word meaning both "potato" and "confidence game"). Here's my own interpretation of maryamyriameliamurphies:
+* mary - A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!"
+* myria - Like the word myriad, which means "many people or things." From the Greek word for 10,000 (also used for an uncountably large number of things).
+* melia - Similar to the Latin word for a thousand (mille), but it also looks like the Greek word for "honey" to me, which can also be used to describe something sweet.
+* murphies - As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics.
+
+Thus:
+
+* maryamyriameliamurphies - Wow, a whole bunch of sweet functions!
+
+### See also
 
 - [ghcjs](https://github.com/ghcjs/ghcjs)
 - [purescript](https://github.com/purescript/purescript)

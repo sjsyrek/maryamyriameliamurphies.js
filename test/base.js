@@ -11,20 +11,20 @@ let list = m.list;
 let emptyList = m.emptyList;
 
 describe(`Base`, function() {
+  let tup = tuple(1, 2);
+  let lst = list(1, 2, 3);
   describe(`dataType()`, function() {
     it(`should return the constructor function of an object`, function() {
       dataType(0).should.be.a.Function();
-      let lst = list(1,2,3);
       dataType(lst).should.be.a.Function();
     });
   });
   describe(`type()`, function() {
+    let b = tuple(3, 4, 5);
+    let c = `text`;
+    let d = tuple(c, 10);
     it(`should return the type of an object`, function() {
-      let a = tuple(1, 2);
-      let b = tuple(3, 4, 5);
-      let c = `text`;
-      let d = tuple(c, 10);
-      type(a).should.equal(`(number,number)`);
+      type(tup).should.equal(`(number,number)`);
       type(b).should.equal(`(number,number,number)`);
       type(c).should.equal(`string`);
       type(d).should.equal(`(string,number)`);
@@ -33,14 +33,12 @@ describe(`Base`, function() {
   });
   describe(`typeCheck()`, function() {
     let typeCheck = m.typeCheck;
-    let t1 = tuple(1,2);
-    let t2 = tuple(2,3);
-    let lst = list(1,2,3);
+    let tup2 = tuple(2, 3);
     it(`should return true if two objects are the same type`, function() {
-      typeCheck(t1, t2).should.be.true;
+      typeCheck(tup, tup2).should.be.true;
     });
     it(`should return false if two objects are not the same type`, function() {
-      typeCheck(t1, lst).should.be.false;
+      typeCheck(tup, lst).should.be.false;
     });
   });
   describe(`partial()`, function() {
@@ -96,19 +94,19 @@ describe(`Base`, function() {
   });
   describe(`constant()`, function() {
     let constant = m.constant;
+    let multHund = x => x * 100;
+    let c = (x, y) => $(constant(x))(multHund)(y);
     it(`should return the value of the second argument applied to it`, function() {
       constant(2, 3).should.equal(2);
-      let multHund = x => x * 100;
-      let c = (x, y) => $(constant(x))(multHund)(y);
       c(5, 10).should.equal(5);
     });
   });
   describe(`until()`, function() {
     let until = m.until;
+    let pred = x => x > 10;
+    let f = x => x + 1;
+    let u = until(pred, f);
     it(`should yield the result of applying a function to a value until a predicate is true`, function() {
-      let pred = x => x > 10;
-      let f = x => x + 1;
-      let u = until(pred, f);
       u(1).should.equal(11);
     });
   });
@@ -170,15 +168,14 @@ describe(`Base`, function() {
     it(`should return false if a list, tuple, or array is not empty`, function() {
       isEmpty([[]]).should.be.false;
       isEmpty(list(emptyList)).should.be.false;
-      isEmpty(tuple(1,2)).should.be.false;
+      isEmpty(tup).should.be.false;
       isEmpty(tuple(unit, unit)).should.be.false;
+      isEmpty(lst).should.be.false;
     });
   });
   describe(`show()`, function() {
     let show = m.show;
     it(`should display the value of an object as a string`, function() {
-      let lst = list(1,2,3);
-      let tup = tuple(1,2);
       show(lst).should.equal(`[1:2:3:[]]`);
       show(tup).should.equal(`(1,2)`);
     });
@@ -186,8 +183,6 @@ describe(`Base`, function() {
   describe(`print()`, function() {
     let print = m.print;
     it(`should display the value of an object on the console`, function() {
-      let lst = list(1,2,3);
-      let tup = tuple(1,2);
       print(lst);
       print(tup);
     });
