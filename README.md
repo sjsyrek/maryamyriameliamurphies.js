@@ -30,10 +30,10 @@ First published entirely by chance on St. Patrick's Day, 2016.
 
 ## How to use with npm
 
-- `npm test` Run mocha tests on all files imported into `./test/index.js`.
-- `npm run compile` Run babel on `./source/index.js` and output to `./distribution/index.js`.
+- `npm test` Run Mocha tests on all files imported into `./test/index.js`.
+- `npm run compile` Run Babel on `./source/index.js` and output to `./distribution/index.js`.
 - `npm run build` Test and compile.
-- `npm run lint` Run eslint on all files imported into `/source/index.js`.
+- `npm run lint` Run ESlint on all files imported into `/source/index.js`.
 
 These commands require certain npm packages. See below.
 
