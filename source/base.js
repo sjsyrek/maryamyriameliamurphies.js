@@ -196,9 +196,9 @@ export function typeCheck(a, b) {
  */
 export function partial(f, ...as) {
   if (isEmpty(as)) { return f.call(); }
-  let a = as.shift();
+  const a = as.shift();
   if (a === undefined) { return f; }
-  let p = f.bind(f, a);
+  const p = f.bind(f, a);
   return partial(p, ...as);
 }
 
@@ -276,27 +276,27 @@ export function id(a) { return a; }
  * c(5, 10);                                      // => 5
  */
 export function constant(a, b) {
-  let p = (a, b) => a;
-  return partial(p, a, b);
+  const constantP = (a, b) => a;
+  return partial(constantP, a, b);
 }
 
 /**
  * Yield the result of applying function `f` to a value `x` until the predicate
- * function `pred` is true. A negative, recursive version of a `while` loop.
+ * function `p` is true. A negative, recursive version of a `while` loop.
  * Haskell> until :: (a -> Bool) -> (a -> a) -> a -> a
- * @param {Function} pred - A predicate function that returns a boolean.
+ * @param {Function} p - A predicate function that returns a boolean.
  * @param {Function} f - The function to apply to `x`.
  * @param {*} x - The value to bind to `f`.
- * @returns {*} - The result of applying `f` to `x` until `pred` returns `true`.
+ * @returns {*} - The result of applying `f` to `x` until `p` returns `true`.
  * @example
- * let pred = x => x > 10;
+ * let p = x => x > 10;
  * let f = x => x + 1;
- * let u = until(pred, f);
+ * let u = until(p, f);
  * u(1);                   // => 11
  */
-export function until(pred, f, x) {
-  let p = (pred, f, x) => pred(x) ? x : until(pred, f, f(x));
-  return partial(p, pred, f, x);
+export function until(p, f, x) {
+  const untilP = (p, f, x) => p(x) ? x : until(p, f, f(x));
+  return partial(untilP, p, f, x);
 }
 
 /**
@@ -312,13 +312,13 @@ export function until(pred, f, x) {
  * and(a, b);       // => false
  */
 export function and(a, b) {
-  let p = (a, b) => {
+  const andP = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, and); }
     if (type(b) !== `boolean`) { return error.typeError(b, and); }
     if (a) { return b; }
     return false;
   }
-  return partial(p, a, b);
+  return partial(andP, a, b);
 }
 
 /**
@@ -334,13 +334,13 @@ export function and(a, b) {
  * or(a, b);        // => true
  */
 export function or(a, b) {
-  let p = (a, b) => {
+  const orP = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, or); }
     if (type(b) !== `boolean`) { return error.typeError(b, or); }
     if (a)  { return true; }
     return b;
   }
-  return partial(p, a, b);
+  return partial(orP, a, b);
 }
 
 /**
