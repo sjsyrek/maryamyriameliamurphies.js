@@ -24,16 +24,16 @@ First published entirely by chance on St. Patrick's Day, 2016.
 
 ## How to Install
 
-1. Copy and paste the code. Go nuts.
-2. `git clone` this repo, `npm install && npm run compile`, and `import` it into your projects.
-3. [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
+* Copy and paste the code. Go nuts.
+* `git clone` this repo, `npm install && npm run compile`, and `import` it into your projects.
+* [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
 
-If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
+## How to use with npm
 
-- `npm test` - run mocha using babel on all files imported into `/test/index.js`
-- `npm run compile` - run babel on `/source/index.js` and output to `/distribution/index.js`
-- `npm run build` - compile and test
-- `npm run lint` - run eslint on all files imported into `/source/index.js`
+- `npm test` Run mocha tests on all files imported into `./test/index.js`.
+- `npm run compile` Run babel on `./source/index.js` and output to `./distribution/index.js`.
+- `npm run build` Test and compile.
+- `npm run lint` - Run eslint on all files imported into `/source/index.js`.
 
 These commands require certain npm packages. See below.
 
@@ -80,11 +80,11 @@ ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text
 
 ### See also
 
-- [ghcjs](https://github.com/ghcjs/ghcjs)
-- [purescript](https://github.com/purescript/purescript)
-- [lazy.js](https://github.com/dtao/lazy.js)
-- [fantasy-land](https://github.com/fantasyland/fantasy-land)
-- [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
+* [ghcjs](https://github.com/ghcjs/ghcjs)
+* [purescript](https://github.com/purescript/purescript)
+* [lazy.js](https://github.com/dtao/lazy.js)
+* [fantasy-land](https://github.com/fantasyland/fantasy-land)
+* [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
 
 ## API
 

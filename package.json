@@ -43,7 +43,7 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register ./test/index.js",
     "compile": "babel source --out-dir distribution",
-    "build": "npm run compile && npm test",
+    "build": "npm test && npm run compile",
     "lint": "eslint ./source/index.js",
     "prepublish": "npm run compile"
   }
