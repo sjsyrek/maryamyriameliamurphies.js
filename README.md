@@ -88,10 +88,11 @@ The word "maryamyriameliamurphies" occurs on pg. 293 of James Joyce's _Finnegans
 Here's my own interpretation of maryamyriameliamurphies:
 
 * **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!" Also a mild oath, since it refers to the Virgin Mary (as pure as a monadic interface, she was).
-* **myria** — Like the word myriad, which means "many people or things." From the Greek word for 10,000 (also used for an uncountably large number of things).
-* **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet.
-* **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics.
-* **maryamyriameliamurphies** - Wow, a whole bunch of sweet functions!
+* **myria** — Probably the word myriad, "many people or things." Also the ancient Greek word for 10,000, though used just as often to mean an uncountably large number of things (because who would ever need to count higher than 10,000?).
+* **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet (or, at a stretch, the Latin word "meliora" meaning "better than").
+* **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics, though it's doubtful this would have occurred to Joyce.
+
+#### **maryamyriameliamurphies** - Wow, a whole bunch of sweet functions!
 
 ## API
 
