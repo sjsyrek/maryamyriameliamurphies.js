@@ -70,7 +70,7 @@ class Maybe extends Type {
  * nothings are the same nothing, there is only one `Nothing` (c.f. Wallace Stevens).
  * @const {Maybe}
  */
-const Nothing = new Maybe();
+export const Nothing = new Maybe();
 
 /**
  * A constructor for a `Maybe` value. Returns `Nothing` if the value is `undefined`, `null`, or `NaN`.
