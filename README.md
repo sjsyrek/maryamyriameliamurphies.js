@@ -92,7 +92,7 @@ Here's my own interpretation of maryamyriameliamurphies:
 * **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet (or, at a stretch, the Latin word "meliora" meaning "better than").
 * **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics, though it's doubtful this would have occurred to Joyce.
 
-#### **maryamyriameliamurphies** - Wow, a whole bunch of sweet functions!
+#### **maryamyriameliamurphies** — Wow, a whole bunch of sweet functions!
 
 ## API
 
