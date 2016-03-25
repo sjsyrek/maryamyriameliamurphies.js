@@ -22,13 +22,13 @@
 
 First published entirely by chance on St. Patrick's Day, 2016.
 
-## How to Install
+### How to install
 
 * Copy and paste the code. Go nuts.
 * `git clone` this repo, `npm install && npm run compile`, and `import` it into your projects.
 * [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
 
-## How to use with npm
+### How to use with npm if you clone
 
 - `npm test` Run Mocha tests on all files imported into `./test/index.js`.
 - `npm run compile` Run Babel on `./source/index.js` and output to `./distribution/index.js`.
@@ -37,12 +37,34 @@ First published entirely by chance on St. Patrick's Day, 2016.
 
 These commands require certain npm packages. See below.
 
-## Description
+### Description
 
 Since the average explanation of functional programming terminology makes about as much sense to the average reader as the average page of _Finnegans Wake_, I gave this library a whimsical, literary name. Also, I'm an English literature Ph.D. student, and functional code strikes me as poetic (as "composed" in multiple senses) even though the technical explanations are impenetrably obtuse. All you need to know—in fact, all I understand—is that a pure function (or a morphism in general) simply describes how one thing can predictably transform into another. So a functional program, much like Joyce's final work, is an extended description of how things change.
 
 These functions are experimental, as Haskell's type system translates only awkwardly to a JavaScript idiom, but I'd be delighted if any of them turn out to be useful. I tried hard to make them as pure as possible, which is why most (but not all) of them accept as arguments and return as values single values, and very few are defined as methods on prototypes. I also followed Haskell code patterns as
 closely as I could for each implementation (as much as it made sense to do so), resulting in a style that is sometimes extremely straightforward and sometimes bewilderingly terse.
+
+There are two Haskell concepts that I use in the code that do not perfectly fit into the JavaScript way of doing things: the type class and the data type. In Haskell, a type class is similar to a protocol or trait in other programming languages. It describes an interface that objects conforming to it must implement.
+
+A type class is a way of making fully parameterized types more useful by placing constraints on them. For example, the `Eq` type class in this library provides functionality for comparing whether the objects that implement it are equal. Objects that provide their own `isEq()` function will perform this test and return a `boolean`. Note that Haskell type classes are in no way comparable to "classes" in OOP.
+
+A data type, on the other hand, is much closer to an OO class definition, as it does describe a custom type. The `Tuple` type is an example of a data type, as it represents a container for other, more basic values. As is often the case with objects in classical languages, instances of Haskell data types are created with special constructor functions that initialize them based on the arguments to those functions. A data type does not inherit (in the usual way) from other data types, however. Instead, it describes how constructor functions convert values passed in as arguments to those functions into the values that comprise that particular type.
+
+As mentioned above, data types can be constrained (or not) by type classes, so as to provide additional functionality—`Eq` is an example of this, as is `Ord`, a type class that allows objects to be compared (greater than, less than, etc.). `Tuple` implements both of these type classes, as one may rightly want to compare tuples or test them for equality, for example.
+
+Since JavaScript is not a strongly typed language by nature, it seemed unnecessary to me (and, for better or worse, antithetical to the JS spirit) to recreate the entirety of Haskell's static type system, though I do provide a limited amount of type checking. Anyone interested in better type safety should probably be using something like [PureScript](http://www.purescript.org) or [GHCJS](https://github.com/ghcjs/ghcjs). Instead, I use the new ES2015 `class` pattern for data types with static methods defined on those classes to provide the functionality of type classes. Since the classes and their constructors are not exposed in the API this library provides, instances of data types must be created using specialized functions provided for this purpose. This keeps the static "type class" methods private and affords some degree of namespace protection for the data types.
+
+ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack. When it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls).
+
+#### See also
+
+* [ghcjs](https://github.com/ghcjs/ghcjs)
+* [purescript](https://github.com/purescript/purescript)
+* [lazy.js](https://github.com/dtao/lazy.js)
+* [fantasy-land](https://github.com/fantasyland/fantasy-land)
+* [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
+
+### Development
 
 Requires:
 
@@ -59,32 +81,17 @@ I develop the code on [Node.js](https://nodejs.org/en/) using [Babel](http://bab
 
 ES2015 code is located in the `/source` directory and babel-transpiled ES5 code in the `/distribution` directory. Mocha tests are in `/test` and example projects are in `/examples`.
 
-There are two Haskell concepts that I use in the code that do not perfectly fit into the JavaScript way of doing things: the type class and the data type. In Haskell, a type class is similar to a protocol or trait in other programming languages. It describes an interface that objects conforming to it must implement.
+### What the name of this library means
 
-A type class is a way of making fully parameterized types more useful by placing constraints on them. For example, the `Eq` type class in this library provides functionality for comparing whether the objects that implement it are equal. Objects that provide their own `isEq()` function will perform this test and return a `boolean`. Note that Haskell type classes are in no way comparable to "classes" in OOP.
+The word "maryamyriameliamurphies" occurs on pg. 293 of James Joyce's _Finnegans Wake_. The two brothers Kev and Dolph (surrogates for the archetypal Shem and Shaun, who represent all rival brothers in history and myth) are having a math lesson. Dolph, the elder, is attempting to explain to Kev the [first postulate of Euclid](http://mathworld.wolfram.com/EuclidsPostulates.html), which results in a rather prurient diagram of circles and triangles. Happily for me, as a functional programmer, it contains a `λ`. If you want to find out about the naughtier significances of this diagram, you'll have to research that for yourself (hint: like functional programming, it involves "lifting"). In the middle of Dolph's explanation, Kev starts to daydream, hence all the invocations of "murphy," an allusion to Morpheus, the Greek god of dreams (also the common Irish surname, Murphy, as well as a slang word meaning both "potato" and "confidence game").
 
-A data type, on the other hand, is much closer to an OO class definition, as it does describe a custom type. The `Tuple` type is an example of a data type, as it represents a container for other, more basic values. As is often the case with objects in classical languages, instances of Haskell data types are created with special constructor functions that initialize them based on the arguments to those functions. A data type does not inherit (in the usual way) from other data types, however. Instead, it describes how constructor functions convert values passed in as arguments to those functions into the values that comprise that particular type.
+Here's my own interpretation of maryamyriameliamurphies:
 
-As mentioned above, data types can be constrained (or not) by type classes, so as to provide additional functionality—`Eq` is an example of this, as is `Ord`, a type class that allows objects to be compared (greater than, less than, etc.). `Tuple` implements both of these type classes, as one may rightly want to compare tuples or test them for equality, for example.
-
-Since JavaScript is not a strongly typed language by nature, it seemed unnecessary to me (and, for better or worse, antithetical to the JS spirit) to recreate the entirety of Haskell's static type system, though I do provide a limited amount of type checking. Anyone interested in better type safety should probably be using something like [PureScript](http://www.purescript.org) or [GHCJS](https://github.com/ghcjs/ghcjs). Instead, I use the new ES2015 `class` pattern for data types with static methods defined on those classes to provide the functionality of type classes. Since the classes and their constructors are not exposed in the API this library provides, instances of data types must be created using specialized functions provided for this purpose. This keeps the static "type class" methods private and affords some degree of namespace protection for the data types.
-
-ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack. When it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls).
-
-"maryamyriameliamurphies" is a word that occurs on pg. 293 of James Joyce's _Finnegans Wake_. The two brothers Kev and Dolph (surrogates for the archetypal brothers Shem and Shaun, who represent between them all rival brothers in history and myth) are having a math lesson. Dolph, the elder, is attempting to explain to Kev the [first postulate of Euclid](http://mathworld.wolfram.com/EuclidsPostulates.html), which results in a rather prurient diagram of circles and triangles. Happily for me, as a functional programmer, it contains a `λ`. If you want to find out about the naughtier significances of this diagram, you'll have to research that for yourself (hint: like functional programming, it involves "lifting"). In the middle of Dolph's explanation, Kev starts to daydream, hence all the invocations of "murphy," an allusion to Morpheus, the Greek god of dreams (also the common Irish surname, Murphy, as well as a slang word meaning both "potato" and "confidence game"). Here's my own interpretation of maryamyriameliamurphies:
-* **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!"
+* **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!" Also a mild oath, since it refers to the Virgin Mary (as pure as a monadic interface, she was).
 * **myria** — Like the word myriad, which means "many people or things." From the Greek word for 10,000 (also used for an uncountably large number of things).
-* **melia** — Similar to the Latin word for a thousand (mille), but it also looks like the Greek word for "honey" to me, which can also be used to describe something sweet.
+* **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet.
 * **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics.
 * **maryamyriameliamurphies** - Wow, a whole bunch of sweet functions!
-
-### See also
-
-* [ghcjs](https://github.com/ghcjs/ghcjs)
-* [purescript](https://github.com/purescript/purescript)
-* [lazy.js](https://github.com/dtao/lazy.js)
-* [fantasy-land](https://github.com/fantasyland/fantasy-land)
-* [casualjavascript](https://github.com/casualjavascript/haskell-in-es6)
 
 ## API
 
