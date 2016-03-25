@@ -2,8 +2,9 @@
  * maryamyriameliamurphies.js
  *
  * @name ord.js
- * @fileOverview
- * Ord type class
+ * @author Steven J. Syrek
+ * @file Ord type class.
+ * @license ISC
  */
 
  /** @module maryamyriameliamurphies.js/source/ord */
@@ -46,19 +47,19 @@
   * The "equals" Ordering. Equivalent to ===.
   * @const {Ordering}
   */
- const EQ = new Ordering(`EQ`);
+ export const EQ = new Ordering(`EQ`);
 
  /**
   * The "less than" Ordering. Equivalent to <.
   * @const {Ordering}
   */
- const LT = new Ordering(`LT`);
+ export const LT = new Ordering(`LT`);
 
  /**
   * The "greater than" Ordering. Equivalent to >.
   * @const {Ordering}
   */
- const GT = new Ordering(`GT`);
+ export const GT = new Ordering(`GT`);
 
  /**
   * Compare two objects and return an `Ordering`. Both values must be instances of the `Ord` type class
@@ -69,19 +70,19 @@
   * @param {*} b - Any object.
   * @returns {Ordering} - The Ordering value (`EQ` for equality, `LT` for less than, or `GT` for greater than).
   * @example
-  * let lst1 = list(1,2,3);
-  * let lst2 = list(4,5,6);
+  * const lst1 = list(1,2,3);
+  * const lst2 = list(4,5,6);
   * compare(lst1, lst2);    // => LT
   * compare(lst2, lst1);    // => GT
-  * let tup1 = tuple(1,2);
-  * let tup2 = tuple(2,1);
-  * let tup3 = swap(tup2);
+  * const tup1 = tuple(1,2);
+  * const tup2 = tuple(2,1);
+  * const tup3 = swap(tup2);
   * compare(tup1, tup2);    // => LT
   * compare(tup2, tup3);    // => GT
   * compare(tup3, tup1);    // => EQ
   */
- function compare(a, b) {
-   let p = (a, b) => {
+ export function compare(a, b) {
+   const compareP = (a, b) => {
      if (a === Infinity) { return GT; }
      if (b === Infinity) { return LT; }
      if (typeCheck(a, b)) {
@@ -92,7 +93,7 @@
      }
      return error.typeMismatch(a, b, compare);
    }
-   return partial(p, a, b);
+   return partial(compareP, a, b);
  }
 
  /**
@@ -102,8 +103,8 @@
   * @param {*} b - Any object.
   * @returns {boolean} - a < b.
   */
- function lessThan(a, b) {
-   let p = (a, b) => compare(a, b) === LT;
+ export function lessThan(a, b) {
+   const lessThanP = (a, b) => compare(a, b) === LT;
    return partial(p, a, b);
  }
 
@@ -114,9 +115,9 @@
   * @param {*} b - Any object.
   * @returns {boolean} - a <= b.
   */
- function lessThanOrEqual(a, b) {
-   let p = (a, b) => compare(a, b) !== GT;
-   return partial(p, a, b);
+ export function lessThanOrEqual(a, b) {
+   const lessThanOrEqualP = (a, b) => compare(a, b) !== GT;
+   return partial(lessThanOrEqualP, a, b);
  }
 
  /**
@@ -126,9 +127,9 @@
   * @param {*} b - Any object.
   * @returns {boolean} - a > b.
   */
- function greaterThan(a, b) {
-   let p = (a, b) => compare(a, b) === GT;
-   return partial(p, a, b);
+ export function greaterThan(a, b) {
+   const greaterThanP = (a, b) => compare(a, b) === GT;
+   return partial(greaterThan, a, b);
  }
 
  /**
@@ -138,9 +139,9 @@
   * @param {*} b - Any object.
   * @returns {boolean} - a >= b.
   */
- function greaterThanOrEqual(a, b) {
-   let p = (a, b) => compare(a, b) !== LT;
-   return partial(p, a, b);
+ export function greaterThanOrEqual(a, b) {
+   const greaterThanOrEqualP = (a, b) => compare(a, b) !== LT;
+   return partial(greaterThanOrEqualP, a, b);
  }
 
  /**
@@ -150,16 +151,16 @@
   * @param {*} b - Any object.
   * @returns {*} - `a` or `b`, whichever is greater.
   * @example
-  * let tup1 = tuple(1,2);
-  * let tup2 = tuple(2,1);
-  * let tup3 = swap(tup2);
+  * const tup1 = tuple(1,2);
+  * const tup2 = tuple(2,1);
+  * const tup3 = swap(tup2);
   * max(tup1, tup2);       // => (2,1)
   * max(tup2, tup1);       // => (2,1)
   * max(tup3, tup1);       // => (1,2)
   */
- function max(a, b) {
-   let p = (a, b) => lessThanOrEqual(a, b) ? b : a;
-   return partial(p, a, b);
+ export function max(a, b) {
+   const maxP = (a, b) => lessThanOrEqual(a, b) ? b : a;
+   return partial(maxP, a, b);
  }
 
  /**
@@ -169,14 +170,14 @@
   * @param {*} b - Any object.
   * @returns {*} - `a` or `b`, whichever is lesser.
   * @example
-  * let tup1 = tuple(1,2);
-  * let tup2 = tuple(2,1);
-  * let tup3 = swap(tup2);
+  * const tup1 = tuple(1,2);
+  * const tup2 = tuple(2,1);
+  * const tup3 = swap(tup2);
   * min(tup1, tup2);       // => (1,2)
   * min(tup2, tup1);       // => (1,2)
   * min(tup3, tup1);       // => (1,2)
   */
- function min(a, b) {
-   let p = (a, b) => lessThanOrEqual(a, b) ? a : b;
-   return partial(p, a, b);
+ export function min(a, b) {
+   const minP = (a, b) => lessThanOrEqual(a, b) ? a : b;
+   return partial(minP, a, b);
  }
