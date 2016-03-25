@@ -41,10 +41,10 @@
     "babel-polyfill": "^6.5.0"
   },
   "scripts": {
-    "compile": "babel source --out-dir distribution",
-    "lint": "eslint ./source/index.js && eslint ./distribution/index.js",
     "test": "mocha --compilers js:babel-core/register ./test/index.js",
+    "compile": "babel source --out-dir distribution",
     "build": "npm run compile && npm test",
+    "lint": "eslint ./source/index.js",
     "prepublish": "npm run compile"
   }
 }

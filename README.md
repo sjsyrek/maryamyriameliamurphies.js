@@ -18,7 +18,7 @@
 
 ## About
 
-maryamyriameliamurphies.js is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Also available as a Node.js package on npm: [https://www.npmjs.com/package/maryamyriameliamurphies](https://www.npmjs.com/package/maryamyriameliamurphies)
+**maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Also available as a Node.js package on npm: [https://www.npmjs.com/package/maryamyriameliamurphies](https://www.npmjs.com/package/maryamyriameliamurphies)
 
 First published entirely by chance on St. Patrick's Day, 2016.
 
@@ -30,10 +30,10 @@ First published entirely by chance on St. Patrick's Day, 2016.
 
 If you clone this repo and have npm, ES2015 to ES5 transpiling, linting, and testing are automated through the following commands:
 
+- `npm test` - run mocha using babel on all files imported into `/test/index.js`
 - `npm run compile` - run babel on `/source/index.js` and output to `/distribution/index.js`
-- `npm run lint` - run eslint on `/source/index.js` and `/distribution/index.js`
-- `npm run test` - run mocha using babel on all files imported into `/test/index.js`
 - `npm run build` - compile and test
+- `npm run lint` - run eslint on all files imported into `/source/index.js`
 
 These commands require certain npm packages. See below.
 
@@ -44,7 +44,18 @@ Since the average explanation of functional programming terminology makes about 
 These functions are experimental, as Haskell's type system translates only awkwardly to a JavaScript idiom, but I'd be delighted if any of them turn out to be useful. I tried hard to make them as pure as possible, which is why most (but not all) of them accept as arguments and return as values single values, and very few are defined as methods on prototypes. I also followed Haskell code patterns as
 closely as I could for each implementation (as much as it made sense to do so), resulting in a style that is sometimes extremely straightforward and sometimes bewilderingly terse.
 
-I developed the code using the [Babel](http://babeljs.io/) package on [Node.js](https://nodejs.org/en/), linted both source and distribution code with the [babel-eslint](https://github.com/babel/babel-eslint) parser for the latest version of [ESLint](http://eslint.org), and tested the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since it uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in [Node](https://nodejs.org/en/) or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
+Requires:
+
+* [Node.js](https://nodejs.org/en/)
+* [Babel](http://babeljs.io/)
+* [babel-polyfill](http://babeljs.io/docs/usage/polyfill/)
+* [Mocha](http://mochajs.org)
+* [should.js](http://shouldjs.github.io)
+* [ESLint](http://eslint.org)
+* [babel-eslint](https://github.com/babel/babel-eslint)
+* [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+
+I developed the code on [Node.js](https://nodejs.org/en/) using [Babel](http://babeljs.io/), linted the source code with [ESLint](http://eslint.org) using the [babel-eslint](https[eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)eslint-config-airbnb rule set, and tested the transpiled ES5 output with [Mocha](http://mochajs.org) and the [should.js](http://shouldjs.github.io) assertion library. Since this library uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in Node or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
 
 ES2015 code is located in the `/source` directory and babel-transpiled ES5 code in the `/distribution` directory. Mocha tests are in `/test` and example projects are in `/examples`.
 
@@ -61,14 +72,11 @@ Since JavaScript is not a strongly typed language by nature, it seemed unnecessa
 ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack. When it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls).
 
 "maryamyriameliamurphies" is a word that occurs on pg. 293 of James Joyce's _Finnegans Wake_. The two brothers Kev and Dolph (surrogates for the archetypal brothers Shem and Shaun, who represent between them all rival brothers in history and myth) are having a math lesson. Dolph, the elder, is attempting to explain to Kev the [first postulate of Euclid](http://mathworld.wolfram.com/EuclidsPostulates.html), which results in a rather prurient diagram of circles and triangles. Happily for me, as a functional programmer, it contains a `λ`. If you want to find out about the naughtier significances of this diagram, you'll have to research that for yourself (hint: like functional programming, it involves "lifting"). In the middle of Dolph's explanation, Kev starts to daydream, hence all the invocations of "murphy," an allusion to Morpheus, the Greek god of dreams (also the common Irish surname, Murphy, as well as a slang word meaning both "potato" and "confidence game"). Here's my own interpretation of maryamyriameliamurphies:
-* mary - A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!"
-* myria - Like the word myriad, which means "many people or things." From the Greek word for 10,000 (also used for an uncountably large number of things).
-* melia - Similar to the Latin word for a thousand (mille), but it also looks like the Greek word for "honey" to me, which can also be used to describe something sweet.
-* murphies - As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics.
-
-Thus:
-
-* maryamyriameliamurphies - Wow, a whole bunch of sweet functions!
+* **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!"
+* **myria** — Like the word myriad, which means "many people or things." From the Greek word for 10,000 (also used for an uncountably large number of things).
+* **melia** — Similar to the Latin word for a thousand (mille), but it also looks like the Greek word for "honey" to me, which can also be used to describe something sweet.
+* **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics.
+* **maryamyriameliamurphies** - Wow, a whole bunch of sweet functions!
 
 ### See also
 

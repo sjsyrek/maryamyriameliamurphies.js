@@ -205,9 +205,8 @@ describe(`Tuple`, function() {
     });
   });
   describe(`fromArrayToTuple()`, function() {
-    let fromArrayToTuple = m.fromArrayToTuple;
     it(`should create a new tuple from the values of an array.`, function() {
-      p.should.have.properties({"1": 2, "2": 1});
+      d.should.have.properties({"1": 2, "2": 1});
     });
   });
   describe(`fromTupleToArray()`, function() {
