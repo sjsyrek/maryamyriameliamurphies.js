@@ -21,7 +21,7 @@
     "eslint"
   ],
   "author": "Steven J. Syrek <steven.syrek@gmail.com>",
-  "license": "Apache-2.0",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/sjsyrek/maryamyriameliamurphies.js/issues"
   },

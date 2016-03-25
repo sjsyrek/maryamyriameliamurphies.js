@@ -1,5 +1,5 @@
 # maryamyriameliamurphies.js
-[![Apache 2.0 licensed](https://img.shields.io/badge/license-Apache2.0-blue.svg)](./LICENSE.txt)
+[![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)](./LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
 [![npm](https://img.shields.io/npm/dt/maryamyriameliamurphies.svg)](https://www.npmjs.com/package/maryamyriameliamurphies)
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
