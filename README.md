@@ -297,7 +297,7 @@ See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Lis
 * `insert(e, ls)` Insert `e` at the first position in `ls` where it is less than or equal to the next element.
 * `insertBy(cmp, e, ls)` Insert `e` at the first position in `ls` using comparison function `cmp`.
 
-#### Utility functions
+### Utility functions
 
 * `throwError(e)` Throws an error with message `e`.
 * `defines(...methods)` Defines a type class that requires implementations of `methods`.
