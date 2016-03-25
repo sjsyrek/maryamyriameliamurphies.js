@@ -26,8 +26,8 @@ const Eq = defines(`isEq`);
  * @param {*} b - Any object.
  * @returns {boolean} - a === b
  * @example
- * let lst1 = list(1,2,3);
- * let lst2 = list(4,5,6);
+ * const lst1 = list(1,2,3);
+ * const lst2 = list(4,5,6);
  * isEq(lst1, lst2);        // => false
  * isEq(lst1, list(1,2,3)); // => true
  * isEq(0, 1);              // => false
@@ -49,8 +49,8 @@ export function isEq(a, b) {
  * @param {*} b - Any object.
  * @returns {boolean} - a !== b
  * @example
- * let lst1 = list(1,2,3);
- * let lst2 = list(4,5,6);
+ * const lst1 = list(1,2,3);
+ * const lst2 = list(4,5,6);
  * isNotEq(lst1, lst2);        // => true
  * isNotEq(lst1, list(1,2,3)); // => false
  * isNotEq(0, 1);              // => true

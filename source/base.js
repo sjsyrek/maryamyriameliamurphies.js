@@ -59,25 +59,25 @@ class Type {
    * @param {Type} a - An instance of this type class.
    * @returns {string} - The type.
    * @example
-   * let lst = list(1,2,3);
+   * const lst = list(1,2,3);
    * List.type(lst);         // => List
-   * let tup = tuple(1,2);
+   * const tup = tuple(1,2);
    * Tuple.type(tup);        // => (number,number)
-   * let m = just(5);
+   * const m = just(5);
    * Maybe.type(m);          // => Maybe
    */
   static type(a) { return dataType(a) === this ? this.name : error.typeError(a, this.type); }
   /**
    * Returns the string representation of an object for a given data type. As with most objects,
-   * this is fairly useless and is here only for the sake of completeness.
+   * this is fairly useless and is here only for the sake of compconsteness.
    * @abstract
    * @returns {string} - The data type as a string.
    * @example
-   * let tup = tuple(1,2);
+   * const tup = tuple(1,2);
    * tup.toString();         // => [Object Tuple]
-   * let lst = list(1,2,3);
+   * const lst = list(1,2,3);
    * lst.toString();         // => [Object List]
-   * let m = just(5);
+   * const m = just(5);
    * m.toString();           // => Just 5
    */
   toString() { return this.valueOf(); }
@@ -86,11 +86,11 @@ class Type {
    * @abstract
    * @returns {string} - The type of the object.
    * @example
-   * let tup = tuple(1,2);
+   * const tup = tuple(1,2);
    * tup.typeOf();           // => (number,number)
-   * let lst = list(1,2,3);
+   * const lst = list(1,2,3);
    * lst.typeOf();           // => [number]
-   * let m = just(5);
+   * const m = just(5);
    * m.typeOf();             // => Maybe number
    */
   typeOf() { return dataType(this).name; }
@@ -99,11 +99,11 @@ class Type {
    * @abstract
    * @returns {string} - The value of the object.
    * @example
-   * let tup = tuple(1,2);
+   * const tup = tuple(1,2);
    * tup.valueOf();          // => (1,2)
-   * let lst = list(1,2,3);
+   * const lst = list(1,2,3);
    * lst.valueOf();          // => [1:2:3:[]]
-   * let m = just(5);
+   * const m = just(5);
    * m.valueOf();            // => Just 5
    */
   valueOf() { return this; }
@@ -131,7 +131,7 @@ export function defines = (...methods) => a => methods.every(m => Reflect.has(da
  * @returns {Function} - The object's constructor function.
  * @example
  * dataType(0);               // function Number() { [native code] }
- * let lst = list(1,2,3);
+ * const lst = list(1,2,3);
  * dataType(lst)              // => function List(head, tail) { ... }
  * lst.typeOf();              // => List // more useful if you don't need a function pointer
  */
@@ -143,7 +143,7 @@ export function dataType = (a) => a.constructor;
  * @returns {string} - The type of the object.
  * @example
  * type(0);                   // => number
- * let t = tuple(1,2);
+ * const t = tuple(1,2);
  * type(t);                   // => (number,number)
  */
 export function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
@@ -187,8 +187,8 @@ export function typeCheck(a, b) {
  * @returns {Function|*} - A new function with its arguments partially or fully applied (i.e. its final value).
  * @example
  * function multiply(x, y) {
- *   let p = (x, y) => x * y; // create a closure with the same arguments and "do the math" in this closure
- *   return partial(p, x, y); // return a "curried" version of the function that accepts partial application
+ *   const multiplyP = (x, y) => x * y; // create a closure with the same arguments and "do the math" in this closure
+ *   return partial(multiplyP, x, y); // return a "curried" version of the function that accepts partial application
  * }
  * multiply(10, 10);          // => 100
  * multiply(10);              // => function () { [native code] } // (with 10 applied to x)
@@ -220,14 +220,14 @@ export function partial(f, ...as) {
  * @param {Function} f - The outermost function to compose.
  * @returns {Function|*} - The composed function or its value, returned only if a value is bound to f.
  * @example
- * let addTen = x => x + 10;
- * let multHund = x => x * 100;
- * let addTwenty = x => addTen(10);
- * let h = (x, y) => {
- *   let p = (x, y) => x / y;
+ * const addTen = x => x + 10;
+ * const multHund = x => x * 100;
+ * const addTwenty = x => addTen(10);
+ * const h = (x, y) => {
+ *   const p = (x, y) => x / y;
  *   return partial(p, x, y);
  * }
- * let divByTen = h(10);
+ * const divByTen = h(10);
  * $(addTen)(multHund)(10)            // => 1010
  * $(addTen)(multHund, 10)            // => 1010
  * $(multHund)(addTen)(10)            // => 2000
@@ -245,8 +245,8 @@ export function $(f) { return (g, x) => x === undefined ? x => f(g(x)) : f(g(x))
  * @param {Function} f - The function to flip.
  * @returns {Function} - The function with its arguments reversed.
  * @example
- * let subtract = (x, y) => x - y;
- * let flipped = flip(subtract);
+ * const subtract = (x, y) => x - y;
+ * const flipped = flip(subtract);
  * subtract(10, 5);                // => 5
  * flipped(10, 5);                 // => -5
  */
@@ -271,8 +271,8 @@ export function id(a) { return a; }
  * @returns {*} a - The value of the first object.
  * @example
  * constant(2, 3);                                // => 2
- * let multHund = x => x * 100;
- * let c = (x, y) => $(constant(x))(multHund)(y);
+ * const multHund = x => x * 100;
+ * const c = (x, y) => $(constant(x))(multHund)(y);
  * c(5, 10);                                      // => 5
  */
 export function constant(a, b) {
@@ -289,9 +289,9 @@ export function constant(a, b) {
  * @param {*} x - The value to bind to `f`.
  * @returns {*} - The result of applying `f` to `x` until `p` returns `true`.
  * @example
- * let p = x => x > 10;
- * let f = x => x + 1;
- * let u = until(p, f);
+ * const p = x => x > 10;
+ * const f = x => x + 1;
+ * const u = until(p, f);
  * u(1);                   // => 11
  */
 export function until(p, f, x) {
@@ -307,8 +307,8 @@ export function until(p, f, x) {
  * @returns {boolean} - a && b.
  * @example
  * and(true, true); // => true
- * let a = 5 > 0;
- * let b = 0 > 5;
+ * const a = 5 > 0;
+ * const b = 0 > 5;
  * and(a, b);       // => false
  */
 export function and(a, b) {
@@ -329,8 +329,8 @@ export function and(a, b) {
  * @returns {boolean} - a || b.
  * @example
  * or(true, false); // => true
- * let a = 5 > 0;
- * let b = 0 > 5;
+ * const a = 5 > 0;
+ * const b = 0 > 5;
  * or(a, b);        // => true
  */
 export function or(a, b) {
@@ -352,8 +352,8 @@ export function or(a, b) {
  * @example
  * not(true);     // => false
  * not(false);    // => true
- * let a = 5 > 0;
- * let b = 0 > 5;
+ * const a = 5 > 0;
+ * const b = 0 > 5;
  * not(a);        // => false
  * not(b);        // => true
  */
@@ -408,8 +408,8 @@ export function isEmpty(a) {
  * @param {*} a - The object to show.
  * @returns {string} - The value of the object as a string, returned from the object's `valueOf` function.
  * @example
- * let lst = list(1,2,3);
- * let tup = tuple(1,2);
+ * const lst = list(1,2,3);
+ * const tup = tuple(1,2);
  * show(lst);             // => [1:2:3:[]]
  * show(tup);             // => (1,2)
  */
@@ -421,7 +421,7 @@ export function show(a) { return a instanceof Tuple ? `(${Object.values(a).map(e
  * @param {*} a - The value to print.
  * @returns {Function} - The `console.log` function applied to the return value of `show(a)`.
  * @example
- * let lst = list(1,2,3);
+ * const lst = list(1,2,3);
  * print(lst);            // "[1:2:3:[]]"
  */
 export function print(a) { return console.log(show(a)); }
