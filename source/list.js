@@ -518,7 +518,7 @@ export function transpose(lss) {
  * @param {List} as - The `List` to fold.
  * @example
  * const lst = list(1,2,3);
- * const f = (x ,y) => x - y;
+ * const f = (x, y) => x - y;
  * foldl(f, 0, lst);          // => -6
  */
 export function foldl(f, z, as) {
@@ -635,8 +635,8 @@ export function listInf(start) { return listInfBy(start, (x => x + 1)); }
  * @returns {List} - An infinite `List` of consecutive values, incremented from `start`.
  */
 export function listInfBy(start, step) {
-  const p = (start, step) => listRangeLazyBy(start, Infinity, step);
-  return partial(p, start, step);
+  const listInfBy_ = (start, step) => listRangeLazyBy(start, Infinity, step);
+  return partial(listInfBy_, start, step);
 }
 
 /**
@@ -648,11 +648,11 @@ export function listInfBy(start, step) {
  * @example
  * const f = x => x * 2;
  * const lst = iterate(f, 1);
- * take(10, lst);           // => [1:2:4:8:16:32:64:128:256:512:[]]
+ * take(10, lst);             // => [1:2:4:8:16:32:64:128:256:512:[]]
  */
 export function iterate(f, x) {
-  const p = (f, x) => listInfBy(x, (x => f(x)));
-  return partial(p, f, x);
+  const iterate_ = (f, x) => listInfBy(x, (x => f(x)));
+  return partial(iterate_, f, x);
 }
 
 /**
@@ -662,7 +662,7 @@ export function iterate(f, x) {
  * @returns {List} - The infinite `List` of repeated values.
  * @example
  * const lst = repeat(3);
- * take(10, lst);       // => [3:3:3:3:3:3:3:3:3:3:[]]
+ * take(10, lst);         // => [3:3:3:3:3:3:3:3:3:3:[]]
  */
 export function repeat(a) { return cons(a)(listInfBy(a, id)); }
 
@@ -674,8 +674,8 @@ export function repeat(a) { return cons(a)(listInfBy(a, id)); }
  * @returns {List} - The `List` of values.
  */
 export function replicate(n, x) {
-  const p = (n, x) => take(n, repeat(x));
-  return partial(p, n, x);
+  const replicate_ = (n, x) => take(n, repeat(x));
+  return partial(replicate_, n, x);
 }
 
 /**
@@ -686,19 +686,19 @@ export function replicate(n, x) {
  * @example
  * const lst = list(1,2,3);
  * const c = cycle(lst);
- * take(9, c);            // => [1:2:3:1:2:3:1:2:3:[]]
+ * take(9, c);              // => [1:2:3:1:2:3:1:2:3:[]]
  */
 export function cycle(as) {
   if (isList(as) === false) { return error.listError(as, cycle); }
   if (isEmpty(as)) { return error.emptyList(as, cycle); }
-  const x = head(as);
-  const xs = tail(as);
+  let x = head(as);
+  let xs = tail(as);
   const c = list(x);
   const listGenerator = function* () {
     do {
-    x = isEmpty(xs) ? head(as) : head(xs);
-    xs = isEmpty(xs) ? tail(as) : tail(xs);
-    yield list(x);
+      x = isEmpty(xs) ? head(as) : head(xs);
+      xs = isEmpty(xs) ? tail(as) : tail(xs);
+      yield list(x);
     } while (true);
   }
   const gen = listGenerator();
@@ -708,7 +708,7 @@ export function cycle(as) {
         const next = gen.next();
         target[prop] = () => new Proxy(next.value, handler);
       }
-      return Reflect.get(target, prop);
+      return target[prop];
     }
   };
   const proxy = new Proxy(c, handler);
@@ -725,10 +725,10 @@ export function cycle(as) {
  * @returns {List} - A new `List`, the desired prefix of the original list.
  * @example
  * const lst = list(1,2,3);
- * take(2, lst);          // => [1:2:[]]
+ * take(2, lst);            // => [1:2:[]]
  */
 export function take(n, as) {
-  const p = (n, as) => {
+  const take_ = (n, as) => {
     if (isList(as) === false) { return error.listError(as, take); }
     if (n <= 0) { return emptyList; }
     if (isEmpty(as)) { return emptyList; }
@@ -736,7 +736,7 @@ export function take(n, as) {
     const xs = tail(as);
     return cons(x)(take(n - 1)(xs));
   }
-  return partial(p, n, as);
+  return partial(take_, n, as);
 }
 
 /**
@@ -747,10 +747,10 @@ export function take(n, as) {
  * @returns {List} - A new `List`, the desired suffix of the original list.
  * @example
  * const lst = list(1,2,3);
- * drop(2, lst);          // => [3:[]]
+ * drop(2, lst);            // => [3:[]]
  */
 export function drop(n, as) {
-  const p = (n, as) => {
+  const drop_ = (n, as) => {
     if (isList(as) === false) { return error.listError(as, drop); }
     if (n <= 0) { return as; }
     if (isEmpty(as)) { return emptyList; }
@@ -758,7 +758,7 @@ export function drop(n, as) {
     const xs = tail(as);
     return drop(n - 1)(xs);
   }
-  return partial(p, n, as);
+  return partial(drop_, n, as);
 }
 
 /**
@@ -770,66 +770,66 @@ export function drop(n, as) {
  * @returns {Tuple} - The split list.
  * @example
  * const lst = list(1,2,3);
- * splitAt(2, lst);       // => ([1:2:[]],[3:[]])
+ * splitAt(2, lst);         // => ([1:2:[]],[3:[]])
  */
 export function splitAt(n, as) {
-  const p = (n, as) => {
+  const splitAt_ = (n, as) => {
     if (isList(as) === false) { return error.listError(as, splitAt); }
     return tuple(take(n, as), drop(n, as));
   }
-  return partial(p, n, as);
+  return partial(splitAt_, n, as);
 }
 
 /**
  * Return the longest prefix (possibly empty) of a `List` of values that satisfy a
  * predicate function.
  * Haskell> takeWhile :: (a -> Bool) -> [a] -> [a]
- * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - The `List` to take from.
  * @returns {List} - The `List` of values that satisfy the predicate function.
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x < 3;
- * takeWhile(f, lst);               // => [1:2:[]]
+ * takeWhile(f, lst);                 // => [1:2:[]]
  */
-export function takeWhile(pred, as) {
-  const p = (pred, as) => {
+export function takeWhile(p, as) {
+  const takeWhile_ = (p, as) => {
     if (isList(as) === false) { return error.listError(as, takeWhile); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
     const xs = tail(as);
-    const test = pred(x);
-    if (test === true) { return cons(x)(takeWhile(pred, xs)); }
+    const test = p(x);
+    if (test === true) { return cons(x)(takeWhile(p, xs)); }
     if (test === false) { return emptyList; }
     return error.listError(as, takeWhile);
   }
-  return partial(p, pred, as);
+  return partial(takeWhile_, p, as);
 }
 
 /**
  * Drop values from a `List` while a given predicate function returns `true` for
  * each value.
  * Haskell> dropWhile :: (a -> Bool) -> [a] -> [a]
- * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - The `List` to drop values from.
  * @returns {List} - The `List` of values that do not satisfy the predicate function.
  * @example
  * const lst = list(1,2,3,4,5,1,2,3);
  * const f = x => x < 3;
- * dropWhile(f, lst);               // => [3:4:5:1:2:3:[]]
+ * dropWhile(f, lst);                 // => [3:4:5:1:2:3:[]]
  */
-export function dropWhile(pred, as) {
-  const p = (pred, as) => {
+export function dropWhile(p, as) {
+  const dropWhile_ = (p, as) => {
     if (isList(as) === false) { return error.listError(as, dropWhile); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
     const xs = tail(as);
-    const test = pred(x);
-    if (test === true) { return dropWhile(pred, xs); }
+    const test = p(x);
+    if (test === true) { return dropWhile(p, xs); }
     if (test === false) { return as; }
     return error.listError(as, dropWhile);
   }
-  return partial(p, pred, as);
+  return partial(dropWhile_, p, as);
 }
 
 /**
@@ -837,7 +837,7 @@ export function dropWhile(pred, as) {
  * of a `List` of values that satisfy a predicate function and the second element is
  * the rest of the list.
  * Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])
- * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
  * @returns {Tuple} - The `Tuple` of results.
  * @example
@@ -845,12 +845,12 @@ export function dropWhile(pred, as) {
  * const f = x => x < 3;
  * span(f, lst);                    // => ([1:2:[]],[3:4:1:2:3:4:[]])
  */
-export function span(pred, as) {
-  const p = (pred, as) => {
+export function span(p, as) {
+  const span_ = (p, as) => {
     if (isList(as) === false) { return error.listError(as, span); }
-    tuple(takeWhile(pred, as), dropWhile(pred, as));
+    tuple(takeWhile(p, as), dropWhile(p, as));
   }
-  return partial(p, pred, as);
+  return partial(span_, p, as);
 }
 
 /**
@@ -858,7 +858,7 @@ export function span(pred, as) {
  * of a `List` of values that do not satisfy a predicate function and the second element
  * is the rest of the list.
  * Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])
- * @param {Function} pred - The predicate function (should return `boolean`).
+ * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
  * @returns {Tuple} - The `Tuple` of results.
  * @example
@@ -866,9 +866,9 @@ export function span(pred, as) {
  * const f = x => x > 3;
  * spanNot(f, lst);                 // => ([1:2:3:[]],[4:1:2:3:4:[]])
  */
-export function spanNot(pred, as) {
-  const p = (pred, as) => span($(not)(pred), as);
-  return partial(p, pred, as);
+export function spanNot(p, as) {
+  const spanNot_ = (p, as) => span($(not)(p), as);
+  return partial(spanNot_, p, as);
 }
 
 /**
@@ -886,7 +886,7 @@ export function spanNot(pred, as) {
  * stripPrefix(prefix, fromStringToList(`barfoobaz`)); // => Nothing
  */
 export function stripPrefix(as, bs) {
-  const p = (as, bs) => {
+  const stripPrefix_ = (as, bs) => {
     if (isList(as) === false) { return error.listError(as, stripPrefix); }
     if (isList(bs) === false) { return error.listError(bs, stripPrefix); }
     if (isEmpty(as)) { return just(bs); }
@@ -897,7 +897,7 @@ export function stripPrefix(as, bs) {
     if (x === y) { return stripPrefix(xs, ys); }
     return Nothing;
   }
-  return partial(p, as, bs);
+  return partial(stripPrefix_, as, bs);
 }
 
 /**
@@ -923,7 +923,7 @@ export function group(as) { return groupBy(isEq, as); }
  * @returns {List} - A `List` of result lists.
  */
 export function groupBy(eq, as) {
-  const p = (eq, as) => {
+  const groupBy_ = (eq, as) => {
     if (isList(as) === false) { return error.listError(as, groupBy); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
@@ -933,7 +933,7 @@ export function groupBy(eq, as) {
     const zs = snd(t);
     return cons(cons(x)(ys))(groupBy(eq, zs));
   }
-  return partial(p, eq, as);
+  return partial(groupBy_, eq, as);
 }
 
 // Searching
@@ -951,7 +951,7 @@ export function groupBy(eq, as) {
  * lookup(5, assocs);                                                 // => Nothing
  */
 export function lookup(key, assocs) {
-  const p = (key, assocs) => {
+  const lookup_ = (key, assocs) => {
     if (isList(assocs) === false) { return error.listError(as, lookup); }
     if (isEmpty(assocs)) { return Nothing; }
     const xy = head(assocs);
@@ -961,13 +961,13 @@ export function lookup(key, assocs) {
     if (key === x) { return just(y); }
     return lookup(key, xys);
   }
-  return partial(p, key, assocs);
+  return partial(lookup_, key, assocs);
 }
 
 /**
- * Return the `List` of elements in a `List` that satisfy the predicate.
+ * Return the `List` of elements in a `List` for which a function `f` returns `true`.
  * Haskell> filter :: (a -> Bool) -> [a] -> [a]
- * @param {Function} f - The predicate function.
+ * @param {Function} f - The filter function. Must return a `boolean`.
  * @param {List} as - The `List` to filter.
  * @returns {List} - The filtered `List`.
  * @example
@@ -976,7 +976,7 @@ export function lookup(key, assocs) {
  * filter(f, lst); // => [11:13:15:17:19:21:23:25:27:29:31:33:35:37:39:41:43:45:47:49:[]]
  */
 export function filter(f, as) {
-  const p = (f, as) => {
+  const filter_ = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, filter); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
@@ -985,7 +985,7 @@ export function filter(f, as) {
     if (f(x) === false) { return filter(f, xs); }
     return error.returnError(f, filter);
   }
-  return partial(p, f, as);
+  return partial(filter_, f, as);
 }
 
 // Indexing
@@ -998,10 +998,10 @@ export function filter(f, as) {
  * @returns {*} - The value at the specified index.
  * @example
  * const lst = list(1,2,3,4,5);
- * index(lst, 3));            // => 4
+ * index(lst, 3));              // => 4
  */
 export function index(as, n) {
-  const p = (as, n) => {
+  const index_ = (as, n) => {
     if (isList(as) === false ) { return error.listError(as, index); }
     if (n < 0) { return error.rangeError(n, index); }
     if (isEmpty(as)) { return error.rangeError(n, index); }
@@ -1010,7 +1010,7 @@ export function index(as, n) {
     if (n === 0) { return x; }
     return index(xs)(n - 1);
   }
-  return partial(p, as, n);
+  return partial(index_, as, n);
 }
 
 /**
@@ -1022,15 +1022,15 @@ export function index(as, n) {
  * @returns {Maybe} - `Just a` or `Nothing`.
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,8);
- * elemIndex(8, lst);                       // => Just 11
- * elemIndex(10, lst);                      // => Nothing
+ * elemIndex(8, lst);                         // => Just 11
+ * elemIndex(10, lst);                        // => Nothing
  */
 export function elemIndex(a, as) {
-  const p = (a, as) => {
+  const elemIndex_ = (a, as) => {
     if(isList(as) === false) { return listError(xs, elemIndex); }
     return findIndex(isEq(a), as);
   }
-  return partial(p, a, as);
+  return partial(elemIndex_, a, as);
 }
 
 /**
@@ -1042,15 +1042,15 @@ export function elemIndex(a, as) {
  * @returns {List} as - A `List` of values equal to `a`.
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,8);
- * elemIndices(2, lst);                     // => [1:2:4:6:7:9:[]]
- * elemIndices(10, lst);                    // => [[]]
+ * elemIndices(2, lst);                       // => [1:2:4:6:7:9:[]]
+ * elemIndices(10, lst);                      // => [[]]
  */
 export function elemIndices(a, as) {
-  const p = (a, as) => {
+  const elemIndices_ = (a, as) => {
     if(isList(as) === false) { return listError(xs, elemIndices); }
     return findIndices(isEq(a), as);
   }
-  return partial(p, a, as);
+  return partial(elemIndices_, a, as);
 }
 
 /**
@@ -1059,7 +1059,7 @@ export function elemIndices(a, as) {
  * function currently only works on `List` objects, but should in the future work
  * for all `Foldable` types.
  * Haskell> find :: Foldable t => (a -> Bool) -> t a -> Maybe a
- * @param {Function} pred - The predicate function.
+ * @param {Function} p - The predicate function.
  * @param {List} xs - The `List` to evaluate.
  * @returns {Maybe} - The value inside a `Just` or `Nothing`, otherwise.
  * @example
@@ -1069,19 +1069,19 @@ export function elemIndices(a, as) {
  * find(pred1, lst);                      // => Just 3
  * find(pred2, lst);                      // => Nothing
  */
-export function find(pred, xs) {
-  const p = (pred, xs) => {
+export function find(p, xs) {
+  const find_ = (p, xs) => {
     if (isList(xs) === false) { return listError(xs, find); }
-    return $(listToMaybe)(filter(pred))(xs);
+    return $(listToMaybe)(filter(p))(xs);
   }
-  return partial(p, pred, xs);
+  return partial(find_, p, xs);
 }
 
 /**
  * Take a predicate function and a `List` and return the index of the first value
  * in the list that satisfies the predicate, or `Nothing` if there is no such element.
  * Haskell> findIndex :: (a -> Bool) -> [a] -> Maybe Int
- * @param {Function} pred - The predicate function.
+ * @param {Function} p - The predicate function.
  * @param {List} xs - The `List` to evaluate.
  * @returns {Maybe} - The index inside a `Just` or `Nothing`, otherwise.
  * @example
@@ -1091,19 +1091,19 @@ export function find(pred, xs) {
  * findIndex(pred1, lst);                 // => Just 2
  * findIndex(pred2, lst);                 // => Nothing
  */
-export function findIndex(pred, xs) {
-  const p = (pred, xs) => {
+export function findIndex(p, xs) {
+  const findIndex_ = (pred, xs) => {
     if (isList(xs) === false) { return listError(xs, findIndex); }
-    return $(listToMaybe)(findIndices(pred))(xs);
+    return $(listToMaybe)(findIndices(p))(xs);
   }
-  return partial(p, pred, xs);
+  return partial(findIndex_, p, xs);
 }
 
 /**
  * Return the indices of all values in a `List` that satisfy a predicate function,
  * in ascending order.
  * Haskell> findIndices :: (a -> Bool) -> [a] -> [Int]
- * @param {Function} pred - The predicate function.
+ * @param {Function} p - The predicate function.
  * @param {List} xs - The `List` to evaluate.
  * @returns {List} - The `List` of matching indices.
  * @example
@@ -1111,19 +1111,19 @@ export function findIndex(pred, xs) {
  * const pred = x => even(x);
  * findIndices(pred, lst1); // => [1:3:5:7:9:[]]
  */
-export function findIndices(pred, xs) {
-  const p = (pred, xs) => {
+export function findIndices(p, xs) {
+  const findIndices_ = (p, xs) => {
     if (isList(xs) === false) { return listError(xs, findIndices); }
     const z = zip(xs, listRange(0, length(xs)));
     const f = xs => {
       const x = fst(xs);
       const i = snd(xs);
-      return pred(x) ? true : false;
+      return p(x) ? true : false;
     }
     const m = t => snd(t);
     return map(m, filter(f, z));
   }
-  return partial(p, pred, xs);
+  return partial(findIndices_, p, xs);
 }
 
 // Zipping and unzipping lists
@@ -1138,10 +1138,10 @@ export function findIndices(pred, xs) {
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
- * zip(lst1, lst2);            // => [(1,5):(2,4):(3,3):(4,2):(5,1):[]]
+ * zip(lst1, lst2);              // => [(1,5):(2,4):(3,3):(4,2):(5,1):[]]
  */
 export function zip(as, bs) {
-  const p = (as, bs) => {
+  const zip_ = (as, bs) => {
     if (isList(as) === false) { return error.listError(as, zip); }
     if (isList(bs) === false) { return error.listError(bs, zip); }
     if (isEmpty(as)) { return emptyList; }
@@ -1152,7 +1152,7 @@ export function zip(as, bs) {
     const ys = tail(bs);
     return cons(tuple(x, y))(zip(xs)(ys));
   }
-  return partial(p, as, bs);
+  return partial(zip_, as, bs);
 }
 
 /**
@@ -1167,10 +1167,10 @@ export function zip(as, bs) {
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
  * const lst3 = list(6,7,8,9,10);
- * zip3(lst1, lst2, lst3);      // => [(1,5,6):(2,4,7):(3,3,8):(4,2,9):(5,1,10):[]]
+ * zip3(lst1, lst2, lst3);        // => [(1,5,6):(2,4,7):(3,3,8):(4,2,9):(5,1,10):[]]
  */
 export function zip3(as, bs, cs) {
-  const p = (as, bs, cs) => {
+  const zip3_ = (as, bs, cs) => {
     if (isList(as) === false) { return error.listError(as, zip3); }
     if (isList(bs) === false) { return error.listError(bs, zip3); }
     if (isList(cs) === false) { return error.listError(cs, zip3); }
@@ -1183,7 +1183,7 @@ export function zip3(as, bs, cs) {
     const zs = tail(cs);
     return cons(tuple(x, y, z))(zip3(xs, ys, zs));
   }
-  return partial(p, as, bs, cs);
+  return partial(zip3_, as, bs, cs);
 }
 
 /**
@@ -1203,7 +1203,7 @@ export function zip3(as, bs, cs) {
  * zipWith(g, lst1, lst2); // => [6:6:6:6:6:[]]
  */
 export function zipWith(f, as, bs) {
-  const p = (f, as, bs) => {
+  const zipWith_ = (f, as, bs) => {
     if (isList(as) === false) { return error.listError(as, zipWith); }
     if (isList(bs) === false) { return error.listError(bs, zipWith); }
     if (isEmpty(as) || isEmpty(bs)) { return emptyList; }
@@ -1213,7 +1213,7 @@ export function zipWith(f, as, bs) {
     const ys = tail(bs);
     return cons(f(x, y))(zipWith(f, xs, ys));
   }
-  return partial(p, f, as, bs);
+  return partial(zipWith_, f, as, bs);
 }
 
 /**
@@ -1235,7 +1235,7 @@ export function zipWith(f, as, bs) {
  * zipWith3(g, lst1, lst2, lst3); // => [12:13:14:15:16:[]]
  */
 export function zipWith3(f, as, bs, cs) {
-  const p = (f, as, bs, cd) => {
+  const zipWith3_ = (f, as, bs, cd) => {
     if (isList(as) === false) { return error.listError(as, zipWith3); }
     if (isList(bs) === false) { return error.listError(bs, zipWith3); }
     if (isList(cs) === false) { return error.listError(cs, zipWith3); }
@@ -1248,7 +1248,7 @@ export function zipWith3(f, as, bs, cs) {
     const zs = tail(cs);
     return cons(f(x, y, z))(zipWith3(f, xs, ys, zs));
   }
-  return partial(p, f, as, bs, cs);
+  return partial(zipWith3_, f, as, bs, cs);
 }
 
 // "Set" operations
@@ -1281,7 +1281,7 @@ export function nub(as) {
  * nubBy(eq, lst); // => [1:3:5:7:7:9:[]]
  */
 export function nubBy(eq, as) {
-  const p = (eq, as) => {
+  const nubBy_ = (eq, as) => {
     if (isList(as) === false) { return error.listError(as, nubBy); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
@@ -1289,7 +1289,7 @@ export function nubBy(eq, as) {
     const y = y => not(eq(x, y));
     return cons(x)(nubBy(eq, filter(y, xs)));
     }
-  return partial(p, eq, as);
+  return partial(nubBy_, eq, as);
 }
 
 /**
@@ -1304,11 +1304,11 @@ export function nubBy(eq, as) {
  * deleteL(2, lst5); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
 export function deleteL(a, as) {
-  const p = (a, as) => {
+  const deleteL_ = (a, as) => {
     if (isList(as) === false) { return error.listError(as, deleteL); }
     return deleteLBy(isEq, a, as);
   }
-  return partial(p, a, as);
+  return partial(deleteL_, a, as);
 }
 
 /**
@@ -1324,7 +1324,7 @@ export function deleteL(a, as) {
  * deleteLBy(eq, 2, lst); // => [2:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
 export function deleteLBy(eq, a, as) {
-  const p = (eq, a, as) => {
+  const deleteLBy_ = (eq, a, as) => {
     if (isList(as) === false) { return error.listError(as, deleteLBy); }
     if (isEmpty(as)) { return emptyList; }
     const y = head(as);
@@ -1332,7 +1332,7 @@ export function deleteLBy(eq, a, as) {
     const x = eq(a, y) ? ys : y;
     return eq(a, y) ? ys : cons(y)(deleteLBy(eq, a, ys));
   }
-  return partial(p, eq, a, as);
+  return partial(deleteLBy_, eq, a, as);
 }
 
 /**
@@ -1351,12 +1351,12 @@ export function deleteLBy(eq, a, as) {
  * deleteFirsts(listAppend(lst1, lst2), lst1) === lst2; // => true
  */
 export function deleteFirsts(as, bs) {
-  const p = (as, bs) => {
+  const deleteFirsts_ = (as, bs) => {
     if (isList(as) === false) { return error.listError(as, deleteFirsts); }
     if (isList(ab) === false) { return error.listError(ab, deleteFirsts); }
     return foldl(flip(deleteL), as, bs);
   }
-  return partial(p, as, bs);
+  return partial(deleteFirsts_, as, bs);
 }
 
 /**
@@ -1375,10 +1375,10 @@ export function deleteFirsts(as, bs) {
  * deleteFirstsBy(eq, lst3, lst1);    // => [5:7:8:9:10:[]]
  */
 export function deleteFirstsBy(eq, as, bs) {
-  const p = (eq, as, bs) => {
+  const deleteFirstsBy_ = (eq, as, bs) => {
     return foldl(flip(deleteLBy(eq)), as, bs);
   }
-  return partial(p, eq, as, bs);
+  return partial(deleteFirstsBy_, eq, as, bs);
 }
 
 // Ordered lists
@@ -1407,15 +1407,15 @@ export function sort(as) { return sortBy(compare, as); }
  * const notCompare = (x, y) => compare(x, y) === EQ ? EQ : (GT ? LT : GT);
  * const lst1 = listRange(1, 11);
  * const lst2 = reverse(lst1);       // [10:9:8:7:6:5:4:3:2:1:[]]
- * sortBy(notCompare, lst1);       // => [1:2:3:4:5:6:7:8:9:10:[]]
- * sortBy(notCompare, lst2);       // => [10:9:8:7:6:5:4:3:2:1:[]]
+ * sortBy(notCompare, lst1);         // => [1:2:3:4:5:6:7:8:9:10:[]]
+ * sortBy(notCompare, lst2);         // => [10:9:8:7:6:5:4:3:2:1:[]]
  */
 export function sortBy(cmp, as) {
-  const p = (cmp, as) => {
+  const sortBy_ = (cmp, as) => {
     if (isList(as) === false) { return error.listError(as, sortBy); }
     return foldr(insertBy(cmp), emptyList, as);
   }
-  return partial(p, cmp, as);
+  return partial(sortBy_, cmp, as);
 }
 
 /**
@@ -1454,7 +1454,7 @@ export function mergeSort(as) {
  * mergeSortBy(notCompare, lst2);  // => [10:9:8:7:6:5:4:3:2:1:[]]
  */
 export function mergeSortBy(cmp, as) {
-  const p = (cmp, as) => {
+  const mergeSortBy_ = (cmp, as) => {
     if (isList(as) === false) { return error.listError(as, mergeSortBy); }
     const sequences = as => {
       if (isEmpty(as)) { return list(as); }
@@ -1506,7 +1506,7 @@ export function mergeSortBy(cmp, as) {
     }
     return $(mergeAll)(sequences)(as);
   }
-  return partial(p, cmp, as);
+  return partial(mergeSortBy_, cmp, as);
 }
 
 /**
@@ -1523,8 +1523,8 @@ export function mergeSortBy(cmp, as) {
  * insert(7, lst); // => [1:2:3:4:5:6:7:8:9:10:[]]
  */
 export function insert(e, ls) {
-  const p = (e, ls) => insertBy(compare, e, ls);
-  return partial(p, e, ls);
+  const insert_ = (e, ls) => insertBy(compare, e, ls);
+  return partial(insert_, e, ls);
 }
 
 /**
@@ -1536,7 +1536,7 @@ export function insert(e, ls) {
  * @returns {List} - A new `List`, with the element inserted.
  */
 export function insertBy(cmp, e, ls) {
-  const p = (cmp, e, ls) => {
+  const insertBy_ = (cmp, e, ls) => {
     if (isList(ls) === false) { return error.listError(ls, insertBy); }
     if (isEmpty(ls)) { return list(e); }
     const y = head(ls);
@@ -1544,5 +1544,5 @@ export function insertBy(cmp, e, ls) {
     if (cmp(e, y) === GT) { return cons(y)(insertBy(cmp, e, ys)); }
     return cons(e)(ls);
   }
-  return partial(p, cmp, e, ls);
+  return partial(insertBy_, cmp, e, ls);
 }
