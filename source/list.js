@@ -109,7 +109,7 @@ export function list(...as) { return isEmpty(as) ? emptyList : Reflect.construct
  * listRange(0, 100, f, filt);  // => [0:10:20:30:40:50:60:70:80:90:[]]
  */
 export function listRange(start, end, f, filter) {
- const listRangeP = (start, end) => {
+ const listRange_ = (start, end) => {
    if (f === undefined) { f = x => x + 1; }
    const lst = emptyList;
    const p = x => x >= end;
@@ -122,7 +122,7 @@ export function listRange(start, end, f, filter) {
    until(p, go, start);
    return lst;
  }
- return partial(listRangeP, start, end);
+ return partial(listRange_, start, end);
 }
 
 /**
@@ -140,8 +140,8 @@ export function listRange(start, end, f, filter) {
  */
 export function listFilter(start, end, filter) {
  const f = x => x + 1;
- const listFilterP = (start, end, filter) => listRange(start, end, f, filter);
- return partial(listFilterP, start, end, filter);
+ const listFilter_ = (start, end, filter) => listRange(start, end, f, filter);
+ return partial(listFilter_, start, end, filter);
 }
 
 /**
@@ -153,8 +153,8 @@ export function listFilter(start, end, filter) {
  * @returns {List} - The lazy evaluated `List`.
  */
 export function listRangeLazy(start, end) {
-  const listRangeLazyP = (start, end) => listRangeLazyBy(start, end, (x => x + 1));
-  return partial(listRangeLazyP, start, end);
+  const listRangeLazy_ = (start, end) => listRangeLazyBy(start, end, (x => x + 1));
+  return partial(listRangeLazy_, start, end);
 }
 
 /**
@@ -166,7 +166,7 @@ export function listRangeLazy(start, end) {
  * @returns {List} - The lazy evaluated `List`.
  */
 export function listRangeLazyBy(start, end, step) {
-  const listRangeLazyByP = (start, end, step) => {
+  const listRangeLazyBy_ = (start, end, step) => {
     if (start === end) { return list(start); }
     if (greaterThan(start, end)) { return emptyList; }
     let x = start;
@@ -190,7 +190,7 @@ export function listRangeLazyBy(start, end, step) {
     const proxy = new Proxy(xs, handler);
     return proxy;
   }
-  return partial(listRangeLazyByP, start, end, step);
+  return partial(listRangeLazyBy_, start, end, step);
 }
 
 /**
@@ -205,7 +205,7 @@ export function listRangeLazyBy(start, end, step) {
  * listAppend(lst1, lst2);   // => [1:2:3:4:5:6:[]]
  */
 export function listAppend(as, bs) {
-  const listAppendP = (as, bs) => {
+  const listAppend_ = (as, bs) => {
     if (isList(as) === false ) { return error.listError(as, listAppend); }
     if (isList(bs) === false ) { return error.listError(bs, listAppend); }
     if (isEmpty(as)) { return bs; }
@@ -213,7 +213,7 @@ export function listAppend(as, bs) {
     if (type(head(as)) === type(head(bs))) { return cons(head(as))(listAppend(tail(as))(bs)); }
     return error.typeMismatch(type(head(as)), type(head(bs)), listAppend);
   }
-  return partial(listAppendP, as, bs);
+  return partial(listAppend_, as, bs);
 }
 
 /**
@@ -227,13 +227,13 @@ export function listAppend(as, bs) {
  * cons(3)(lst);            // => [3:4:5:6:[]]
  */
 export function cons(x, xs) {
-  const consP = (x, xs) => {
+  const cons_ = (x, xs) => {
     if (xs === undefined || isEmpty(xs)) { return new List(x, emptyList); }
     if (xs instanceof List === false) { return error.listError(xs, cons); }
     if (typeCheck(x, head(xs))) { return new List(x, xs); }
     return error.typeError(head(xs), cons);
   }
-  return partial(consP, x, xs);
+  return partial(cons_, x, xs);
 }
 
 /**
@@ -407,14 +407,14 @@ export function fromStringToList(str) {
  * map(f, lst));              // => [3:6:9:12:15:[]]
  */
 export function map(f, as) {
-  const p = (f, as) => {
+  const map_ = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, map); }
     if (isEmpty(as)) { return emptyList; }
     const x = f(head(as)) === undefined ? f.bind(f, head(as)) : f(head(as));
     const xs = tail(as);
     return cons(x)(map(f)(xs));
   }
-  return partial(p, f, as);
+  return partial(map_, f, as);
 }
 
 /**
@@ -427,8 +427,8 @@ export function map(f, as) {
  * reverse(lst);              // => [5:4:3:2:1:[]]
  */
 export function reverse(as) {
-  const rev = (as, a) => isEmpty(as) ? a : rev(tail(as), cons(head(as))(a));
-  return rev(as, emptyList);
+  const r = (as, a) => isEmpty(as) ? a : r(tail(as), cons(head(as))(a));
+  return r(as, emptyList);
 }
 
 /**
@@ -439,12 +439,12 @@ export function reverse(as) {
  * @returns {List} - A new `List` in which the elements of `as` are interspersed with `sep`.
  * @example
  * const lst = list(1,2,3,4,5);
- * intersperse(0, lst);        // => [1:0:2:0:3:0:4:0:5:[]]
+ * intersperse(0, lst);         // => [1:0:2:0:3:0:4:0:5:[]]
  * const str = fromStringToList(`abcdefghijklmnopqrstuvwxyz`);
- * intersperse(`|`, str)       // => [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z]
+ * intersperse(`|`, str)        // => [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z]
  */
 export function intersperse(sep, as) {
-  const p = (sep, as) => {
+  const intersperse_ = (sep, as) => {
     if (isList(as) === false) { return error.listError(as, intersperse); }
     if (typeCheck(sep, head(as)) === false) { return error.typeMismatch(sep, head(as), intersperse); }
     if (isEmpty(as)) { return emptyList; }
@@ -452,8 +452,8 @@ export function intersperse(sep, as) {
     const xs = tail(as);
     return cons(x)(prependToAll(sep, xs));
   }
-  function prependToAll(sep, xs) { return isEmpty(xs) ? emptyList : cons(sep)(cons(head(xs))(prependToAll(sep, tail(xs)))); }
-  return partial(p, sep, as);
+  const prependToAll = (sep, xs) => isEmpty(xs) ? emptyList : cons(sep)(cons(head(xs))(prependToAll(sep, tail(xs))));
+  return partial(intersperse_, sep, as);
 }
 
 /**
@@ -473,8 +473,8 @@ export function intersperse(sep, as) {
  * intercalate(xs, xss); // => [1:1:1:1:1:0:0:0:2:2:2:2:2:0:0:0:3:3:3:3:3:0:0:0:4:4:4:4:4:0:0:0:5:5:5:5:5:[]]
  */
 export function intercalate(xs, xss) {
-  const p = (xs, xss) => concat(intersperse(xs, xss));
-  return partial(p, xs, xss);
+  const intercalate_ = (xs, xss) => concat(intersperse(xs, xss));
+  return partial(intercalate_, xs, xss);
 }
 
 /**
@@ -487,8 +487,8 @@ export function intercalate(xs, xss) {
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);
  * const xss1 = list(lst1, lst2);
- * transpose(xss1);             // => [[1:4:[]]:[2:5:[]]:[3:6:[]]:[]]
  * const xss2 = list(list(10,11), list(20), list(), list(30,31,32));
+ * transpose(xss1);             // => [[1:4:[]]:[2:5:[]]:[3:6:[]]:[]]
  * transpose(xss2);             // => [[10:20:30:[]]:[11:31:[]]:[32:[]]:[]]
  */
 export function transpose(lss) {
@@ -519,11 +519,11 @@ export function transpose(lss) {
  * @example
  * const lst = list(1,2,3);
  * const f = (x ,y) => x - y;
- * foldl(f, 0, lst);        // => -6
+ * foldl(f, 0, lst);          // => -6
  */
 export function foldl(f, z, as) {
-  const p = (f, z, as) => last(scanl(f, z, as));
-  return partial(p, f, z, as);
+  const foldl_ = (f, z, as) => last(scanl(f, z, as));
+  return partial(foldl_, f, z, as);
 }
 
 // Special folds
@@ -539,7 +539,7 @@ export function foldl(f, z, as) {
  * const lst2 = list(4,5,6);
  * const lst3 = list(7,8,9);
  * const xss = list(lst1, lst2, lst3); // [[1:2:3:[]]:[4:5:6:[]]:[7:8:9:[]]:[]]
- * concat(xss);                      // => [1:2:3:4:5:6:7:8:9:[]]
+ * concat(xss);                        // => [1:2:3:4:5:6:7:8:9:[]]
  */
 export function concat(xss) {
   if (isList(xss)) {
@@ -561,12 +561,12 @@ export function concat(xss) {
  * @example
  * const f = x => list(x * 3);
  * const lst = list(1,2,3);    // [1:2:3:[]]
- * map(f, lst);              // => [[3:[]]:[6:[]]:[9:[]]:[]]
- * concatMap(f, lst);        // => [3:6:9:[]]
+ * map(f, lst);                // => [[3:[]]:[6:[]]:[9:[]]:[]]
+ * concatMap(f, lst);          // => [3:6:9:[]]
  */
 export function concatMap(f, as) {
-  const p = (f, as) => concat(map(f, as));
-  return partial(p, f, as);
+  const concatMap_ = (f, as) => concat(map(f, as));
+  return partial(concatMap_, f, as);
 }
 
 // Building lists
@@ -581,17 +581,17 @@ export function concatMap(f, as) {
  * @example
  * const lst = list(1,2,3)
  * const f = (x, y) => x - y;
- * scanl(f, 0, lst);        // => [0:-1:-3:-6:[]]
+ * scanl(f, 0, lst);          // => [0:-1:-3:-6:[]]
  */
 export function scanl(f, q, ls) {
-  const p = (f, q, ls) => {
+  const scanl_ = (f, q, ls) => {
     if (isList(ls) === false) { return error.listError(ls, scanl); }
     if (isEmpty(ls)) { return cons(q)(emptyList); }
     const x = head(ls);
     const xs = tail(ls);
     return cons(q)(p(f, f(q, x), xs));
   }
-  return partial(p, f, q, ls);
+  return partial(scanl_, f, q, ls);
 }
 
 /**
@@ -603,11 +603,11 @@ export function scanl(f, q, ls) {
  * @returns {List} - The `List` of reduced values.
  * @example
  * const lst = list(1,2,3);
- * const f = (x ,y) => x - y;
- * scanr(f, 0, lst);        // => [2:-1:3:0:[]]
+ * const f = (x, y) => x - y;
+ * scanr(f, 0, lst);          // => [2:-1:3:0:[]]
  */
 export function scanr(f, q0, as) {
-  const p = (f, q0, as) => {
+  const scanr_ = (f, q0, as) => {
     if (isList(as) === false) { return error.listError(ls, scanr); }
     if (isEmpty(as)) { return list(q0); }
     const x = head(as);
@@ -616,7 +616,7 @@ export function scanr(f, q0, as) {
     const q = head(qs);
     return cons(f(x, q))(qs);
   }
-  return partial(p, f, q0, as);
+  return partial(scanr_, f, q0, as);
 }
 
 // Infinite lists

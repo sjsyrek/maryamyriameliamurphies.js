@@ -45,11 +45,11 @@ export function mempty(a) { return Monoid(a) ? dataType(a).mempty(a) : error.typ
  * mappend(mappend(l1, l2), l3);     // => [1:2:3:4:5:6:7:8:9:[]]
  */
 export function mappend(a, b) {
-  const mappendP = (a, b) => {
+  const mappend_ = (a, b) => {
     if (typeCheck(a, b)) { return Monoid(a) ? dataType(a).mappend(a, b) : error.typeError(a, mappend); }
     return error.typeMismatch(a, b, mappend);
   }
-  return partial(mappendP, a, b);
+  return partial(mappend_, a, b);
 }
 
 /**

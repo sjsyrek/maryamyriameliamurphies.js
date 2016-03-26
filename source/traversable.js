@@ -34,8 +34,8 @@ const Traversable = defines(`fmap`, `foldr`, `traverse`);
  * traverse(f, tup);         // => [(1,9):[]]
  */
 export function traverse(f, a) {
-  const traverseP = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
-  return partial(traverseP, f, a);
+  const traverse_ = (f, a) => { return Traversable(a) ? dataType(a).traverse(f, a) : error.typeError(a, traverse); }
+  return partial(traverse_, f, a);
 }
 
 /**
@@ -47,8 +47,8 @@ export function traverse(f, a) {
  * @returns {Object} - A collection of the results of the traversal.
  */
 export function mapM(f, m) {
-  const mapMP = (f, m) => Monad(m) ? dataType(m).traverse(f, m) : error.typeError(m, mapM);
-  return partial(mapMP, f, m);
+  const mapM_ = (f, m) => Monad(m) ? dataType(m).traverse(f, m) : error.typeError(m, mapM);
+  return partial(mapM_, f, m);
 }
 
 /**

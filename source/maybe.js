@@ -96,11 +96,11 @@ export function just(a) { return a === undefined || a === null || a !== a ? Noth
  * maybe(0, f, m2);       // => 0
  */
 export function maybe(n, f, m) {
-  const maybeP = (n, f, m) => {
+  const maybe_ = (n, f, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, maybe); }
     return Nothing(m) ? n : f(fromJust(m));
   }
-  return partial(maybeP, n, f, m);
+  return partial(maybe_, n, f, m);
 }
 
 /**
@@ -152,11 +152,11 @@ export function fromJust(m) {
  * @returns {*} - The value contained in the `Maybe` or `d` if it is `Nothing`.
  */
 export function fromMaybe(d, m) {
-  const fromMaybeP = (d, m) => {
+  const fromMaybe_ = (d, m) => {
     if (isMaybe(m) === false) { return error.typeError(m, fromMaybe); }
     return isNothing(m) ? d : m.value();
   }
-  return partial(fromMaybeP, d, m);
+  return partial(fromMaybe_, d, m);
 }
 
 /**
@@ -223,7 +223,7 @@ export function catMaybes(as) {
  * mapMaybe(f, lst2);                              // => [4:8:12:16:20:24:28:32:36:40:44:48:[]]
  */
 export function mapMaybe(f, as) {
-  const mapMaybeP = (f, as) => {
+  const mapMaybe_ = (f, as) => {
     if (isList(as) === false) { return error.listError(as, mapMaybe); }
     if (isEmpty(as)) { return emptyList; }
     const x = head(as);
@@ -234,5 +234,5 @@ export function mapMaybe(f, as) {
     if (isJust(r)) { return cons(fromJust(r))(rs()); }
     return error.returnError(f, mapMaybe);
   }
-  return partial(mapMaybeP, f, as);
+  return partial(mapMaybe_, f, as);
 }

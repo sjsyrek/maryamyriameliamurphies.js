@@ -35,8 +35,8 @@ const Functor = defines(`fmap`);
  * fmap($(f)(g))(lst)       // => [1100:2200:3300:[]]
  */
 export function fmap(f, a) {
-  const fmapP = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
-  return partial(fmapP, f, a);
+  const fmap_ = (f, a) => Functor(a) ? dataType(a).fmap(f, a) : error.typeError(a, fmap);
+  return partial(fmap_, f, a);
 }
 
 /**
@@ -50,6 +50,6 @@ export function fmap(f, a) {
  * fmapReplaceBy(5, lst)  // => [5:5:5:[]]
  */
 export function fmapReplaceBy(a, b) {
-  const fmapReplaceByP = (a, b) => fmap(constant(a), b);
-  return partial(fmapReplaceByP, a, b);
+  const fmapReplaceBy_ = (a, b) => fmap(constant(a), b);
+  return partial(fmapReplaceBy_, a, b);
 }

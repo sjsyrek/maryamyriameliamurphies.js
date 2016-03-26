@@ -34,11 +34,11 @@ const Eq = defines(`isEq`);
  * isEq(0, 0);              // => true
  */
 export function isEq(a, b) {
-  const isEqP = (a, b) => {
+  const isEq_ = (a, b) => {
     if (typeCheck(a, b)) { return Eq(a) ? dataType(a).isEq(a, b) : a === b; }
     return error.typeMismatch(a, b, isEq);
   }
-  return partial(isEqP, a, b);
+  return partial(isEq_, a, b);
 }
 
 /**
@@ -57,6 +57,6 @@ export function isEq(a, b) {
  * isNotEq(0, 0);              // => false
  */
 export function isNotEq(a, b) {
-  const isNotEqP = (a, b) => !isEq(a, b);
-  return partial(isNotEqP, a, b);
+  const isNotEq_ = (a, b) => !isEq(a, b);
+  return partial(isNotEq_, a, b);
 }

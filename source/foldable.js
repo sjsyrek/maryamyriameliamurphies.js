@@ -43,8 +43,8 @@ export function fold(a) { return foldMap(id, a); }
  * foldMap(f, lst);            // => [3:6:9:[]]
  */
 export function foldMap(f, a) {
-  const foldMapP = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
-  return partial(foldMapP, f, a);
+  const foldMap_ = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
+  return partial(foldMap_, f, a);
  }
 
 /**
@@ -60,6 +60,6 @@ export function foldMap(f, a) {
  * foldr(f, 0, lst);          // => 6
  */
 export function foldr(f, z, t) {
-  const foldrP = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
-  return partial(foldrP, f, z, t);
+  const foldr_ = (f, z, t) => { return Foldable(t) ? dataType(t).foldr(f, z, t) : error.typeError(t, foldr); }
+  return partial(foldr_, f, z, t);
 }

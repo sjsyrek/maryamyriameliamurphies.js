@@ -83,7 +83,7 @@ export const GT = new Ordering(`GT`);
  * compare(tup3, tup1);    // => EQ
  */
 export function compare(a, b) {
-  const compareP = (a, b) => {
+  const compare_ = (a, b) => {
     if (a === Infinity) { return GT; }
     if (b === Infinity) { return LT; }
     if (typeCheck(a, b)) {
@@ -94,7 +94,7 @@ export function compare(a, b) {
     }
     return error.typeMismatch(a, b, compare);
   }
-  return partial(compareP, a, b);
+  return partial(compare_, a, b);
 }
 
 /**
@@ -105,7 +105,7 @@ export function compare(a, b) {
  * @returns {boolean} - a < b.
  */
 export function lessThan(a, b) {
-  const lessThanP = (a, b) => compare(a, b) === LT;
+  const lessThan_ = (a, b) => compare(a, b) === LT;
   return partial(p, a, b);
 }
 
@@ -117,8 +117,8 @@ export function lessThan(a, b) {
  * @returns {boolean} - a <= b.
  */
 export function lessThanOrEqual(a, b) {
-  const lessThanOrEqualP = (a, b) => compare(a, b) !== GT;
-  return partial(lessThanOrEqualP, a, b);
+  const lessThanOrEqual_ = (a, b) => compare(a, b) !== GT;
+  return partial(lessThanOrEqual_, a, b);
 }
 
 /**
@@ -129,7 +129,7 @@ export function lessThanOrEqual(a, b) {
  * @returns {boolean} - a > b.
  */
 export function greaterThan(a, b) {
-  const greaterThanP = (a, b) => compare(a, b) === GT;
+  const greaterThan_ = (a, b) => compare(a, b) === GT;
   return partial(greaterThan, a, b);
 }
 
@@ -141,8 +141,8 @@ export function greaterThan(a, b) {
  * @returns {boolean} - a >= b.
  */
 export function greaterThanOrEqual(a, b) {
-  const greaterThanOrEqualP = (a, b) => compare(a, b) !== LT;
-  return partial(greaterThanOrEqualP, a, b);
+  const greaterThanOrEqual_ = (a, b) => compare(a, b) !== LT;
+  return partial(greaterThanOrEqual_, a, b);
 }
 
 /**
@@ -160,8 +160,8 @@ export function greaterThanOrEqual(a, b) {
  * max(tup3, tup1);       // => (1,2)
  */
 export function max(a, b) {
-  const maxP = (a, b) => lessThanOrEqual(a, b) ? b : a;
-  return partial(maxP, a, b);
+  const max_ = (a, b) => lessThanOrEqual(a, b) ? b : a;
+  return partial(max_, a, b);
 }
 
 /**
@@ -179,6 +179,6 @@ export function max(a, b) {
  * min(tup3, tup1);       // => (1,2)
  */
 export function min(a, b) {
-  const minP = (a, b) => lessThanOrEqual(a, b) ? a : b;
-  return partial(minP, a, b);
+  const min_ = (a, b) => lessThanOrEqual(a, b) ? a : b;
+  return partial(min_, a, b);
 }

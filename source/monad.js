@@ -27,8 +27,8 @@ const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
  * @returns {Object} - A new monad of the same type with the value injected.
  */
 export function inject(m, a) {
-  const injectP = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
-  return partial(injectP, m, a);
+  const inject_ = (m, a) => Monad(m) ? dataType(m).pure(a) : error.typeError(m, inject);
+  return partial(inject_, m, a);
 }
 
 /**
@@ -39,8 +39,8 @@ export function inject(m, a) {
  * @returns {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 export function bind(m, f) {
-  const bindP = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
-  return partial(bindP, m, f);
+  const bind_ = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
+  return partial(bind_, m, f);
 }
 
 /**
@@ -52,8 +52,8 @@ export function bind(m, f) {
  * Haskell> (>>) :: m a -> m b -> m b
  */
 export function chain(m, f) {
-  const chainP = (m, f) => Monad(m) ? then(m, f) : error.typeError(m, chain);
-  return partial(chainP, m, f);
+  const chain_ = (m, f) => Monad(m) ? then(m, f) : error.typeError(m, chain);
+  return partial(chain_, m, f);
 }
 
 /**
@@ -64,8 +64,8 @@ export function chain(m, f) {
  * @returns {Object} - A new monad of the same type, the result of binding the function to the original injected value.
  */
 export function bindFlip(f, m) {
-  const bindFlipP = (f, m) => bind(m, f);
-  return partial(bindFlipP, f, m);
+  const bindFlip_ = (f, m) => bind(m, f);
+  return partial(bindFlip_, f, m);
 }
 
 /**
@@ -92,8 +92,8 @@ export function join(m) {
  * @returns {Object} - A new monad containing the result of mapping the function over the monad.
  */
 export function liftM(f, m) {
-  const liftMP = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
-  return partial(liftMP, f, m)
+  const liftM_ = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
+  return partial(liftM_, f, m)
 }
 
 /**

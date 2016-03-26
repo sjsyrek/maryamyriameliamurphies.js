@@ -30,8 +30,8 @@ const Applicative = defines(`fmap`, `pure`, `ap`);
  * pure(lst, 5);            // => [5:[]]
  */
 export function pure(f, a) {
-  const pureP = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
-  return partial(pureP, f, a);
+  const pure_ = (f, a) => Applicative(f) ? dataType(f).pure(a) : error.typeError(f, pure);
+  return partial(pure_, f, a);
 }
 
 /**
@@ -59,12 +59,12 @@ export function pure(f, a) {
  * ap(pf, a);                     // => [6:[]] // proves interchange (well, not really possible?)
  */
 export function ap(f, a)  {
-  const apP = (f, a) => {
+  const ap_ = (f, a) => {
     if (Applicative(f) === false) { error.typeError(f, ap); }
     if (Applicative(a) == = false) { error.typeError(a, ap); }
   return dataType(a).ap(f, a);
   }
-  return partial(apP, f, a) ;
+  return partial(ap_, f, a) ;
 }
 
 /**
@@ -76,8 +76,8 @@ export function ap(f, a)  {
  * @returns {Object} - A new applicative functor of the same type, the result of the application.
  */
 export function apFlip(f, a, b) {
-  const apFlipP = (f, a, b) => liftA2(flip(f), a, b);
-  return partial(apFlipP, f, a, b);
+  const apFlip_ = (f, a, b) => liftA2(flip(f), a, b);
+  return partial(apFlip_, f, a, b);
 }
 
 /**
@@ -92,8 +92,8 @@ export function apFlip(f, a, b) {
  * then(l1, l2);         // => [4:5:6:4:5:6:4:5:6:[]]
  */
 export function then(a1, a2) {
-  const thenP = (a1, a2) => liftA2(constant(id), a1, a2);
-  return partial(thenP, a1, a2);
+  const then_ = (a1, a2) => liftA2(constant(id), a1, a2);
+  return partial(then_, a1, a2);
 }
 
 /**
@@ -108,8 +108,8 @@ export function then(a1, a2) {
  * skip(l1, l2);         // => [1:1:1:2:2:2:3:3:3:[]]
  */
 export function skip(a1, a2) {
-  const skipP = (a1, a2) => liftA2(constant, a1, a2);
-  return partial(skipP, a1, a2);
+  const skip_ = (a1, a2) => liftA2(constant, a1, a2);
+  return partial(skip_, a1, a2);
 }
 
 /**
@@ -120,8 +120,8 @@ export function skip(a1, a2) {
  * @returns {Object} - The result of applying the lifted function.
  */
 export function liftA(f, a) {
-  const liftAP = (f, a) => ap(dataType(a).pure(f))(a);
-  return partial(liftAP, f, a);
+  const liftA_ = (f, a) => ap(dataType(a).pure(f))(a);
+  return partial(liftA_, f, a);
 }
 
 /**
@@ -133,8 +133,8 @@ export function liftA(f, a) {
  * @returns {Object} - The result of applying the lifted function.
  */
 export function liftA2(f, a, b) {
-  const liftA2P = (f, a, b) => ap(fmap(f, a))(b);
-  return partial(liftA2P, f, a, b);
+  const liftA2_ = (f, a, b) => ap(fmap(f, a))(b);
+  return partial(liftA2_, f, a, b);
 }
 
 /**
@@ -147,6 +147,6 @@ export function liftA2(f, a, b) {
  * @returns {Object} - The result of applying the lifted function.
  */
 export function liftA3(f, a, b, c) {
-  const liftA3P = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
-  return partial(liftA3P, f, a, b, c);
+  const liftA3_ = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
+  return partial(liftA3_, f, a, b, c);
 }

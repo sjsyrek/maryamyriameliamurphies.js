@@ -160,12 +160,12 @@ export function type(a) { return a instanceof Type ? a.typeOf() : typeof a; }
  * typeCheck(0, 'a');       // => false
  */
 export function typeCheck(a, b) {
-  const typeCheckP = (a, b) => {
+  const typeCheck_ = (a, b) => {
     if (a instanceof Type && b instanceof Type) { return dataType(a).type(a) === dataType(b).type(b); }
     if (dataType(a) === dataType(b)) { return true; }
     return false;
   }
-  return partial(typeCheckP, a, b);
+  return partial(typeCheck_, a, b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,8 +187,8 @@ export function typeCheck(a, b) {
  * @returns {Function|*} - A new function with its arguments partially or fully applied (i.e. its final value).
  * @example
  * function multiply(x, y) {
- *   const multiplyP = (x, y) => x * y; // create a closure with the same arguments and "do the math" in this closure
- *   return partial(multiplyP, x, y); // return a "curried" version of the function that accepts partial application
+ *   const multiply_ = (x, y) => x * y; // create a closure with the same arguments and "do the math" in this closure
+ *   return partial(multiply_, x, y); // return a "curried" version of the function that accepts partial application
  * }
  * multiply(10, 10);          // => 100
  * multiply(10);              // => function () { [native code] } // (with 10 applied to x)
@@ -276,8 +276,8 @@ export function id(a) { return a; }
  * c(5, 10);                                      // => 5
  */
 export function constant(a, b) {
-  const constantP = (a, b) => a;
-  return partial(constantP, a, b);
+  const constant_ = (a, b) => a;
+  return partial(constant_, a, b);
 }
 
 /**
@@ -295,8 +295,8 @@ export function constant(a, b) {
  * u(1);                   // => 11
  */
 export function until(p, f, x) {
-  const untilP = (p, f, x) => p(x) ? x : until(p, f, f(x));
-  return partial(untilP, p, f, x);
+  const until_ = (p, f, x) => p(x) ? x : until(p, f, f(x));
+  return partial(until_, p, f, x);
 }
 
 /**
@@ -312,13 +312,13 @@ export function until(p, f, x) {
  * and(a, b);       // => false
  */
 export function and(a, b) {
-  const andP = (a, b) => {
+  const and_ = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, and); }
     if (type(b) !== `boolean`) { return error.typeError(b, and); }
     if (a) { return b; }
     return false;
   }
-  return partial(andP, a, b);
+  return partial(and_, a, b);
 }
 
 /**
@@ -334,13 +334,13 @@ export function and(a, b) {
  * or(a, b);        // => true
  */
 export function or(a, b) {
-  const orP = (a, b) => {
+  const or_ = (a, b) => {
     if (type(a) !== `boolean`) { return error.typeError(a, or); }
     if (type(b) !== `boolean`) { return error.typeError(b, or); }
     if (a)  { return true; }
     return b;
   }
-  return partial(orP, a, b);
+  return partial(or_, a, b);
 }
 
 /**
