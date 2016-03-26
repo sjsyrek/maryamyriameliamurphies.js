@@ -61,10 +61,10 @@ export function pure(f, a) {
 export function ap(f, a)  {
   const ap_ = (f, a) => {
     if (Applicative(f) === false) { error.typeError(f, ap); }
-    if (Applicative(a) == = false) { error.typeError(a, ap); }
-  return dataType(a).ap(f, a);
+    if (Applicative(a) === false) { error.typeError(a, ap); }
+    return dataType(a).ap(f, a);
   }
-  return partial(ap_, f, a) ;
+  return partial(ap_, f, a);
 }
 
 /**
