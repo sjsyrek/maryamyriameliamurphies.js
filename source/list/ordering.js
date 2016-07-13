@@ -35,9 +35,9 @@ import {
 import {error} from '../error';
 
 /** @function sort
- * Sort a list using regular value comparison. Use `sortBy` to supply your own
- * comparison function. Uses an insertion sort algorithm. The `mergeSort` function
- * is probably more efficient for larger lists.
+ * Sort a list using regular value comparison. Use `sortBy` to supply your own comparison function.
+ * Uses an insertion sort algorithm. The `mergeSort` function is probably more efficient for larger
+ * lists.
  * Haskell> sort :: Ord a => [a] -> [a]
  * @param {List} as - The `List` to sort.
  * @returns {List} - The sorted list. The original list is unmodified.
@@ -48,8 +48,8 @@ import {error} from '../error';
 export const sort = as => sortBy(compare, as);
 
 /** @function sortBy
- * Sort a list using a comparison function of your choice. Uses an insertion sort
- * algorithm. The `mergeSortBy` function is probably more efficient for larger lists.
+ * Sort a list using a comparison function of your choice. Uses an insertion sort algorithm. The
+ * `mergeSortBy` function is probably more efficient for larger lists.
  * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
  * @param {Function} cmp - The comparison function—must return an `Ordering`.
  * @param {List} as - The `List` to sort.
@@ -57,23 +57,19 @@ export const sort = as => sortBy(compare, as);
  * @example
  * const notCompare = (x, y) => compare(x, y) === EQ ? EQ : (GT ? LT : GT);
  * const lst1 = listRange(1, 11);
- * const lst2 = reverse(lst1);       // [10:9:8:7:6:5:4:3:2:1:[]]
- * sortBy(notCompare, lst1);         // => [1:2:3:4:5:6:7:8:9:10:[]]
- * sortBy(notCompare, lst2);         // => [10:9:8:7:6:5:4:3:2:1:[]]
+ * const lst2 = reverse(lst1);    // [10:9:8:7:6:5:4:3:2:1:[]]
+ * sortBy(notCompare, lst1);      // => [1:2:3:4:5:6:7:8:9:10:[]]
+ * sortBy(notCompare, lst2);      // => [10:9:8:7:6:5:4:3:2:1:[]]
  */
 export const sortBy = (cmp, as) => {
-  const sortBy_ = (cmp, as) => {
-    if (isList(as) === false) { return error.listError(as, sortBy); }
-    return foldr(insertBy(cmp), emptyList, as);
-  }
+  const sortBy_ = (cmp, as) =>
+    isList(as) ? foldr(insertBy(cmp), emptyList, as) : error.listError(as, sortBy);
   return partial(sortBy_, cmp, as);
 }
 
 /** @function mergeSort
- * Sort a list using regular value comparison. Use `mergeSortBy` to supply your own
- * comparison function. Uses a merge sort algorithm, which may be more efficient
- * than `sort` for larger lists. Use `mergeSortBy` to supply your own comparison
- * function.
+ * Sort a list using regular value comparison. Use `mergeSortBy` to supply your own comparison
+ * function. Uses a merge sort algorithm, which may be more efficient than `sort` for larger lists.
  * Haskell> sort :: Ord a => [a] -> [a]
  * @param {List} as - The `List` to sort.
  * @returns {List} - The sorted `List`. The original list is unmodified.
@@ -85,11 +81,11 @@ export const sortBy = (cmp, as) => {
  * mergeSort(lst2);                           // => [1:2:3:4:5:6:7:8:9:10:[]]
  */
 export const mergeSort = as =>
-  isList(as) === false ? error.listError(as, mergeSort) : mergeSortBy(compare, as);
+  isList(as) ? mergeSortBy(compare, as) : error.listError(as, mergeSort);
 
 /** @function mergeSortBy
- * Sort a list using a comparison function of your choice. Uses a merge sort algorithm,
- * which may be more efficient than `sortBy` for larger lists.
+ * Sort a list using a comparison function of your choice. Uses a merge sort algorithm, which may be
+ * more efficient than `sortBy` for larger lists.
  * Haskell> sortBy :: (a -> a -> Ordering) -> [a] -> [a]
  * @param {Function} cmp - The comparison function—must return an `Ordering`.
  * @param {List} as - The `List` to sort.
@@ -158,9 +154,9 @@ export const mergeSortBy = (cmp, as) => {
 }
 
 /** @function insert
- * The `insert` function takes an element and a `List` and inserts the element into the
- * list at the first position where it is less than or equal to the next element.
- * In particular, if the list is sorted before the call, the result will also be sorted.
+ * The `insert` function takes an element and a `List` and inserts the element into the list at the
+ * first position where it is less than or equal to the next element. In particular, if the list is
+ * sorted before the call, the result will also be sorted.
  * Use `insertBy` to supply your own comparison function.
  * Haskell> insert :: Ord a => a -> [a] -> [a]
  * @param {*} e - The element to insert.

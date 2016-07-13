@@ -26,8 +26,8 @@ import {
 import {error} from '../error';
 
 /** @function zip
- * Take two `List` objects and return a `List` of corresponding pairs. If one input
- * list is short, excess elements of the longer list are discarded.
+ * Take two `List` objects and return a `List` of corresponding pairs. If one input list is short,
+ * excess elements of the longer list are discarded.
  * Haskell> zip :: [a] -> [b] -> [(a, b)]
  * @param {List} as - The first `List`.
  * @param {List} bs - The second `List`.
@@ -53,8 +53,8 @@ export const zip = (as, bs) => {
 }
 
 /** @function zip3
- * Take three `List` objects and return a `List` of triples (`Tuple` objects
- * with three values). Analogous to the `zip` function.
+ * Take three `List` objects and return a `List` of triples (`Tuple` objects with three values).
+ * Analogous to the `zip` function.
  * Haskell> zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
  * @param {List} as - The first `List`.
  * @param {List} bs - The second `List`.
@@ -84,8 +84,7 @@ export const zip3 = (as, bs, cs) => {
 }
 
 /** @function zipWith
- * A generalization of the `zip` function. Zip two `List` objects using a
- * provided function.
+ * A generalization of the `zip` function. Zip two `List` objects using a provided function.
  * Haskell> zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
  * @param {Function} f - The zipping function.
  * @param {List} as - The first `List`.
@@ -114,8 +113,7 @@ export const zipWith = (f, as, bs) => {
 }
 
 /** @function zipWith3
- * A generalization of the `zip3` function. Zip three `List` objects using a
- * provided function.
+ * A generalization of the `zip3` function. Zip three `List` objects using a provided function.
  * Haskell> zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
  * @param {Function} f - The zipping function.
  * @param {List} as - The first `List`.

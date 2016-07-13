@@ -62,8 +62,8 @@ export const index = (as, n) => {
 }
 
 /** @function elemIndex
- * Return the index of the first value of a `List` equal to a query value, or
- * `Nothing` if there is no such value.
+ * Return the index of the first value of a `List` equal to a query value, or `Nothing` if there is
+ * no such value.
  * Haskell> elemIndex :: Eq a => a -> [a] -> Maybe Int
  * @param {*} a - The query value.
  * @param {List} as - The `List` to evaluate.
@@ -74,16 +74,13 @@ export const index = (as, n) => {
  * elemIndex(10, lst);                        // => Nothing
  */
 export const elemIndex = (a, as) => {
-  const elemIndex_ = (a, as) => {
-    if(isList(as) === false) { return error.listError(as, elemIndex); }
-    return findIndex(isEq(a), as);
-  }
+  const elemIndex_ = (a, as) =>
+    isList(as) ? findIndex(isEq(a), as) : error.listError(as, elemIndex);
   return partial(elemIndex_, a, as);
 }
 
 /** @function elemIndices
- * Return the indices of all values in a `List` equal to a query value, in
- * ascending order.
+ * Return the indices of all values in a `List` equal to a query value, in ascending order.
  * Haskell> elemIndices :: Eq a => a -> [a] -> [Int]
  * @param {*} a - The query value.
  * @param {List} as - The `List` to evaluate.
@@ -94,18 +91,15 @@ export const elemIndex = (a, as) => {
  * elemIndices(10, lst);                      // => [[]]
  */
 export const elemIndices = (a, as) => {
-  const elemIndices_ = (a, as) => {
-    if(isList(as) === false) { return error.listError(as, elemIndices); }
-    return findIndices(isEq(a), as);
-  }
+  const elemIndices_ = (a, as) =>
+    isList(as) ? findIndices(isEq(a), as) : error.listError(as, elemIndices);
   return partial(elemIndices_, a, as);
 }
 
 /** @function find
- * Take a predicate function and a `List` and return the first value in the list
- * that satisfies the predicate, or `Nothing` if there is no such element. This
- * function currently only works on `List` objects, but should in the future work
- * for all `Foldable` types.
+ * Take a predicate function and a `List` and return the first value in the list that satisfies the
+ * predicate, or `Nothing` if there is no such element. This function currently only works on `List`
+ * objects, but should in the future work for all `Foldable` types.
  * Haskell> find :: Foldable t => (a -> Bool) -> t a -> Maybe a
  * @param {Function} p - The predicate function.
  * @param {List} xs - The `List` to evaluate.
@@ -118,16 +112,13 @@ export const elemIndices = (a, as) => {
  * find(pred2, lst);                       // => Nothing
  */
 export const find = (p, xs) => {
-  const find_ = (p, xs) => {
-    if (isList(xs) === false) { return error.listError(xs, find); }
-    return $(listToMaybe)(filter(p))(xs);
-  }
+  const find_ = (p, xs) => isList(xs) ? $(listToMaybe)(filter(p))(xs) : error.listError(xs, find);
   return partial(find_, p, xs);
 }
 
 /** @function findIndex
- * Take a predicate function and a `List` and return the index of the first value
- * in the list that satisfies the predicate, or `Nothing` if there is no such element.
+ * Take a predicate function and a `List` and return the index of the first value in the list that
+ * satisfies the predicate, or `Nothing` if there is no such element.
  * Haskell> findIndex :: (a -> Bool) -> [a] -> Maybe Int
  * @param {Function} p - The predicate function.
  * @param {List} xs - The `List` to evaluate.
@@ -140,10 +131,8 @@ export const find = (p, xs) => {
  * findIndex(pred2, lst);                  // => Nothing
  */
 export const findIndex = (p, xs) => {
-  const findIndex_ = (pred, xs) => {
-    if (isList(xs) === false) { return error.listError(xs, findIndex); }
-    return $(listToMaybe)(findIndices(p))(xs);
-  }
+  const findIndex_ = (p, xs) =>
+    isList(xs) ? $(listToMaybe)(findIndices(p))(xs) : error.listError(xs, findIndex);
   return partial(findIndex_, p, xs);
 }
 
@@ -155,9 +144,9 @@ export const findIndex = (p, xs) => {
  * @param {List} xs - The `List` to evaluate.
  * @returns {List} - The `List` of matching indices.
  * @example
- * const lst1 = list(1,2,3,4,5,6,7,8,9,10);
+ * const lst = list(1,2,3,4,5,6,7,8,9,10);
  * const pred = x => even(x);
- * findIndices(pred, lst1);                 // => [1:3:5:7:9:[]]
+ * findIndices(pred, lst);                 // => [1:3:5:7:9:[]]
  */
 export const findIndices = (p, xs) => {
   const findIndices_ = (p, xs) => {

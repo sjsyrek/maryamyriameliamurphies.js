@@ -259,9 +259,8 @@ export const init = as => {
 }
 
 /** @function uncons
- * Decompose a `List` into its head and tail. If the list is empty, returns `Nothing`.
- * If the list is non-empty, returns `Just (x, xs)`, where `x` is the head of
- * the list and `xs` its tail.
+ * Decompose a `List` into its head and tail. If the list is empty, returns `Nothing`. If the list
+ * is non-empty, returns `Just (x, xs)`, where `x` is the head of the list and `xs` its tail.
  * Haskell> uncons :: [a] -> Maybe (a, [a])
  * @param {List} as - The `List` to decompose.
  * @returns {Maybe} - The decomposed `List` wrapped in a `Just`, or `Nothing` if the list is empty.
@@ -283,8 +282,8 @@ export const uncons = as => isEmpty(as) ? Nothing : just(tuple(head(as), tail(as
 export const empty = t => foldr(x => x === undefined, true, t);
 
 /** @function length
- * Return the length of a `List`. In the future, this function should work on all
- * `Foldable` structures.
+ * Return the length of a `List`. In the future, this function should work on all `Foldable`
+ * structures.
  * Haskell> length :: Foldable t => t a -> Int
  * @param {List} as - A `List`.
  * @returns {number} - The length of the list.

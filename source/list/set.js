@@ -32,8 +32,8 @@ import {
 import {error} from '../error';
 
 /** @function nub
- * Remove duplicate values from a `List` by dropping all occurrences after the first.
- * Use `nubBy` to supply your own equality function.
+ * Remove duplicate values from a `List` by dropping all occurrences after the first. Use `nubBy` to
+ * supply your own equality function.
  * Haskell> nub :: Eq a => [a] -> [a]
  * @param {List} as - A `List`.
  * @returns {List} - The essence of `as`.
@@ -41,11 +41,11 @@ import {error} from '../error';
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
  * nub(lst); // => [1:2:3:4:5:6:7:8:9:10:[]]
  */
-export const nub = as => isList(as) === false ? error.listError(as, nub) : nubBy(isEq, as);
+export const nub = as => isList(as) ? nubBy(isEq, as) : error.listError(as, nub);
 
 /** @function nubBy
- * Remove duplicate values from a `List` by dropping all occurrences after the first.
- * This function generalizes `nub` by allowing you to supply your own equality test.
+ * Remove duplicate values from a `List` by dropping all occurrences after the first. This function
+ * generalizes `nub` by allowing you to supply your own equality test.
  * Haskell> nubBy :: (a -> a -> Bool) -> [a] -> [a]
  * @param {Function} eq - A function to test for equality (must return `boolean`).
  * @param {List} as - A `List`.
@@ -68,8 +68,8 @@ export const nubBy = (eq, as) => {
 }
 
 /** @function deleteL
- * Remove the first occurrence of a value from a `List`. Use `deleteLBy` to supply
- * your own equality function.
+ * Remove the first occurrence of a value from a `List`. Use `deleteLBy` to supply your own equality
+ * function.
  * Haskell> delete :: (Eq a) => a -> [a] -> [a]
  * @param {*} x - The value to delete.
  * @param {List} as - A `List`.
@@ -79,14 +79,13 @@ export const nubBy = (eq, as) => {
  * deleteL(2, lst); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
 export const deleteL = (x, as) => {
-  const deleteL_ = (x, as) =>
-    isList(as) === false ? error.listError(as, deleteL) : deleteLBy(isEq, x, as);
+  const deleteL_ = (x, as) => isList(as) ? deleteLBy(isEq, x, as) : error.listError(as, deleteL);
   return partial(deleteL_, x, as);
 }
 
 /** @function deleteLBy
- * Remove the first occurrence of a value from a `List` using a provided function
- * to check for equality.
+ * Remove the first occurrence of a value from a `List` using a provided function to check for
+ * equality.
  * Haskell> deleteBy :: (a -> a -> Bool) -> a -> [a] -> [a]
  * @param {Function} eq - A function to test for equality (must return `boolean`).
  * @param {*} x - The value to delete.
@@ -109,9 +108,8 @@ export const deleteLBy = (eq, x, as) => {
 }
 
 /** @function deleteFirsts
- * Non-associative list difference: remove the first occurrence of each value of a
- * `List` in turn from another `List`. Use `deleteFirstsBy` to supply your own
- * equality function.
+ * Non-associative list difference: remove the first occurrence of each value of a `List` in turn
+ * from another `List`. Use `deleteFirstsBy` to supply your own equality function.
  * Haskell> (\\) :: Eq a => [a] -> [a] -> [a]
  * @param {List} as - The first `List`.
  * @param {List} bs - The second `List`.
@@ -133,8 +131,8 @@ export const deleteFirsts = (as, bs) => {
 }
 
 /** @function deleteFirstsBy
- * Non-associative list difference: remove the first occurrence of each value of a
- * `List` in turn from another `List` using a provided function to check for equality.
+ * Non-associative list difference: remove the first occurrence of each value of a `List` in turn
+ * from another `List` using a provided function to check for equality.
  * Haskell> deleteFirstsBy :: (a -> a -> Bool) -> [a] -> [a] -> [a]
  * @param {Function} eq - A function to test for equality (must return `boolean`).
  * @param {List} as - The first `List`.
@@ -145,7 +143,7 @@ export const deleteFirsts = (as, bs) => {
  * const lst2 = list(6,7,8,9,10);
  * const lst3 = listAppend(lst1, lst2);
  * const eq = (x, y) => even(x * y);
- * deleteFirstsBy(eq, lst3, lst1);    // => [5:7:8:9:10:[]]
+ * deleteFirstsBy(eq, lst3, lst1);      // => [5:7:8:9:10:[]]
  */
 export const deleteFirstsBy = (eq, as, bs) => {
   const deleteFirstsBy_ = (eq, as, bs) => foldl(flip(deleteLBy(eq)), as, bs);

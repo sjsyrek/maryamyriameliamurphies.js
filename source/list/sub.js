@@ -84,8 +84,8 @@ export const drop = (n, as) => {
 }
 
 /** @function splitAt
- * Return a `Tuple` in which the first element is the prefix of a `List` of a given
- * length and the second element is the remainder of the list.
+ * Return a `Tuple` in which the first element is the prefix of a `List` of a given length and the
+ * second element is the remainder of the list.
  * Haskell> splitAt :: Int -> [a] -> ([a], [a])
  * @param {number} n - The length of the prefix.
  * @param {List} as - The `List` to split.
@@ -95,16 +95,14 @@ export const drop = (n, as) => {
  * splitAt(2, lst);         // => ([1:2:[]],[3:[]])
  */
 export const splitAt = (n, as) => {
-  const splitAt_ = (n, as) => {
-    if (isList(as) === false) { return error.listError(as, splitAt); }
-    return tuple(take(n, as), drop(n, as));
-  }
+  const splitAt_ = (n, as) =>
+    isList(as) ? tuple(take(n, as), drop(n, as)) : error.listError(as, splitAt);
   return partial(splitAt_, n, as);
 }
 
 /** @function takeWhile
- * Return the longest prefix (possibly empty) of a `List` of values that satisfy a
- * predicate function.
+ * Return the longest prefix (possibly empty) of a `List` of values that satisfy a predicate
+ * function.
  * Haskell> takeWhile :: (a -> Bool) -> [a] -> [a]
  * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - The `List` to take from.
@@ -129,8 +127,7 @@ export const takeWhile = (p, as) => {
 }
 
 /** @function dropWhile
- * Drop values from a `List` while a given predicate function returns `true` for
- * each value.
+ * Drop values from a `List` while a given predicate function returns `true` for each value.
  * Haskell> dropWhile :: (a -> Bool) -> [a] -> [a]
  * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - The `List` to drop values from.
@@ -155,9 +152,8 @@ export const dropWhile = (p, as) => {
 }
 
 /** @function span
- * Return a `Tuple` in which the first element is the longest prefix (possibly empty)
- * of a `List` of values that satisfy a predicate function and the second element is
- * the rest of the list.
+ * Return a `Tuple` in which the first element is the longest prefix (possibly empty) of a `List` of
+ * values that satisfy a predicate function and the second element is the rest of the list.
  * Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])
  * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
@@ -165,20 +161,17 @@ export const dropWhile = (p, as) => {
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x < 3;
- * span(f, lst);                    // => ([1:2:[]],[3:4:1:2:3:4:[]])
+ * span(f, lst);                      // => ([1:2:[]],[3:4:1:2:3:4:[]])
  */
 export const span = (p, as) => {
-  const span_ = (p, as) => {
-    if (isList(as) === false) { return error.listError(as, span); }
-    tuple(takeWhile(p, as), dropWhile(p, as));
-  }
+  const span_ = (p, as) =>
+    isList(as) ? tuple(takeWhile(p, as), dropWhile(p, as)) : error.listError(as, span);
   return partial(span_, p, as);
 }
 
 /** @function spanNot
- * Return a `Tuple` in which the first element is the longest prefix (possibly empty)
- * of a `List` of values that do not satisfy a predicate function and the second element
- * is the rest of the list.
+ * Return a `Tuple` in which the first element is the longest prefix (possibly empty) of a `List` of
+ * values that do not satisfy a predicate function and the second element is the rest of the list.
  * Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])
  * @param {Function} p - The predicate function (should return `boolean`).
  * @param {List} as - A `List`.
@@ -186,7 +179,7 @@ export const span = (p, as) => {
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x > 3;
- * spanNot(f, lst);                 // => ([1:2:3:[]],[4:1:2:3:4:[]])
+ * spanNot(f, lst);                   // => ([1:2:3:[]],[4:1:2:3:4:[]])
  */
 export const spanNot = (p, as) => {
   const spanNot_ = (p, as) => span($(not)(p), as);
@@ -194,8 +187,8 @@ export const spanNot = (p, as) => {
 }
 
 /** @function stripPrefix
- * Drops the given prefix from a `List`. Returns `Nothing` if the list did not
- * start with the prefix given, or `Just` the `List` after the prefix, if it does.
+ * Drops the given prefix from a `List`. Returns `Nothing` if the list did not start with the prefix
+ * given, or `Just` the `List` after the prefix, if it does.
  * Haskell> stripPrefix :: Eq a => [a] -> [a] -> Maybe [a]
  * @param {List} as - The prefix `List` to strip.
  * @param {List} bs - The `List` from which to strip the prefix.
@@ -223,22 +216,21 @@ export const stripPrefix = (as, bs) => {
 }
 
 /** @function group
- * Take a `List` and return a `List` of lists such that the concatenation of the result
- * is equal to the argument. Each sublist in the result contains only equal values. Use
- * `groupBy` to supply your own equality function.
+ * Take a `List` and return a `List` of lists such that the concatenation of the result is equal to
+ * the argument. Each sublist in the result contains only equal values. Use `groupBy` to supply your
+ * own equality function.
  * Haskell> group :: Eq a => [a] -> [[a]]
  * @param {List} as - A `List`.
  * @returns {List} - A `List` of result lists.
  * @example
  * const str = fromStringToList(`Mississippi`);
- * group(str); // => [[M]:[i]:[ss]:[i]:[ss]:[i]:[pp]:[i]:[]]
+ * group(str);                                  // => [[M]:[i]:[ss]:[i]:[ss]:[i]:[pp]:[i]:[]]
  */
 export const group = as => groupBy(isEq, as);
 
 /** @function groupBy
- * Take a `List` and return a `List` of lists such that the concatenation of the result
- * is equal to the argument. Each sublist in the result is grouped according to the
- * the supplied equality function.
+ * Take a `List` and return a `List` of lists such that the concatenation of the result is equal to
+ * the argument. Each sublist in the result is grouped according to the the given equality function.
  * Haskell> groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
  * @param {Function} eq - A function to test the equality of elements (must return `boolean`).
  * @param {List} as - A `List`.

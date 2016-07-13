@@ -101,7 +101,7 @@ export const cycle = as => {
   let x = head(as);
   let xs = tail(as);
   const c = list(x);
-  /*eslint no-constant-condition: ["error", { "checkLoops": false }]*/
+  /* eslint no-constant-condition: ["error", { "checkLoops": false }] */
   const listGenerator = function* () {
     do {
       x = isEmpty(xs) ? head(as) : head(xs);

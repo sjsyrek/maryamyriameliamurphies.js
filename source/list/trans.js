@@ -55,7 +55,7 @@ export const map = (f, as) => {
  * @returns {List} - The reversed list.
  * @example
  * const lst = list(1,2,3,4,5);
- * reverse(lst);              // => [5:4:3:2:1:[]]
+ * reverse(lst);                // => [5:4:3:2:1:[]]
  */
 export const reverse = as => {
   const r = (as, a) => isEmpty(as) ? a : r(tail(as), cons(head(as))(a));
@@ -125,8 +125,8 @@ export const intercalate = (xs, xss) => {
  * const lst2 = list(4,5,6);
  * const xss1 = list(lst1, lst2);
  * const xss2 = list(list(10,11), list(20), list(), list(30,31,32));
- * transpose(xss1);               // => [[1:4:[]]:[2:5:[]]:[3:6:[]]:[]]
- * transpose(xss2);               // => [[10:20:30:[]]:[11:31:[]]:[32:[]]:[]]
+ * transpose(xss1); // => [[1:4:[]]:[2:5:[]]:[3:6:[]]:[]]
+ * transpose(xss2); // => [[10:20:30:[]]:[11:31:[]]:[32:[]]:[]]
  */
 export const transpose = lss => {
   if (isList(lss) === false) { return error.listError(lss, transpose); }

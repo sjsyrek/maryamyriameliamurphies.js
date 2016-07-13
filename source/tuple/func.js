@@ -155,4 +155,4 @@ export const fromArrayToTuple = a =>
  * fromTupleToArray(tup);     // => [10,20]
  */
 export const fromTupleToArray = p =>
-  isTuple(p) ? Reflect.ownKeys(p).map(key => p[key]) : error.tupleError(p, fromTupleToArray);
+  isTuple(p) ? Object.getOwnPropertyNames(p).map(k => p[k]) : error.tupleError(p, fromTupleToArray);

@@ -34,16 +34,17 @@ import {
 import {error} from '../error';
 
 /** @function lookup
- * Look up a key in an association list. For a list of `Tuple` objects, returns the
- * second element of the first tuple for which the key matches the first element.
+ * Look up a key in an association list. For a list of `Tuple` objects, returns the second element
+ * of the first tuple for which the key matches the first element.
  * Haskell> lookup :: Eq a => a -> [(a, b)] -> Maybe b
  * @param {*} key - The key value to lookup.
  * @param {List} assocs - A `List` of `Tuple` objects.
  * @returns {Maybe} - The matching value in a `Just` or `Nothing`, otherwise.
  * @example
- * const assocs = list(tuple(1,2), tuple(3,4), tuple(3,3), tuple(4,2)); // [(1,2):(3,4):(3,3):(4,2):[]]
- * lookup(3, assocs);                                                 // => Just 4
- * lookup(5, assocs);                                                 // => Nothing
+ * const assocs =
+ *   list(tuple(1,2), tuple(3,4), tuple(3,3), tuple(4,2)); // [(1,2):(3,4):(3,3):(4,2):[]]
+ * lookup(3, assocs);                                      // => Just 4
+ * lookup(5, assocs);                                      // => Nothing
  */
 export const lookup = (key, assocs) => {
   const lookup_ = (key, assocs) => {
