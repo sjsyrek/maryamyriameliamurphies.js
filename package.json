@@ -44,10 +44,9 @@
     "babel-polyfill": "^6.7.4"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register ./test/index.js",
     "compile": "babel source --out-dir distribution",
-    "build": "npm run compile && npm test",
     "lint": "eslint ./source/index.js",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run compile",
+    "test": "mocha --compilers js:babel-core/register ./test/index.js"
   }
 }
