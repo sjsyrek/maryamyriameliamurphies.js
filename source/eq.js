@@ -39,10 +39,10 @@ export const Eq = defines(`isEq`);
  * @example
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);
- * isEq(lst1, lst2);        // => false
- * isEq(lst1, list(1,2,3)); // => true
- * isEq(0, 1);              // => false
- * isEq(0, 0);              // => true
+ * isEq(lst1, lst2);         // => false
+ * isEq(lst1, list(1,2,3));  // => true
+ * isEq(0, 1);               // => false
+ * isEq(0, 0);               // => true
  */
 export const isEq = (a, b) => {
   const isEq_ = (a, b) => {

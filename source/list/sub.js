@@ -77,7 +77,6 @@ export const drop = (n, as) => {
     if (isList(as) === false) { return error.listError(as, drop); }
     if (n <= 0) { return as; }
     if (isEmpty(as)) { return emptyList; }
-    const x = head(as);
     const xs = tail(as);
     return drop(n - 1)(xs);
   }

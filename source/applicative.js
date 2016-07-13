@@ -71,7 +71,7 @@ export const pure = (f, a) => {
  * pure(lst, f(10));            // => [20:[]] // proves homomorphism
  * ap(pf, pure(lst, 3));        // => [6:[]]
  * const a = pure(lst, 3) ;
- * ap(pf, a);                   // => [6:[]] // proves interchange (not really possible?)
+ * ap(pf, a);                   // => [6:[]] // proves interchange (not actually possible?)
  */
 export const ap = (f, a) => {
   const ap_ = (f, a) => {

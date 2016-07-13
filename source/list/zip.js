@@ -132,7 +132,7 @@ export const zipWith = (f, as, bs) => {
  * zipWith3(g, lst1, lst2, lst3);    // => [12:13:14:15:16:[]]
  */
 export const zipWith3 = (f, as, bs, cs) => {
-  const zipWith3_ = (f, as, bs, cd) => {
+  const zipWith3_ = (f, as, bs, cs) => {
     if (isList(as) === false) { return error.listError(as, zipWith3); }
     if (isList(bs) === false) { return error.listError(bs, zipWith3); }
     if (isList(cs) === false) { return error.listError(cs, zipWith3); }

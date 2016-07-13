@@ -33,6 +33,7 @@ import {
 
 import {
   Type,
+  type,
   dataType
 } from '../type';
 
@@ -70,7 +71,7 @@ export class Tuple extends Type {
     }
   }
   // Monoid
-  static mempty(a) { return unit; }
+  static mempty() { return unit; }
   static mappend(a, b) { return new Tuple(mappend(fst(a), fst(b)), mappend(snd(a), snd(b))); }
   // Foldable
   static foldr(f, acc, p) { return f(snd(p), acc); }

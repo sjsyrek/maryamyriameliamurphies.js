@@ -167,7 +167,7 @@ export const maybeToList = m => {
  */
 export const catMaybes = as => {
   if (isList(as) === false) { return error.listError(as, catMaybes); }
-  if (isMaybe(head(as)) === false) { return error.typeError(m, catMaybes); }
+  if (isMaybe(head(as)) === false) { return error.typeError(as, catMaybes); }
   const p = x => isJust(x);
   const f = x => fromJust(x);
   return map(f, filter(p, as));

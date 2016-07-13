@@ -71,19 +71,17 @@ export const nubBy = (eq, as) => {
  * Remove the first occurrence of a value from a `List`. Use `deleteLBy` to supply
  * your own equality function.
  * Haskell> delete :: (Eq a) => a -> [a] -> [a]
- * @param {*} a - The value to delete.
+ * @param {*} x - The value to delete.
  * @param {List} as - A `List`.
  * @returns {List} - The `List` with the first `a` deleted.
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
- * deleteL(2, lst5); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
+ * deleteL(2, lst); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
-export const deleteL = (a, as) => {
-  const deleteL_ = (a, as) => {
-    if (isList(as) === false) { return error.listError(as, deleteL); }
-    return deleteLBy(isEq, a, as);
-  }
-  return partial(deleteL_, a, as);
+export const deleteL = (x, as) => {
+  const deleteL_ = (x, as) =>
+    isList(as) === false ? error.listError(as, deleteL) : deleteLBy(isEq, x, as);
+  return partial(deleteL_, x, as);
 }
 
 /** @function deleteLBy
@@ -91,6 +89,7 @@ export const deleteL = (a, as) => {
  * to check for equality.
  * Haskell> deleteBy :: (a -> a -> Bool) -> a -> [a] -> [a]
  * @param {Function} eq - A function to test for equality (must return `boolean`).
+ * @param {*} x - The value to delete.
  * @param {List} as - A `List`.
  * @returns {List} - The `List` with the first `a` deleted.
  * @example
@@ -98,16 +97,15 @@ export const deleteL = (a, as) => {
  * const eq = (x, y) => odd(x + y);
  * deleteLBy(eq, 2, lst); // => [2:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
-export const deleteLBy = (eq, a, as) => {
-  const deleteLBy_ = (eq, a, as) => {
+export const deleteLBy = (eq, x, as) => {
+  const deleteLBy_ = (eq, x, as) => {
     if (isList(as) === false) { return error.listError(as, deleteLBy); }
     if (isEmpty(as)) { return emptyList; }
     const y = head(as);
     const ys = tail(as);
-    const x = eq(a, y) ? ys : y;
-    return eq(a, y) ? ys : cons(y)(deleteLBy(eq, a, ys));
+    return eq(x, y) ? ys : cons(y)(deleteLBy(eq, x, ys));
   }
-  return partial(deleteLBy_, eq, a, as);
+  return partial(deleteLBy_, eq, x, as);
 }
 
 /** @function deleteFirsts
@@ -128,7 +126,7 @@ export const deleteLBy = (eq, a, as) => {
 export const deleteFirsts = (as, bs) => {
   const deleteFirsts_ = (as, bs) => {
     if (isList(as) === false) { return error.listError(as, deleteFirsts); }
-    if (isList(ab) === false) { return error.listError(ab, deleteFirsts); }
+    if (isList(bs) === false) { return error.listError(bs, deleteFirsts); }
     return foldl(flip(deleteL), as, bs);
   }
   return partial(deleteFirsts_, as, bs);
@@ -149,9 +147,7 @@ export const deleteFirsts = (as, bs) => {
  * const eq = (x, y) => even(x * y);
  * deleteFirstsBy(eq, lst3, lst1);    // => [5:7:8:9:10:[]]
  */
-export const deleteFirstsBy = (eq, as, bs) {
-  const deleteFirstsBy_ = (eq, as, bs) => {
-    return foldl(flip(deleteLBy(eq)), as, bs);
-  }
+export const deleteFirstsBy = (eq, as, bs) => {
+  const deleteFirstsBy_ = (eq, as, bs) => foldl(flip(deleteLBy(eq)), as, bs);
   return partial(deleteFirstsBy_, eq, as, bs);
 }

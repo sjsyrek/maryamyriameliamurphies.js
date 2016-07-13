@@ -28,25 +28,17 @@
     "examples": "examples"
   },
   "devDependencies": {
-    "babel-cli": "^6.6.5",
-    "babel-core": "^6.7.4",
-    "babel-eslint": "^6.0.0",
-    "babel-polyfill": "^6.7.4",
-    "babel-preset-es2015": "^6.6.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "babel-register": "^6.7.2",
-    "eslint": "^2.5.1",
-    "eslint-config-airbnb": "^6.2.0",
-    "mocha": "^2.4.5",
-    "should": "^8.3.0"
-  },
-  "dependencies": {
-    "babel-polyfill": "^6.7.4"
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.10",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "eslint": "^3.0.1",
+    "should": "^9.0.2"
   },
   "scripts": {
     "compile": "babel source --out-dir distribution",
-    "lint": "eslint ./source/index.js",
+    "lint": "eslint source",
     "prepublish": "npm run compile",
-    "test": "mocha --compilers js:babel-core/register ./test/index.js"
+    "test": "mocha --compilers js:babel-register"
   }
 }

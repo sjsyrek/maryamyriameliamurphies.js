@@ -26,6 +26,12 @@ import {fmap} from '../functor';
 import {pure} from '../applicative';
 
 import {
+  Nothing,
+  just,
+  isNothing
+} from '../maybe';
+
+import {
   Type,
   type
 } from '../type';
@@ -60,7 +66,7 @@ export class Maybe extends Type {
     return compare(a.value(), b.value());
   }
   // Monoid
-  static mempty(a) { return Nothing; }
+  static mempty() { return Nothing; }
   static mappend(m1, m2) {
     if (isNothing(m1)) { return m2; }
     if (isNothing(m2)) { return m1; }
@@ -69,7 +75,7 @@ export class Maybe extends Type {
   // Foldable
   static foldr(f, z, m) { return isNothing(m) ? z : f(m.value(), z); }
   // Traversable
-  static traverse(f, m) { return isNothing(m) ? pure(m, Nothing) : fmap(maybe, f(x)); }
+  static traverse(f, m) { return isNothing(m) ? pure(m, Nothing) : fmap(just, f(m.value())); }
   // Functor
   static fmap(f, m) { return isNothing(m) ? Nothing : new Maybe(f(m.value())); }
   // Applicative

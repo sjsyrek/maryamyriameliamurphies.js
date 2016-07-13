@@ -10,6 +10,8 @@
 
 /** @module error */
 
+import {type} from './type';
+
 /** @const {Object} error
  * When a function from this library throws an error, it calls one of the methods defined on this
  * object, which constructs and then passes an error message to the `throwError` function with the

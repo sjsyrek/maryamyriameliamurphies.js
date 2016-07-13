@@ -47,7 +47,7 @@ class Ordering extends Type {
     super();
     this.ord = () => ord;
    }
-   static mempty(a) { return EQ; }
+   static mempty() { return EQ; }
    static mappend(a, b) {
      if (a === LT) { return LT; }
      if (a === EQ) { return b; }
@@ -116,7 +116,7 @@ export const compare = (a, b) => {
  */
 export const lessThan = (a, b) => {
   const lessThan_ = (a, b) => compare(a, b) === LT;
-  return partial(p, a, b);
+  return partial(lessThan_, a, b);
 }
 
 /** @function lessThanOrEqual
@@ -140,7 +140,7 @@ export const lessThanOrEqual = (a, b) => {
  */
 export const greaterThan = (a, b) => {
   const greaterThan_ = (a, b) => compare(a, b) === GT;
-  return partial(greaterThan, a, b);
+  return partial(greaterThan_, a, b);
 }
 
 /** @function greaterThanOrEqual
@@ -165,9 +165,9 @@ export const greaterThanOrEqual = (a, b) => {
  * const tup1 = tuple(1,2);
  * const tup2 = tuple(2,1);
  * const tup3 = swap(tup2);
- * max(tup1, tup2);       // => (2,1)
- * max(tup2, tup1);       // => (2,1)
- * max(tup3, tup1);       // => (1,2)
+ * max(tup1, tup2);         // => (2,1)
+ * max(tup2, tup1);         // => (2,1)
+ * max(tup3, tup1);         // => (1,2)
  */
 export const max = (a, b) => {
   const max_ = (a, b) => lessThanOrEqual(a, b) ? b : a;
@@ -184,9 +184,9 @@ export const max = (a, b) => {
  * const tup1 = tuple(1,2);
  * const tup2 = tuple(2,1);
  * const tup3 = swap(tup2);
- * min(tup1, tup2);       // => (1,2)
- * min(tup2, tup1);       // => (1,2)
- * min(tup3, tup1);       // => (1,2)
+ * min(tup1, tup2);         // => (1,2)
+ * min(tup2, tup1);         // => (1,2)
+ * min(tup3, tup1);         // => (1,2)
  */
 export const min = (a, b) => {
   const min_ = (a, b) => lessThanOrEqual(a, b) ? a : b;

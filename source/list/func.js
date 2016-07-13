@@ -326,7 +326,7 @@ export const isEmpty = a => isList(a) ? a === emptyList : error.typeError(a, isE
  * fromArrayToList(arr); // => [1:2:3:[]]
  */
 export const fromArrayToList = a =>
-  Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList); }
+  Array.isArray(a) ? list(...a) : error.typeError(a, fromArrayToList);
 
 /** @function fromListToArray
  * Convert a `List` into an array.
@@ -361,4 +361,4 @@ export const fromListToString = as =>
  * fromStringToList(str); // => [abc]
  */
 export const fromStringToList = str =>
-  typeof str === 'string' ? fromArrayToList(str.split(``)) : error.typeError(as, fromStringToList);
+  typeof str === 'string' ? fromArrayToList(str.split(``)) : error.typeError(str, fromStringToList);

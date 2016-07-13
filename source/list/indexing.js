@@ -15,10 +15,9 @@ import {
   $
 } from '../base';
 
-import {
-  Nothing,
-  listToMaybe
-} from '..maybe';
+import {isEq} from '../eq';
+
+import {listToMaybe} from '../maybe';
 
 import {
   fst,
@@ -26,7 +25,6 @@ import {
 } from '../tuple';
 
 import {
-  emptyList,
   listRange,
   head,
   tail,
@@ -77,7 +75,7 @@ export const index = (as, n) => {
  */
 export const elemIndex = (a, as) => {
   const elemIndex_ = (a, as) => {
-    if(isList(as) === false) { return error.listError(xs, elemIndex); }
+    if(isList(as) === false) { return error.listError(as, elemIndex); }
     return findIndex(isEq(a), as);
   }
   return partial(elemIndex_, a, as);
@@ -97,7 +95,7 @@ export const elemIndex = (a, as) => {
  */
 export const elemIndices = (a, as) => {
   const elemIndices_ = (a, as) => {
-    if(isList(as) === false) { return error.listError(xs, elemIndices); }
+    if(isList(as) === false) { return error.listError(as, elemIndices); }
     return findIndices(isEq(a), as);
   }
   return partial(elemIndices_, a, as);
@@ -165,11 +163,7 @@ export const findIndices = (p, xs) => {
   const findIndices_ = (p, xs) => {
     if (isList(xs) === false) { return error.listError(xs, findIndices); }
     const z = zip(xs, listRange(0, length(xs)));
-    const f = xs => {
-      const x = fst(xs);
-      const i = snd(xs);
-      return p(x) ? true : false;
-    }
+    const f = xs => $(p)(fst)(xs) ? true : false;
     const m = t => snd(t);
     return map(m, filter(f, z));
   }

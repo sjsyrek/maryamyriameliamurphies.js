@@ -105,20 +105,19 @@ export const flip = f => (x, y) => y === undefined ? y => f(y, x) : f(y, x);
 export const id = a => a;
 
 /** @function constant
- * Return the value of the first argument, throwing away the value of the second argument.
+ * Return the value of the first argument, throwing away any other arguments.
  * Haskell> const :: a -> b -> a
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {*} a - The value of the first object.
+ * @param {...*} as - Any objects.
+ * @returns {*} - The value of the first object.
  * @example
  * constant(2, 3);                                  // => 2
  * const multHund = x => x * 100;
  * const c = (x, y) => $(constant(x))(multHund)(y);
  * c(5, 10);                                        // => 5
  */
-export const constant = (a, b) => {
-  const constant_ = (a, b) => a;
-  return partial(constant_, a, b);
+export const constant = (...as) => {
+  const constant_ = (...as) => as.shift();
+  return partial(constant_, ...as);
 }
 
 /** @function until

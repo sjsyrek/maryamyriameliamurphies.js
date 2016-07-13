@@ -12,7 +12,10 @@
 
 import {partial} from '../base';
 
-import {Nothing} from '..maybe';
+import {
+  Nothing,
+  just
+} from '..maybe';
 
 import {
   fst,
@@ -44,7 +47,7 @@ import {error} from '../error';
  */
 export const lookup = (key, assocs) => {
   const lookup_ = (key, assocs) => {
-    if (isList(assocs) === false) { return error.listError(as, lookup); }
+    if (isList(assocs) === false) { return error.listError(assocs, lookup); }
     if (isEmpty(assocs)) { return Nothing; }
     const xy = head(assocs);
     const xys = tail(assocs);

@@ -10,14 +10,12 @@
 
 /** @module monad */
 
-import {partial} from './base';
-
-import {fmap} from './functor';
-
 import {
-  pure,
-  then
-} from './applicative';
+  partial,
+  id
+} from './base';
+
+import {then} from './applicative';
 
 import {
   defines,

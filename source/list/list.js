@@ -44,6 +44,7 @@ import {
 } from '../list';
 
 import {
+  Type,
   type,
   typeCheck
 } from '../type';
@@ -58,7 +59,7 @@ import {error} from '../error';
  * things being equal, have an advantage. Lists may only contain values of a single type.
  * @extends Type
  */
-class List extends Type {
+export class List extends Type {
   /** @constructor
    * Create a new `List`.
    * @param {*} head - The value to put at the head of the list (also determines the list's type).
@@ -85,7 +86,7 @@ class List extends Type {
     return compare(head(as), head(bs));
   }
   // Monoid
-  static mempty(as) { return emptyList; }
+  static mempty() { return emptyList; }
   static mappend(as, bs) { return listAppend(as, bs); }
   // Foldable
   static foldr(f, acc, as) {
