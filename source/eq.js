@@ -1,26 +1,37 @@
 /**
  * maryamyriameliamurphies.js
+ * A library of Haskell-style morphisms ported to ES2015 JavaScript.
  *
- * @name eq.js
- * @author Steven J. Syrek
+ * eq.js
+ *
  * @file Eq type class.
  * @license ISC
  */
 
-/** @module maryamyriameliamurphies.js/source/eq */
+/** @module eq */
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Eq
+import {partial} from './base';
 
-/**
- * The `Eq` type class defines equality and inequality. Instances of `Eq` must define an `isEq` method.
- * @const {Function} - Returns `true` if an object is an instance of `Eq` and `false` otherwise.
+import {
+  defines,
+  dataType,
+  typeCheck
+} from './type';
+
+import {error} from './error';
+
+/** @const {Function} Eq
+ * The `Eq` type class defines equality and inequality. Instances of `Eq` must define an `isEq`
+ * method.
+ * @param {*} - Any object.
+ * @returns {boolean} - `true` if an object is an instance of `Eq` and `false` otherwise.
  */
-const Eq = defines(`isEq`);
+export const Eq = defines(`isEq`);
 
-/**
- * Compare two objects for equality. Both objects must be instances of the `Eq` type class (i.e. they
- * both define an `isEq` static method) and must also be the same data type (or the same primitive type).
+/** @function isEq
+ * Compare two objects for equality. Both objects must be instances of the `Eq` type class (i.e.
+ * they both define an `isEq` static method) and must also be the same data type (or the same
+ * primitive type).
  * Haskell> (==) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
@@ -33,7 +44,7 @@ const Eq = defines(`isEq`);
  * isEq(0, 1);              // => false
  * isEq(0, 0);              // => true
  */
-export function isEq(a, b) {
+export const isEq = (a, b) => {
   const isEq_ = (a, b) => {
     if (typeCheck(a, b)) { return Eq(a) ? dataType(a).isEq(a, b) : a === b; }
     return error.typeMismatch(a, b, isEq);
@@ -41,9 +52,10 @@ export function isEq(a, b) {
   return partial(isEq_, a, b);
 }
 
-/**
- * Compare two objects for inequality. Both objects must be instances of the `Eq` type class (i.e. they
- * both define an `isEq` static method) and must be also be the same data type (or the same primitive type).
+/** @function isNotEq
+ * Compare two objects for inequality. Both objects must be instances of the `Eq` type class (i.e.
+ * they both define an `isEq` static method) and must be also be the same data type (or the same
+ * primitive type).
  * Haskell> (/=) :: a -> a -> Bool
  * @param {*} a - Any object.
  * @param {*} b - Any object.
@@ -56,7 +68,7 @@ export function isEq(a, b) {
  * isNotEq(0, 1);              // => true
  * isNotEq(0, 0);              // => false
  */
-export function isNotEq(a, b) {
+export const isNotEq = (a, b) => {
   const isNotEq_ = (a, b) => !isEq(a, b);
   return partial(isNotEq_, a, b);
 }

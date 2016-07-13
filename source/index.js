@@ -1,40 +1,205 @@
 /**
  * maryamyriameliamurphies.js
+ * A library of Haskell-style morphisms ported to ES2015 JavaScript.
  *
- * @name index.js
- * @author Steven J. Syrek
- * @file A library of Haskell-style morphisms ported to ES2015 JavaScript using Babel.
+ * index.js
+ *
+ * @file Top level index.
  * @license ISC
- *
- * Reading the code:
- *
- * I implement each Haskell datatype as an ES2015 class, hewing as closely as I can to the
- * Haskell original but with reasonable concessions to JavaScript idiom. Type classes are
- * represented by static class methods. Since the class definitions are not exported, these
- * methods remain private, thus providing a limited amount of type checking that cannot be
- * easily hacked by accident. For example, data types that are equatable (with ===) will work
- * with the isEq() function if they define an isEq() static function or are natively equatable.
- * This is not dissimilar to Haskell's own implementation under the hood, which uses C-style
- * virtual functions (or so I gather), which is also why none of these functions are members
- * of a class. All of them are meant to be, as in Haskell, pure functions that take one value
- * and return one value. Functions that take multiple arguments are curried automatically.
- * For the sake of those interested, the comment for each function includes the type signature
- * of its Haskell original. My hope is that most of the functions are otherwise self-documenting,
- * though the style is admittedly terse and, therefore, potentially bewildering (or Joycean?).
- * Corrections, modifications, improvements, and additions welcome.
  */
 
-/** @module maryamyriameliamurphies.js/source/index */
+/** @module maryamyriameliamurphies */
 
-export * from './source/base';
-export * from './source/eq';
-export * from './source/ord';
-export * from './source/monoid';
-export * from './source/functor';
-export * from './source/applicative';
-export * from './source/monad';
-export * from './source/foldable';
-export * from './source/traversable';
-export * from './source/maybe';
-export * from './source/tuple';
-export * from './source/list';
+export {
+  defines,
+  dataType,
+  type,
+  typeCheck
+} from './type';
+
+export {
+  partial,
+  $,
+  flip,
+  id,
+  constant,
+  until,
+  and,
+  or,
+  not,
+  even,
+  odd,
+  show,
+  print
+} from './base';
+
+export {
+  isEq,
+  isNotEq
+} from './eq';
+
+export {
+  EQ,
+  LT,
+  GT,
+  compare,
+  lessThan,
+  lessThanOrEqual,
+  greaterThan,
+  greaterThanOrEqual,
+  max,
+  min
+} from './ord';
+
+export {
+  mempty,
+  mappend,
+  mconcat
+} from './monoid';
+
+export {
+  fmap,
+  fmapReplaceBy
+} from './functor';
+
+export {
+  pure,
+  ap,
+  apFlip,
+  then,
+  skip,
+  liftA,
+  liftA2,
+  liftA3
+} from './applicative';
+
+export {
+  inject,
+  bind,
+  chain,
+  bindFlip,
+  join,
+  liftM,
+  Do
+} from './monad';
+
+export {
+  fold,
+  foldMap,
+  foldr
+} from './foldable';
+
+export {
+  traverse,
+  mapM,
+  sequence
+} from './traversable';
+
+export {
+  Nothing,
+  just,
+  maybe,
+  isMaybe,
+  isJust,
+  isNothing,
+  fromJust,
+  fromMaybe,
+  listToMaybe,
+  maybeToList,
+  catMaybes,
+  mapMaybe
+} from './maybe';
+
+export {
+  unit,
+  tuple,
+  fst,
+  snd,
+  curry,
+  uncurry,
+  swap,
+  isTuple,
+  isUnit,
+  fromArrayToTuple,
+  fromTupleToArray
+} from './tuple';
+
+export {
+  emptyList,
+  list,
+  listRange,
+  listRangeLazy,
+  listRangeLazyBy,
+  listFilter,
+  listAppend,
+  cons,
+  head,
+  last,
+  tail,
+  init,
+  uncons,
+  empty,
+  length,
+  isList,
+  isEmpty,
+  fromArrayToList,
+  fromListToArray,
+  fromListToString,
+  fromStringToList,
+  map,
+  reverse,
+  intersperse,
+  intercalate,
+  transpose,
+  foldl,
+  concat,
+  concatMap,
+  scanl,
+  scanr,
+  listInf,
+  listInf,
+  listInfBy,
+  iterate,
+  repeat,
+  replicate,
+  cycle,
+  take,
+  drop,
+  splitAt,
+  takeWhile,
+  dropWhile,
+  span,
+  spanNot,
+  stripPrefix,
+  group,
+  groupBy,
+  lookup,
+  filter,
+  index,
+  elemIndex,
+  elemIndices,
+  find,
+  findIndex,
+  findIndices,
+  zip,
+  zip3,
+  zipWith,
+  zipWith3,
+  nub,
+  nubBy,
+  deleteL,
+  deleteLBy,
+  deleteFirsts,
+  deleteFirstsBy,
+  sort,
+  sortBy,
+  mergeSort,
+  mergeSortBy,
+  insert,
+  insertBy
+} from './list';
+
+export {
+  error,
+  throwError
+} from './error';
