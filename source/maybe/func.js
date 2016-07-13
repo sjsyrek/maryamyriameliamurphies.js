@@ -30,7 +30,7 @@ import {error} from '../error';
 
 /** @const {Maybe} Nothing
  * `Nothing` is the absence of a value, the opposite of `Just` for a `Maybe` object. Since all
- * nothings are the same nothing, there is only one `Nothing` object
+ * nothings are the same nothing, there is only one `Nothing` object.
  * (c.f. Wallace Stevens, "The Snow Man").
  */
 export const Nothing = new Maybe();

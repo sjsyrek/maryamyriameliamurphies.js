@@ -58,11 +58,11 @@ export class Type {
    * @abstract
    * @example
    * const tup = tuple(1,2);
-   * tup.typeOf();           // => (number,number)
+   * tup.typeOf();            // => (number,number)
    * const lst = list(1,2,3);
-   * lst.typeOf();           // => [number]
+   * lst.typeOf();            // => [number]
    * const m = just(5);
-   * m.typeOf();             // => Maybe number
+   * m.typeOf();              // => Maybe number
    */
   typeOf() { return dataType(this).name; }
   /** @method valueOf
@@ -71,11 +71,11 @@ export class Type {
    * @abstract
    * @example
    * const tup = tuple(1,2);
-   * tup.valueOf();          // => (1,2)
+   * tup.valueOf();           // => (1,2)
    * const lst = list(1,2,3);
-   * lst.valueOf();          // => [1:2:3:[]]
+   * lst.valueOf();           // => [1:2:3:[]]
    * const m = just(5);
-   * m.valueOf();            // => Just 5
+   * m.valueOf();             // => Just 5
    */
   valueOf() { return this; }
 }
@@ -93,7 +93,7 @@ export class Type {
  * // require that instances of the `Eq` type class define an `isEq` function:
  * const Eq = defines(`isEq`);
  *
- * // require that instances of `Traversable` define `traverse` and also be instances of `Functor`
+ * // require that instances of `Traversable` define `traverse` and are also instances of `Functor`
  * // and `Foldable`:
  * const Traversable = defines(`fmap`, `foldr`, `traverse`);
  */
@@ -105,10 +105,10 @@ export const defines = (...methods) => a => methods.every(m => m in dataType(a))
  * @param {*} a - Any object.
  * @returns {Function} - The object's constructor function.
  * @example
- * dataType(0);               // function Number() { [native code] }
+ * dataType(0);             // function Number() { [native code] }
  * const lst = list(1,2,3);
- * dataType(lst)              // => function List(head, tail) { ... }
- * lst.typeOf();              // => List // more useful if you don't need a function pointer
+ * dataType(lst)            // => function List(head, tail) { ... }
+ * lst.typeOf();            // => List // more useful if you don't need a function pointer
  */
 export const dataType = a => a.constructor;
 
@@ -117,9 +117,9 @@ export const dataType = a => a.constructor;
  * @param {*} a - Any object.
  * @returns {string} - The type of the object.
  * @example
- * type(0);                   // => number
+ * type(0);              // => number
  * const t = tuple(1,2);
- * type(t);                   // => (number,number)
+ * type(t);              // => (number,number)
  */
 export const type = a => a instanceof Type ? a.typeOf() : typeof a;
 
@@ -129,8 +129,8 @@ export const type = a => a instanceof Type ? a.typeOf() : typeof a;
  * @param {*} b - Any object.
  * @returns {boolean} - `true` if the two objects are the same type, `false` otherwise.
  * @example
- * typeCheck(0, 1);         // => true
- * typeCheck(0, 'a');       // => false
+ * typeCheck(0, 1);   // => true
+ * typeCheck(0, 'a'); // => false
  */
 export const typeCheck = (a, b) => {
   const typeCheck_ = (a, b) => {

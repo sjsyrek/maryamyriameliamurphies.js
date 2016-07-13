@@ -11,7 +11,9 @@
 /** @module base/bool */
 
 import {partial} from '../base';
+
 import {type} from '../type';
+
 import {error} from '../error';
 
 /** @function and

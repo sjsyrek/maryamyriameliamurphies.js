@@ -31,9 +31,9 @@
  *   // return a "curried" version of the function that accepts partial application
  *   return partial(multiply_, x, y);
  * }
- * multiply(10, 10);          // => 100
- * multiply(10);              // => function () { [native code] } // (with 10 applied to x)
- * multiply(10)(10);          // => 100
+ * multiply(10, 10); // => 100
+ * multiply(10);     // => function () { [native code] } // (with 10 applied to x)
+ * multiply(10)(10); // => 100
  */
 export const partial = (f, ...as) => {
   if (as.length === 0) { return f.call(); }
@@ -69,12 +69,12 @@ export const partial = (f, ...as) => {
  *   return partial(p, x, y);
  * }
  * const divByTen = h(10);
- * $(addTen)(multHund)(10)            // => 1010
- * $(addTen)(multHund, 10)            // => 1010
- * $(multHund)(addTen)(10)            // => 2000
- * $(multHund)(addTen, 10)            // => 2000
- * $(addTen)(addTwenty)()             // => 30
- * $(divByTen)(multHund)(10)          // => 0.01
+ * $(addTen)(multHund)(10)   // => 1010
+ * $(addTen)(multHund, 10)   // => 1010
+ * $(multHund)(addTen)(10)   // => 2000
+ * $(multHund)(addTen, 10)   // => 2000
+ * $(addTen)(addTwenty)()    // => 30
+ * $(divByTen)(multHund)(10) // => 0.01
  * }
  */
 export const $ = f => (g, x) => x === undefined ? x => f(g(x)) : f(g(x));
@@ -88,8 +88,8 @@ export const $ = f => (g, x) => x === undefined ? x => f(g(x)) : f(g(x));
  * @example
  * const subtract = (x, y) => x - y;
  * const flipped = flip(subtract);
- * subtract(10, 5);                   // => 5
- * flipped(10, 5);                    // => -5
+ * subtract(10, 5);                  // => 5
+ * flipped(10, 5);                   // => -5
  */
 export const flip = f => (x, y) => y === undefined ? y => f(y, x) : f(y, x);
 

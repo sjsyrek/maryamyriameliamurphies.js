@@ -32,6 +32,6 @@ export const show = a => isTuple(a) ? `(${Object.values(a).map(e => e.valueOf())
  * const lst = list(1,2,3);
  * print(lst);              // "[1:2:3:[]]"
  */
-/*global console*/
-/*eslint no-console: ["error", { allow: ["log"] }] */
+/* global console */
+/* eslint no-console: ["error", { allow: ["log"] }] */
 export const print = a => console.log(show(a));
