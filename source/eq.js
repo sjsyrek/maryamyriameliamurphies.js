@@ -26,7 +26,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Eq` and `false` otherwise.
  */
-export const Eq = defines(`isEq`);
+const Eq = defines(`isEq`);
 
 /** @function isEq
  * Compare two objects for equality. Both objects must be instances of the `Eq` type class (i.e.

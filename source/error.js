@@ -10,8 +10,6 @@
 
 /** @module error */
 
-import {type} from './type';
-
 /** @const {Object} error
  * When a function from this library throws an error, it calls one of the methods defined on this
  * object, which constructs and then passes an error message to the `throwError` function with the
@@ -33,7 +31,7 @@ export const error = {
   tupleError: (p, f) =>
     throwError(`'${p}' is type '${p.constructor.name}' but function '${f.name}' expects a tuple.`),
   typeError: (a, f) =>
-    throwError(`'${type(a) === 'function' ? `${type(a)} ${a.name}` : a}' \
+    throwError(`'${typeof a === 'function' ? `${typeof a} ${a.name}` : a}' \
     is not a valid argument to function '${f.name}'.`),
   typeMismatch: (a, b, f) =>
     throwError(`Arguments '${a}' and '${b}' to function '${f.name}' are not the same type.`)
