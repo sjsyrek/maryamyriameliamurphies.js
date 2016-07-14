@@ -12,8 +12,6 @@
 
 import {partial} from '../base';
 
-import {type} from '../type';
-
 import {error} from '../error';
 
 /** @function and
@@ -30,8 +28,8 @@ import {error} from '../error';
  */
 export const and = (a, b) => {
   const and_ = (a, b) => {
-    if (type(a) !== `boolean`) { return error.typeError(a, and); }
-    if (type(b) !== `boolean`) { return error.typeError(b, and); }
+    if (typeof a !== `boolean`) { return error.typeError(a, and); }
+    if (typeof b !== `boolean`) { return error.typeError(b, and); }
     if (a) { return b; }
     return false;
   }
@@ -52,8 +50,8 @@ export const and = (a, b) => {
  */
 export const or = (a, b) => {
   const or_ = (a, b) => {
-    if (type(a) !== `boolean`) { return error.typeError(a, or); }
-    if (type(b) !== `boolean`) { return error.typeError(b, or); }
+    if (typeof a !== `boolean`) { return error.typeError(a, or); }
+    if (typeof b !== `boolean`) { return error.typeError(b, or); }
     if (a)  { return true; }
     return b;
   }
@@ -75,7 +73,7 @@ export const or = (a, b) => {
  * not(b);          // => true
  */
 export const not = a => {
-  if (type(a) !== `boolean`) { return error.typeError(a, not); }
+  if (typeof a !== `boolean`) { return error.typeError(a, not); }
   if (a) { return false; }
   return true;
 }

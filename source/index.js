@@ -11,13 +11,6 @@
 /** @module maryamyriameliamurphies */
 
 export {
-  defines,
-  dataType,
-  type,
-  typeCheck
-} from './type';
-
-export {
   partial,
   $,
   flip,
@@ -32,6 +25,13 @@ export {
   show,
   print
 } from './base';
+
+export {
+  defines,
+  dataType,
+  type,
+  typeCheck
+} from './type';
 
 export {
   isEq,
@@ -156,7 +156,6 @@ export {
   concatMap,
   scanl,
   scanr,
-  listInf,
   listInf,
   listInfBy,
   iterate,

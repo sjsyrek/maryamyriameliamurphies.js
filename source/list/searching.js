@@ -15,7 +15,7 @@ import {partial} from '../base';
 import {
   Nothing,
   just
-} from '..maybe';
+} from '../maybe';
 
 import {
   fst,
