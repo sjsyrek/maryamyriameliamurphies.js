@@ -19,3 +19,5 @@ import './base';
 import './type-test';
 
 import './eq-test';
+
+import './ord-test';
