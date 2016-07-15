@@ -15,7 +15,6 @@ import {partial} from './base';
 import {isEq} from './eq';
 
 import {
-  Type,
   defines,
   dataType,
   typeCheck
@@ -38,15 +37,12 @@ const Ord = defines(`isEq`, `compare`);
  * @extends Type
  * @private
  */
-class Ordering extends Type {
+class Ordering {
   /** @constructor
-   * Create a new ordering.
+   * Create a new ordering, a relationship that represents a comparison between two objects.
    * @param {string} ord - A string representing the type of ordering.
    */
-  constructor(ord) {
-    super();
-    this.ord = () => ord;
-   }
+  constructor(ord) { this.ord = () => ord; }
    static mempty() { return EQ; }
    static mappend(a, b) {
      if (a === LT) { return LT; }
