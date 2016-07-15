@@ -2,7 +2,7 @@
  * maryamyriameliamurphies.js
  * A library of Haskell-style morphisms ported to ES2015 JavaScript.
  *
- * test/base/io-test.js
+ * test/type-test.js
  *
  * @file Tests for type system functions.
  * @license ISC

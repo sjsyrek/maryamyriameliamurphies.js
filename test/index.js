@@ -17,3 +17,5 @@ import 'should';
 import './base';
 
 import './type-test';
+
+import './eq-test';
