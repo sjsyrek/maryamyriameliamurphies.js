@@ -2,19 +2,19 @@
  * maryamyriameliamurphies.js
  * A library of Haskell-style morphisms ported to ES2015 JavaScript.
  *
- * base/bool-test.js
+ * test/base/bool-test.js
  *
  * @file Tests for Boolean functions.
  * @license ISC
  */
 
- import * as should from 'should';
+/* global describe, it */
 
- import {
-   and,
-   or,
-   not
- } from '../source';
+import {
+  and,
+  or,
+  not
+} from '../../source';
 
 describe(`Boolean functions`, function() {
   describe(`and()`, function() {
