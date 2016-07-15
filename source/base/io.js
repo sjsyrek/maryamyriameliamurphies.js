@@ -21,7 +21,7 @@ import {isTuple} from '../tuple';
  * show(lst);               // => [1:2:3:[]]
  * show(tup);               // => (1,2)
  */
-export const show = a => isTuple(a) ? `(${Object.values(a).map(e => e.valueOf())})` : a.valueOf();
+export const show = a => isTuple(a) ? `(${Object.keys(a).map(k => a[k].valueOf())})` : a.valueOf();
 
 /** @function print
  * Display the results of `show` on the console. One could imagine a more generalized

@@ -4,7 +4,7 @@
  *
  * test/base/bool-test.js
  *
- * @file Tests for Boolean functions.
+ * @file Tests for boolean functions.
  * @license ISC
  */
 
