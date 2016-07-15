@@ -25,7 +25,7 @@ export const unit = new Tuple();
  * @param {...*} as - The values to put into a `Tuple`.
  * @returns {Tuple} - A new `Tuple`.
  * @example
- * tuple(10, 20); // => (10,20)
+ * tuple(10,20); // => (10,20)
  */
 export const tuple = (...as) => {
   const [x, y] = as;
@@ -39,8 +39,8 @@ export const tuple = (...as) => {
  * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The first value of the tuple.
  * @example
- * const tup = tuple(10, 20);
- * fst(tup);                  // => 10
+ * const tup = tuple(10,20);
+ * fst(tup);                 // => 10
  */
 export const fst = p => isTuple(p) ? p[1] : error.tupleError(p, fst);
 
@@ -48,8 +48,8 @@ export const fst = p => isTuple(p) ? p[1] : error.tupleError(p, fst);
  * Extract the second value of a tuple.
  * @param {Tuple} p - A `Tuple`.
  * @returns {*} - The second value of the tuple.
- * const tup = tuple(10, 20);
- * snd(tup);                  // => 20
+ * const tup = tuple(10,20);
+ * snd(tup);                 // => 20
  */
 export const snd = p => isTuple(p) ? p[2] : error.tupleError(p, snd);
 
@@ -106,8 +106,8 @@ export const uncurry = (f, p) => {
  * @param {Tuple} p - A `Tuple`.
  * @returns {Tuple} - A new `Tuple`, with the values of the first tuple swapped.
  * @example
- * const tup = tuple(10, 20);
- * swap(tup);                 // => (20,10)
+ * const tup = tuple(10,20);
+ * swap(tup);                // => (20,10)
  */
 export const swap = p => isTuple(p) ? tuple(snd(p), fst(p)) : error.tupleError(p, swap);
 
@@ -140,7 +140,7 @@ export const isUnit = a => {
  * @param {Array<*>} array - The array to convert.
  * @returns {Tuple} - The new `Tuple`.
  * @example
- * const arr = [10, 20];
+ * const arr = [10,20];
  * fromArrayToTuple(arr); // => (10,20)
  */
 export const fromArrayToTuple = a =>
@@ -151,8 +151,8 @@ export const fromArrayToTuple = a =>
  * @param {Tuple} p - The `Tuple` to convert.
  * @returns {Array<*>} - The new array.
  * @example
- * const tup = tuple(10, 20);
- * fromTupleToArray(tup);     // => [10,20]
+ * const tup = tuple(10,20);
+ * fromTupleToArray(tup);    // => [10,20]
  */
 export const fromTupleToArray = p =>
   isTuple(p) ? Object.getOwnPropertyNames(p).map(k => p[k]) : error.tupleError(p, fromTupleToArray);

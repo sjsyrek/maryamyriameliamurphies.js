@@ -37,7 +37,7 @@ const Monoid = defines(`mempty`, `mappend`);
  * Return the identity (or "empty") value for the monoid.
  * Haskell> mempty :: a
  * @param {Object} a - Any monoid.
- * @returns {Object} - Identity of mappend.
+ * @returns {Object} - Identity value for the monoid.
  */
 export const mempty = a => Monoid(a) ? dataType(a).mempty(a) : error.typeError(a, mempty);
 
@@ -48,12 +48,12 @@ export const mempty = a => Monoid(a) ? dataType(a).mempty(a) : error.typeError(a
  * @param {Object} b - Any monoid.
  * @returns {Object} - A new monoid of the same type, the result of the associative operation.
  * @example
- * const l1 = list(1,2,3);         // => [1:2:3:[]]
- * const l2 = list(4,5,6);         // => [4:5:6:[]]
- * const l3 = list(7,8,9);         // => [7:8:9:[]]
- * mappend(mempty(l1), l1);        // => [1:2:3:[]]
- * mappend(l1, (mappend(l2, l3))); // => [1:2:3:4:5:6:7:8:9:[]]
- * mappend(mappend(l1, l2), l3);   // => [1:2:3:4:5:6:7:8:9:[]]
+ * const l1 = list(1,2,3);       // => [1:2:3:[]]
+ * const l2 = list(4,5,6);       // => [4:5:6:[]]
+ * const l3 = list(7,8,9);       // => [7:8:9:[]]
+ * mappend(mempty(l1), l1);      // => [1:2:3:[]]
+ * mappend(l1, mappend(l2, l3)); // => [1:2:3:4:5:6:7:8:9:[]]
+ * mappend(mappend(l1, l2), l3); // => [1:2:3:4:5:6:7:8:9:[]]
  */
 export const mappend = (a, b) => {
   const mappend_ = (a, b) => {

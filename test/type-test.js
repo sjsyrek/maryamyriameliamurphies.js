@@ -20,11 +20,11 @@ import {
 } from '../source';
 
 describe(`Type system functions`, function() {
-  let tup1 = tuple(1, 2);
-  let tup2 = tuple(3, 4, 5);
-  let lst = list(1, 2, 3);
+  let tup1 = tuple(1,2);
+  let tup2 = tuple(3,4,5);
+  let lst = list(1,2,3);
   let str = `text`;
-  let tup3 = tuple(str, 10);
+  let tup3 = tuple(str,10);
   describe(`defines()`, function() {
     let Eq = defines(`isEq`);
     it(`should return a function that checks for membership in a type class`, function() {
