@@ -28,8 +28,8 @@ describe(`I/O functions`, function() {
   });
   describe(`print()`, function() {
     it(`should display the value of an object on the console`, function() {
-      print(lst);
-      print(tup);
+      print(`     ${lst}`);
+      print(`     ${tup}`);
     });
   });
 });
