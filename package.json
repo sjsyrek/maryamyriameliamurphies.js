@@ -37,9 +37,10 @@
     "should": "^9.0.2"
   },
   "scripts": {
+    "clean": "rm -r distribution/*",
     "compile": "babel source --out-dir distribution",
     "lint": "eslint source",
-    "prepublish": "npm run compile",
-    "test": "mocha --compilers js:babel-register"
+    "test": "mocha --compilers js:babel-register",
+    "prepublish": "npm run compile"
   }
 }
