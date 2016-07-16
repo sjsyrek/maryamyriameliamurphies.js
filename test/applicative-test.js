@@ -115,11 +115,7 @@ describe(`Applicative type class`, function() {
   });
   describe(`liftA3()`, function() {
     it(`should lift a ternary function to actions`, function() {
-      const k2 = (x, y, z) => {
-        const k2_ = (x, y, z) => x * y / z;
-        return partial(k2_, x, y, z);
-      }
-      isEq(liftA3(k2))
+
     });
   });
 });
