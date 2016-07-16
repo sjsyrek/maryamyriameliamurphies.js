@@ -38,7 +38,7 @@
   },
   "scripts": {
     "clean": "rm -r distribution/*",
-    "precompile": "npm run clean",
+    "precompile": "npm run clean -s",
     "compile": "babel source --out-dir distribution",
     "lint": "eslint source",
     "test": "mocha --compilers js:babel-register",
