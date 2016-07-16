@@ -58,6 +58,18 @@ export {
 } from './monoid';
 
 export {
+  fold,
+  foldMap,
+  foldr
+} from './foldable';
+
+export {
+  traverse,
+  mapM,
+  sequence
+} from './traversable';
+
+export {
   fmap,
   fmapReplaceBy
 } from './functor';
@@ -82,18 +94,6 @@ export {
   liftM,
   Do
 } from './monad';
-
-export {
-  fold,
-  foldMap,
-  foldr
-} from './foldable';
-
-export {
-  traverse,
-  mapM,
-  sequence
-} from './traversable';
 
 export {
   Nothing,

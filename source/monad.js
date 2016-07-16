@@ -108,6 +108,13 @@ export const join = m => {
  * @param {Function} f - The function to convert into a monad.
  * @param {Object} m - The monad to convert the function into.
  * @returns {Object} - A new monad containing the result of mapping the function over the monad.
+ * @example
+ * const mb = just(1);
+ * const lst = list(1,2,3);
+ * const doubleJust = x => just(x * 2);
+ * const doubleList = x => list(x * 2);
+ * liftM(doubleJust, mb);               // => Just Just 2
+ * liftM(doubleList, lst);              // => [[2:[]]:[4:[]]:[6:[]]:[]]
  */
 export const liftM = (f, m) => {
   const liftM_ = (f, m) => Monad(m) ? dataType(m).fmap(f, m) : error.typeError(m, liftM);
@@ -152,19 +159,19 @@ class DoBlock {
  * const b2 = Do(j).bind(doubleJust).chain(j).bind(minusOne);
  * const b3 = Do(lst).bind(plusOne).bind(doubleList);
  * const b4 = Do(lst).bind(plusOne).chain(lst).bind(doubleList);
- * print(b1);                          // => Maybe number >>= Just 19
- * print(b2);                          // => Maybe number >>= Just 9
- * print(b3);                          // => [number] >>= [4:6:8:[]]
- * print(b4);                          // => [number] >>= [2:4:6:2:4:6:2:4:6:[]]
+ * print(b1);        // => Maybe number >>= Just 19
+ * print(b2);        // => Maybe number >>= Just 9
+ * print(b3);        // => [number] >>= [4:6:8:[]]
+ * print(b4);        // => [number] >>= [2:4:6:2:4:6:2:4:6:[]]
  * Do(j)
- * .bind(put)                          // => 10
+ * .bind(put)        // => 10
  * .bind(doubleJust)
- * .bind(put)                          // => 20
+ * .bind(put)        // => 20
  * .chain(j)
- * .bind(put)                          // => 10
+ * .bind(put)        // => 10
  * .bind(minusOne)
- * .bind(put)                          // => 9
+ * .bind(put)        // => 9
  * .bind(doubleJust)
- * .bind(put);                         // => 18
+ * .bind(put);       // => 18
  */
 export const Do = m => Monad(m) ? new DoBlock(m) : error.typeError(Do, m);
