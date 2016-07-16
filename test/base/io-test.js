@@ -18,8 +18,8 @@ import {
 } from '../../source';
 
 describe(`I/O functions`, function() {
-  let tup = tuple(1, 2);
-  let lst = list(1, 2, 3);
+  const tup = tuple(1, 2);
+  const lst = list(1, 2, 3);
   describe(`show()`, function() {
     it(`should display the value of an object as a string`, function() {
       show(lst).should.equal(`[1:2:3:[]]`);

@@ -22,12 +22,12 @@ import {
 } from '../source';
 
 describe(`Functor type class`, function() {
-  let lst1 = list(1,2,3);
-  let lst2 = list(1100,2200,3300);
-  let mb = just(5)
-  let tup = tuple(1,2);
-  let f = x => x * 11;
-  let g = x => x * 100;
+  const lst1 = list(1,2,3);
+  const lst2 = list(1100,2200,3300);
+  const mb = just(5)
+  const tup = tuple(1,2);
+  const f = x => x * 11;
+  const g = x => x * 100;
   describe(`fmap()`, function() {
     it(`should map a function over a functor and return the correct value`, function() {
       isEq(fmap(id, mb), mb).should.be.true;

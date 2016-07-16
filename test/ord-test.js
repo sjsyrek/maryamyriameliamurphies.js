@@ -28,16 +28,16 @@ import {
 
 describe(`Ord type class`, function() {
   describe(`compare()`, function() {
-    let a = 1;
-    let b = 2;
-    let c = 2;
-    let d = 2;
-    let mb1 = just(1);
-    let mb2 = just(2);
-    let tup1 = tuple(1,2);
-    let tup2 = tuple(2,1);
-    let lst1 = list(1,2,3);
-    let lst2 = list(3,2,1);
+    const a = 1;
+    const b = 2;
+    const c = 2;
+    const d = 2;
+    const mb1 = just(1);
+    const mb2 = just(2);
+    const tup1 = tuple(1,2);
+    const tup2 = tuple(2,1);
+    const lst1 = list(1,2,3);
+    const lst2 = list(3,2,1);
     it(`should return the Ordering of two values if they are the same type`, function() {
       compare(a, b).should.equal(LT);
       compare(b, a).should.equal(GT);

@@ -59,19 +59,19 @@ export const pure = (f, a) => {
  * const lst = list(1,2,3);
  * const p = pure(lst, id);     // lift id function into applicative context
  * ap(p, lst);                  // => [1:2:3:[]] // proves identity
- * const f = x => x * 2;
+ * const f = x => x * 10;
  * const g = x => x * 3;
  * const pf = pure(lst, f);
  * const pg = pure(lst, g);
  * const p$ = pure(lst, $);
- * ap(ap(ap(p$)(pf))(pg))(lst); // => [6:12:18:[]] // not pretty
- * ap(ap(ap(p$, pf), pg), lst); // => [6:12:18:[]] // but
- * ap(pf, ap(pg, lst));         // => [6:12:18:[]] // proves composition
- * ap(pf, pure(lst, 10));       // => [20:[]]
- * pure(lst, f(10));            // => [20:[]] // proves homomorphism
- * ap(pf, pure(lst, 3));        // => [6:[]]
+ * ap(ap(ap(p$)(pf))(pg))(lst); // => [30:60:90:[]] // not pretty
+ * ap(ap(ap(p$, pf), pg), lst); // => [30:60:90:[]] // but
+ * ap(pf, ap(pg, lst));         // => [30:60:90:[]] // proves composition
+ * ap(pf, pure(lst, 10));       // => [100:[]]
+ * pure(lst, f(10));            // => [100:[]] // proves homomorphism
+ * ap(pf, pure(lst, 3));        // => [30:[]]
  * const a = pure(lst, 3) ;
- * ap(pf, a);                   // => [6:[]] // proves interchange (not actually possible?)
+ * ap(pf, a);                   // => [30:[]] // proves interchange (not actually possible?)
  */
 export const ap = (f, a) => {
   const ap_ = (f, a) => {
@@ -89,6 +89,15 @@ export const ap = (f, a) => {
  * @param {Object} a - The first argument to f.
  * @param {Object} b - The second argument to f.
  * @returns {Object} - A new applicative functor of the same type, the result of the application.
+ * @example
+ * const lst1 = list(1,2,3);
+ * const lst2 = list(10,10,10);
+ * const f1 = (x, y) => x * y;
+ * const f2 = (x, y) => x + y;
+ * const f3 = (x, y) => x - y;
+ * apFlip(f1, lst1, lst2);     // => [10:10:10:20:20:20:30:30:30:[]]
+ * apFlip(f2, lst1, lst2);     // => [11:11:11:12:12:12:13:13:13:[]]
+ * apFlip(f3, lst1, lst2);     // => [9:9:9:8:8:8:7:7:7:[]]
  */
 export const apFlip = (f, a, b) => {
   const apFlip_ = (f, a, b) => liftA2(flip(f), a, b);
@@ -133,6 +142,12 @@ export const skip = (a1, a2) => {
  * @param {Function} f - The function to lift into an applicative context.
  * @param {Object} a - An applicative functor, the context to lift the function into.
  * @returns {Object} - The result of applying the lifted function.
+ * @example
+ * const lst = list(1,2,3);
+ * const mb = just(1);
+ * const f = x => x * 10;
+ * liftA(f, lst);           // => [10:20:30:[]]
+ * liftA(f, mb);            // => Just 10
  */
 export const liftA = (f, a) => {
   const liftA_ = (f, a) => ap(dataType(a).pure(f))(a);
@@ -146,6 +161,17 @@ export const liftA = (f, a) => {
  * @param {Object} a - An applicative functor, the first argument to f.
  * @param {Object} b - An applicative functor, the second argument to f.
  * @returns {Object} - The result of applying the lifted function.
+ * @example
+ * const mb1 = just(1);
+ * const mb2 = just(10);
+ * const lst1 = list(1,2,3);
+ * const lst2 = list(10,10,10);
+ * const f = (x, y) => {
+ *   const k1_ = (x, y) => x * y;
+ *   return partial(k1_, x, y);
+ *  }
+ * liftA2(f, mb1, mb2);           // => Just 10
+ * liftA2(f, lst1, lst2);         // => [10:10:10:20:20:20:30:30:30:[]]
  */
 export const liftA2 = (f, a, b) => {
   const liftA2_ = (f, a, b) => ap(fmap(f, a))(b);

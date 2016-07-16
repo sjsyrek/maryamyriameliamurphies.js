@@ -24,20 +24,20 @@ import {
 } from '../source';
 
 describe(`Monoid type class`, function() {
-  let lst1 = list(1,2,3);
-  let lst2 = list(4,5,6);
-  let lst3 = list(7,8,9);
-  let lst4 = list(1,2,3,4,5,6);
-  let lst5 = list(1,2,3,4,5,6,7,8,9);
-  let lst6 = list(lst1, lst2, lst3);
-  let mb1 = just(lst1);
-  let mb2 = just(lst2);
-  let mb3 = just(lst3);
-  let mb4 = just(lst6);
-  let tup1 = tuple(lst1, lst2);
-  let tup2 = tuple(lst2, lst1);
-  let tup3 = tuple(lst2, lst3);
-  let tup4 = tuple(mappend(lst4, lst2), mappend(lst2, mappend(lst1, lst3)));
+  const lst1 = list(1,2,3);
+  const lst2 = list(4,5,6);
+  const lst3 = list(7,8,9);
+  const lst4 = list(1,2,3,4,5,6);
+  const lst5 = list(1,2,3,4,5,6,7,8,9);
+  const lst6 = list(lst1, lst2, lst3);
+  const mb1 = just(lst1);
+  const mb2 = just(lst2);
+  const mb3 = just(lst3);
+  const mb4 = just(lst6);
+  const tup1 = tuple(lst1, lst2);
+  const tup2 = tuple(lst2, lst1);
+  const tup3 = tuple(lst2, lst3);
+  const tup4 = tuple(mappend(lst4, lst2), mappend(lst2, mappend(lst1, lst3)));
   describe(`mempty()`, function() {
     it(`should return the identity value for the monoid`, function() {
       mempty(mb1).should.equal(Nothing);
