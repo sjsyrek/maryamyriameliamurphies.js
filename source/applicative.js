@@ -178,16 +178,16 @@ export const liftA2 = (f, a, b) => {
   return partial(liftA2_, f, a, b);
 }
 
-/** @function liftA3
- * Lift a ternary function to actions.
- * Haskell> liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
- * @param {Function} f - The function to lift into an applicative context.
- * @param {Object} a - An applicative functor, the first argument to f.
- * @param {Object} b - An applicative functor, the second argument to f.
- * @param {Object} c - An applicative functor, the third argument to f.
- * @returns {Object} - The result of applying the lifted function.
- */
-export const liftA3 = (f, a, b, c) => {
-  const liftA3_ = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
-  return partial(liftA3_, f, a, b, c);
-}
+// /** @function liftA3
+//  * Lift a ternary function to actions.
+//  * Haskell> liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+//  * @param {Function} f - The function to lift into an applicative context.
+//  * @param {Object} a - An applicative functor, the first argument to f.
+//  * @param {Object} b - An applicative functor, the second argument to f.
+//  * @param {Object} c - An applicative functor, the third argument to f.
+//  * @returns {Object} - The result of applying the lifted function.
+//  */
+// export const liftA3 = (f, a, b, c) => {
+//   const liftA3_ = (f, a, b, c) => ap(ap(fmap(f, a))(b))(c);
+//   return partial(liftA3_, f, a, b, c);
+// }

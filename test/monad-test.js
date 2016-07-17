@@ -14,9 +14,9 @@ import {
   print,
   isEq,
   inject,
-  bind,
+  flatMap,
   chain,
-  bindFlip,
+  flatMapFlip,
   join,
   liftM,
   Do,
@@ -47,13 +47,13 @@ describe(`Monad type class`, function() {
       inject.bind(null, 0, 0).should.throw;
     });
   });
-  describe(`bind()`, function() {
+  describe(`flatMap()`, function() {
     it(`should sequentially compose two actions`, function() {
-      isEq(bind(mb1, doubleJust), just(2)).should.be.true;
-      isEq(bind(lst, doubleList), list(2,4,6)).should.be.true;
+      isEq(flatMap(mb1, doubleJust), just(2)).should.be.true;
+      isEq(flatMap(lst, doubleList), list(2,4,6)).should.be.true;
     });
     it(`should throw an error if the first argument is not a monad`, function() {
-      bind.bind(null, 0, doubleJust).should.throw;
+      flatMap.bind(null, 0, doubleJust).should.throw;
     });
   });
   describe(`chain()`, function() {
@@ -65,13 +65,13 @@ describe(`Monad type class`, function() {
       chain.bind(null, 0, j).should.throw;
     });
   });
-  describe(`bindFlip()`, function() {
+  describe(`flatMapFlip()`, function() {
     it(`should sequentially compose two actions but with the arguments in reverse order`, function() {
-      isEq(bindFlip(doubleJust, mb1), just(2)).should.be.true;
-      isEq(bindFlip(doubleList, lst), list(2,4,6)).should.be.true;
+      isEq(flatMapFlip(doubleJust, mb1), just(2)).should.be.true;
+      isEq(flatMapFlip(doubleList, lst), list(2,4,6)).should.be.true;
     });
     it(`should throw an error if the second argument is not a monad`, function() {
-      bindFlip.bind(null, doubleList, 0).should.throw;
+      flatMapFlip.bind(null, doubleList, 0).should.throw;
     });
   });
   describe(`join()`, function() {
@@ -99,24 +99,24 @@ describe(`Monad type class`, function() {
   });
   describe(`Do()`, function() {
     it(`should offer an interface for chaining monadic actions`, function() {
-      const b1 = Do(j).bind(doubleJust).bind(minusOne);
-      const b2 = Do(j).bind(doubleJust).chain(j).bind(minusOne);
-      const b3 = Do(lst).bind(plusOne).bind(doubleList);
-      const b4 = Do(lst).bind(plusOne).chain(lst).bind(doubleList);
+      const b1 = Do(j).flatMap(doubleJust).flatMap(minusOne);
+      const b2 = Do(j).flatMap(doubleJust).chain(j).flatMap(minusOne);
+      const b3 = Do(lst).flatMap(plusOne).flatMap(doubleList);
+      const b4 = Do(lst).flatMap(plusOne).chain(lst).flatMap(doubleList);
       b1.valueOf().should.equal(`Maybe number >>= Just 19`);
       b2.valueOf().should.equal(`Maybe number >>= Just 9`);
       b3.valueOf().should.equal(`[number] >>= [4:6:8:[]]`);
       b4.valueOf().should.equal(`[number] >>= [2:4:6:2:4:6:2:4:6:[]]`);
       Do(j)
-      .bind(put)        // => 10
-      .bind(doubleJust)
-      .bind(put)        // => 20
+      .flatMap(put)        // => 10
+      .flatMap(doubleJust)
+      .flatMap(put)        // => 20
       .chain(j)
-      .bind(put)        // => 10
-      .bind(minusOne)
-      .bind(put)        // => 9
-      .bind(doubleJust)
-      .bind(put);       // => 18
+      .flatMap(put)        // => 10
+      .flatMap(minusOne)
+      .flatMap(put)        // => 9
+      .flatMap(doubleJust)
+      .flatMap(put);       // => 18
     });
   });
 });

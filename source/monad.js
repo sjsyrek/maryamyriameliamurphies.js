@@ -25,8 +25,8 @@ import {
 import {error} from './error';
 
 /** @const {Function} Monad
- * A monad is an abstract datatype of actions. Instances of `Monad` must define a `bind` method as
- * well as all the required methods for `Functor` and `Applicative`.
+ * A monad is an abstract datatype of actions. Instances of `Monad` must define a `flatMap` method
+ * as well as all the required methods for `Functor` and `Applicative`.
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Monad` and `false` otherwise.
  */
@@ -44,19 +44,19 @@ export const inject = (m, a) => {
   return partial(inject_, m, a);
 }
 
-/** @function bind
+/** @function flatMap
  * Sequentially compose two actions, passing the value produced by the first action as an argument
- * to the second action.
+ * to the second action. This function is variously referred to as bind, map, and flatMap.
  * Haskell> (>>=) :: m a -> (a -> m b) -> m b
  * @param {Object} m - A monad.
- * @param {Function} f - A function to bind to the injected value of the monad. This function must
+ * @param {Function} f - A function to map over the injected value of the monad. This function must
  * also return a monad.
- * @returns {Object} - A new monad of the same type, the result of binding the function to the
+ * @returns {Object} - A new monad of the same type, the result of mapping the function over the
  * original, injected value.
  */
-export const bind = (m, f) => {
-  const bind_ = (m, f) => Monad(m) ? dataType(m).flatMap(m, f) : error.typeError(m, bind);
-  return partial(bind_, m, f);
+export const flatMap = (m, f) => {
+  const flatMap_ = (m, f) => Monad(m) ? dataType(m).flatMap(m, f) : error.typeError(m, flatMap);
+  return partial(flatMap_, m, f);
 }
 
 /** @function chain
@@ -72,17 +72,17 @@ export const chain = (m, f) => {
   return partial(chain_, m, f);
 }
 
-/** @function bindFlip
- * The same as `bind` but with the arguments interchanged.
+/** @function flatMapFlip
+ * The same as `flatMap` but with the arguments interchanged.
  * Haskell> (=<<) :: Monad m => (a -> m b) -> m a -> m b
- * @param {Function} f - A function to bind to the injected value of the monad.
+ * @param {Function} f - A function to map over the injected value of the monad.
  * @param {Object} m - A monad.
- * @returns {Object} - A new monad of the same type, the result of binding the function to the
+ * @returns {Object} - A new monad of the same type, the result of mapping the function over the
  * original, injected value.
  */
-export const bindFlip = (f, m) => {
-  const bindFlip_ = (f, m) => bind(m, f);
-  return partial(bindFlip_, f, m);
+export const flatMapFlip = (f, m) => {
+  const flatMapFlip_ = (f, m) => flatMap(m, f);
+  return partial(flatMapFlip_, f, m);
 }
 
 /** @function join
@@ -98,7 +98,7 @@ export const bindFlip = (f, m) => {
  * join(m);            // => *** Error: 'Just 10' is not a valid argument to function 'join'.
  */
 export const join = m => {
-  if (Monad(m)) { return Monad(bind(m, id)) ? bind(m, id) : error.typeError(m, join); }
+  if (Monad(m)) { return Monad(flatMap(m, id)) ? flatMap(m, id) : error.typeError(m, join); }
   return error.typeError(m, join);
 }
 
@@ -134,7 +134,7 @@ class DoBlock {
   */
   constructor(m) { this.m = () => m; }
   inject(a) { return Do(dataType(this.m()).pure(a)); }
-  bind(f) { return Do(bind(this.m(), f)); }
+  flatMap(f) { return Do(flatMap(this.m(), f)); }
   chain(f) { return Do(chain(this.m(), f)); }
   valueOf() { return `${this.m().typeOf()} >>= ${this.m().valueOf()}`; }
 }
@@ -155,23 +155,23 @@ class DoBlock {
  *    print(x);
  *   return just(x);
  * }
- * const b1 = Do(j).bind(doubleJust).bind(minusOne);
- * const b2 = Do(j).bind(doubleJust).chain(j).bind(minusOne);
- * const b3 = Do(lst).bind(plusOne).bind(doubleList);
- * const b4 = Do(lst).bind(plusOne).chain(lst).bind(doubleList);
+ * const b1 = Do(j).flatMap(doubleJust).flatMap(minusOne);
+ * const b2 = Do(j).flatMap(doubleJust).chain(j).flatMap(minusOne);
+ * const b3 = Do(lst).flatMap(plusOne).flatMap(doubleList);
+ * const b4 = Do(lst).flatMap(plusOne).chain(lst).flatMap(doubleList);
  * print(b1);        // => Maybe number >>= Just 19
  * print(b2);        // => Maybe number >>= Just 9
  * print(b3);        // => [number] >>= [4:6:8:[]]
  * print(b4);        // => [number] >>= [2:4:6:2:4:6:2:4:6:[]]
  * Do(j)
- * .bind(put)        // => 10
- * .bind(doubleJust)
- * .bind(put)        // => 20
+ * .flatMap(put)        // => 10
+ * .flatMap(doubleJust)
+ * .flatMap(put)        // => 20
  * .chain(j)
- * .bind(put)        // => 10
- * .bind(minusOne)
- * .bind(put)        // => 9
- * .bind(doubleJust)
- * .bind(put);       // => 18
+ * .flatMap(put)        // => 10
+ * .flatMap(minusOne)
+ * .flatMap(put)        // => 9
+ * .flatMap(doubleJust)
+ * .flatMap(put);       // => 18
  */
 export const Do = m => Monad(m) ? new DoBlock(m) : error.typeError(Do, m);

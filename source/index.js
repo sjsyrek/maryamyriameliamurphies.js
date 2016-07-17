@@ -81,15 +81,14 @@ export {
   then,
   skip,
   liftA,
-  liftA2,
-  liftA3
+  liftA2
 } from './applicative';
 
 export {
   inject,
-  bind,
+  flatMap,
   chain,
-  bindFlip,
+  flatMapFlip,
   join,
   liftM,
   Do
