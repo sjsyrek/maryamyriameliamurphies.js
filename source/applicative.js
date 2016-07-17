@@ -32,7 +32,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Applicative` and `false` otherwise.
  */
-const Applicative = defines(`fmap`, `pure`, `ap`);
+export const Applicative = defines(`fmap`, `pure`, `ap`);
 
 /** @function pure
  * Lift a value into an applicative context.

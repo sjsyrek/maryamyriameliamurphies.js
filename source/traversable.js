@@ -31,7 +31,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Traversable` and `false` otherwise.
  */
-const Traversable = defines(`fmap`, `foldr`, `traverse`);
+export const Traversable = defines(`fmap`, `foldr`, `traverse`);
 
 /** @function traverse
  * Map each element of a structure to an action, evaluate these actions from left to right, and

@@ -28,7 +28,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Ord` and `false` otherwise.
  */
-const Ord = defines(`isEq`, `compare`);
+export const Ord = defines(`isEq`, `compare`);
 
 /** @class Ordering
  * A data constructor for orderings of objects that can be compared, implemented as a class because

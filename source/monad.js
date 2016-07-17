@@ -30,7 +30,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Monad` and `false` otherwise.
  */
-const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
+export const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
 
 /** @function inject
  * Inject a value into a monadic context.

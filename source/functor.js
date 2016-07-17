@@ -29,7 +29,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Functor` and `false` otherwise.
  */
-const Functor = defines(`fmap`);
+export const Functor = defines(`fmap`);
 
 /** @function fmap
  * Map a function over a functor, a data type that specifies how functions may be mapped over it.

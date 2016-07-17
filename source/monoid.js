@@ -31,7 +31,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Monoid` and `false` otherwise.
  */
-const Monoid = defines(`mempty`, `mappend`);
+export const Monoid = defines(`mempty`, `mappend`);
 
 /** @function mempty
  * Return the identity (or "empty") value for the monoid.

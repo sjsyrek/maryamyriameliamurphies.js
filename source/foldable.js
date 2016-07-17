@@ -36,7 +36,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Foldable` and `false` otherwise.
  */
-const Foldable = defines(`foldr`);
+export const Foldable = defines(`foldr`);
 
 /** @function fold
  * Combine the elements of a structure using a monoid. For example, fold a list of lists into a
@@ -45,9 +45,12 @@ const Foldable = defines(`foldr`);
  * @param {Object} a - The monoid to fold.
  * @returns {Object} - The folded monoid.
  * @example
+ * const mb = just(1);
+ * const mmb = just(mb);
  * const lst = list(1,2,3); // => [1:2:3:[]]
  * const llst = list(lst);  // => [[1:2:3:[]]:[]]
  * fold(llst);              // => [1:2:3:[]]
+ * fold(mmb);               // => Just 1
  */
 export const fold = a => foldMap(id, a);
 
@@ -58,9 +61,12 @@ export const fold = a => foldMap(id, a);
  * @param {Object} a - The monoid to map over.
  * @returns {Object} - A new monoid of the same type, the result of the mapping.
  * @example
+ * const mb = just(1);
  * const lst = list(1,2,3);
- * const f = x => list(x * 3);
- * foldMap(f, lst);            // => [3:6:9:[]]
+ * const f1 = x => just(x * 3);
+ * const f2 = x => list(x * 3);
+ * foldMap(f1, mb);             // => Just 3
+ * foldMap(f2, lst);            // => [3:6:9:[]]
  */
 export const foldMap = (f, a) => {
   const foldMap_ = (f, a) => Monoid(a) ? $(mconcat)(fmap(f))(a) : error.typeError(a, foldMap);
@@ -75,8 +81,12 @@ export const foldMap = (f, a) => {
  * @param {Object} t - A `Foldable` type.
  * @returns {*} - The result of applying the function to the foldable and the accumulator.
  * @example
+ * const mb = just(1);
+ * const tup = tuple(1,2);
  * const lst = list(1,2,3);
  * const f = (x, y) => x + y;
+ * foldr(f, 0, mb);           // => 1
+ * foldr(f, 0, tup);          // => 2
  * foldr(f, 0, lst);          // => 6
  */
 export const foldr = (f, z, t) => {
