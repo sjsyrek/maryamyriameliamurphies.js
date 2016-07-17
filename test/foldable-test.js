@@ -51,7 +51,7 @@ describe(`Foldable type class`, function() {
       isEq(foldr(g, 0, lst), 6).should.be.true;
     });
     it(`should throw an error if the third argument is not a foldable type`, function() {
-      foldr.bind(null, g, 0, 0);
+      foldr.bind(null, g, 0, 0).should.throw;
     });
   });
 });

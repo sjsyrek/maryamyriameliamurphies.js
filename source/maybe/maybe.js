@@ -82,7 +82,7 @@ export class Maybe extends Type {
   static pure(m) { return just(m); }
   static ap(f, m) { return isNothing(f) ? Nothing : fmap(f.value(), m); }
   // Monad
-  static bind(m, f) { return isNothing(m) ? Nothing : f(m.value()); }
+  static flatMap(m, f) { return isNothing(m) ? Nothing : f(m.value()); }
   // Prototype
   typeOf() { return `Maybe ${this.value === undefined ? 'Nothing' : type(this.value())}`; }
   valueOf() { return this.value === undefined ? `Nothing` : `Just ${this.value()}`; }

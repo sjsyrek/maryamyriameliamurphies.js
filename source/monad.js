@@ -30,7 +30,7 @@ import {error} from './error';
  * @param {*} - Any object.
  * @returns {boolean} - `true` if an object is an instance of `Monad` and `false` otherwise.
  */
-export const Monad = defines(`fmap`, `pure`, `ap`, `bind`);
+export const Monad = defines(`fmap`, `pure`, `ap`, `flatMap`);
 
 /** @function inject
  * Inject a value into a monadic context.
@@ -55,7 +55,7 @@ export const inject = (m, a) => {
  * original, injected value.
  */
 export const bind = (m, f) => {
-  const bind_ = (m, f) => Monad(m) ? dataType(m).bind(m, f) : error.typeError(m, bind);
+  const bind_ = (m, f) => Monad(m) ? dataType(m).flatMap(m, f) : error.typeError(m, bind);
   return partial(bind_, m, f);
 }
 

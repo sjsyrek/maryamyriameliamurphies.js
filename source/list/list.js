@@ -109,7 +109,7 @@ export class List extends Type {
     return isEmpty(fs) ? emptyList : listAppend(fmap(head(fs), as))(ap(tail(fs), as));
   }
   // Monad
-  static bind(xs, f) { return concat(map(f, xs)); }
+  static flatMap(xs, f) { return concat(map(f, xs)); }
   // Prototype
   toString() { return `[Object List]`; }
   typeOf() { return `[${isEmpty(this) ? '' : type(head(this))}]`; }
