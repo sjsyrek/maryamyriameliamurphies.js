@@ -144,7 +144,7 @@ export const isUnit = a => {
  * fromArrayToTuple(arr); // => (10,20)
  */
 export const fromArrayToTuple = a =>
-  Array.isArray(a) ? new Tuple(Array.from(a)) : error.typeError(a, fromArrayToTuple);
+  Array.isArray(a) ? Reflect.construct(Tuple, Array.from(a)) : error.typeError(a, fromArrayToTuple);
 
 /** @function fromTupleToArray
  * Convert a `Tuple` into an array.

@@ -12,6 +12,8 @@
 
 //import {describe, it} from 'mocha'; // unecessary if 'npm run test' is used on the command line
 
+import 'babel-polyfill';
+
 import 'should';
 
 import './base';
