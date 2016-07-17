@@ -33,6 +33,7 @@ describe(`Foldable type class`, function() {
     it(`should combine the elements of a structure using a monoid`, function() {
       isEq(fold(mmb), mb).should.be.true;
       isEq(fold(llst), lst).should.be.true;
+      fold(llst).should.eql(lst);
     });
   });
   describe(`foldMap()`, function() {

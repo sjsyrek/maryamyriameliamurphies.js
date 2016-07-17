@@ -22,7 +22,6 @@ import {
   skip,
   liftA,
   liftA2,
-  liftA3,
   just,
   unit,
   tuple,
@@ -113,9 +112,9 @@ describe(`Applicative type class`, function() {
       isEq(liftA2(k1, lst1, lst5), list(10,10,10,20,20,20,30,30,30)).should.be.true;
     });
   });
-  describe(`liftA3()`, function() {
-    it(`should lift a ternary function to actions`, function() {
-
-    });
-  });
+  // describe(`liftA3()`, function() {
+  //   it(`should lift a ternary function to actions`, function() {
+  //
+  //   });
+  // });
 });
