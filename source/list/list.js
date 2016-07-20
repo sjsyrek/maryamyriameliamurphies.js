@@ -33,7 +33,6 @@ import {
   head,
   tail,
   listAppend,
-  isList,
   isEmpty,
   fromListToArray,
   fromListToString,

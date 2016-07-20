@@ -8,10 +8,10 @@
  * @license ISC
  */
 
-export * from './misc-test';
+export {misc} from './misc-test';
 
-export * from './bool-test';
+export {bool} from './bool-test';
 
-export * from './num-test';
+export {num} from './num-test';
 
-export * from './io-test';
+export {io} from './io-test';

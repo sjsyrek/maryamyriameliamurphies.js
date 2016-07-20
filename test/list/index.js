@@ -8,26 +8,26 @@
  * @license ISC
  */
 
-export * from './list-test';
+export {list} from './list-test';
 
-export * from './trans-test';
+export {trans} from './trans-test';
 
-export * from './reducing-test';
+export {reducing} from './reducing-test';
 
-export * from './folds-test';
+export {folds} from './folds-test';
 
-export * from './building-test';
+export {building} from './building-test';
 
-export * from './inf-test';
+export {inf} from './inf-test';
 
-export * from './sub-test';
+export {sub} from './sub-test';
 
-export * from './searching-test';
+export {searching} from './searching-test';
 
-export * from './indexing-test';
+export {indexing} from './indexing-test';
 
-export * from './zip-test';
+export {zip} from './zip-test';
 
-export * from './set-test';
+export {set} from './set-test';
 
-export * from './ordering-test';
+export {ordering} from './ordering-test';

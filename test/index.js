@@ -10,8 +10,6 @@
 
 /* eslint no-unused-vars: 0 */
 
-import 'babel-polyfill';
-
 import 'should';
 
 import './base';
