@@ -44,7 +44,7 @@ describe(`Monoid type class`, function() {
       mempty(lst1).should.equal(emptyList);
     });
     it(`should throw an error if its argument is not a monoid`, function() {
-      mempty.bind(null, 0).should.throw;
+      mempty.bind(null, 0).should.throw();
     });
   });
   describe(`mappend()`, function() {
@@ -62,10 +62,10 @@ describe(`Monoid type class`, function() {
       mappend(mappend(tup1, tup2), tup3).should.eql(tup4);
     });
     it(`should throw an error if either of its arguments is not a monoid`, function() {
-      mappend.bind(null, 0, 1).should.throw;
+      mappend.bind(null, 0, 1).should.throw();
     });
     it(`should throw an error if its arguments are different types`, function() {
-      mappend.bind(null, lst1, mb1).should.throw;
+      mappend.bind(null, lst1, mb1).should.throw();
     });
   });
   describe(`mconcat()`, function() {

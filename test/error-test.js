@@ -25,13 +25,13 @@ describe(`error handling functions`, function() {
       error.returnError.bind(null, 0, 0).should.throw(Error);
       error.tupleError.bind(null, 0, 0).should.throw(Error);
       error.typeError.bind(null, 0, 0).should.throw(Error);
-      error.typeError.bind(null, () => {}, 0).should.throw(Error);    
+      error.typeError.bind(null, () => {}, 0).should.throw(Error);
       error.typeMismatch.bind(null, 0, 0, 0).should.throw(Error);
     });
   });
   describe(`throwError()`, function() {
     it(`should throw an error`, function() {
-      throwError.bind(null).should.throw;
+      throwError.bind(null).should.throw();
     });
   });
 });

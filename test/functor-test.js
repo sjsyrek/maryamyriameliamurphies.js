@@ -39,7 +39,7 @@ describe(`Functor type class`, function() {
       fmap($(f)(g))(lst1).should.eql(lst2);
     });
     it(`should throw an error if the second argument is not a functor`, function() {
-      fmap.bind(null, f, 0).should.throw;
+      fmap.bind(null, f, 0).should.throw();
     });
   });
   describe(`fmapReplaceBy()`, function() {

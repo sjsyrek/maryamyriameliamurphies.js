@@ -70,7 +70,7 @@ describe(`Maybe data type`, function() {
       maybe(0, f, mb2).should.equal(0);
     });
     it(`should throw an error if the third argument is not a Maybe value`, function() {
-      maybe.bind(null, 0, f, 0).should.throw;
+      maybe.bind(null, 0, f, 0).should.throw();
     });
   });
   describe(`isMaybe()`, function() {
@@ -89,7 +89,7 @@ describe(`Maybe data type`, function() {
       isJust(mb2).should.be.false;
     });
     it(`should throw an error if the argument is not a Maybe value`, function() {
-      isJust.bind(null, 0).should.throw;
+      isJust.bind(null, 0).should.throw();
     });
   });
   describe(`isNothing()`, function() {
@@ -100,7 +100,7 @@ describe(`Maybe data type`, function() {
       isNothing(mb1).should.be.false;
     });
     it(`should throw an error if the argument is not a Maybe value`, function() {
-      isNothing.bind(null, 0).should.throw;
+      isNothing.bind(null, 0).should.throw();
     });
   });
   describe(`fromJust()`, function() {
@@ -108,10 +108,10 @@ describe(`Maybe data type`, function() {
       fromJust(mb1).should.equal(100);
     });
     it(`should throw an error if the argument is Nothing`, function() {
-      fromJust.bind(null, mb2).should.throw;
+      fromJust.bind(null, mb2).should.throw();
     });
     it(`should throw an error if the argument is not a Maybe value`, function() {
-      fromJust.bind(null, 0).should.throw;
+      fromJust.bind(null, 0).should.throw();
     });
   });
   describe(`fromMaybe()`, function() {
@@ -121,8 +121,8 @@ describe(`Maybe data type`, function() {
     it(`should return the default value if the Maybe value is Nothing`, function() {
       fromMaybe(-1, mb2).should.equal(-1);
     });
-    it(`should throw an error if the argument is not a Maybe value`, function() {
-      fromMaybe.bind(null, 0).should.throw;
+    it(`should throw an error if the second argument is not a Maybe value`, function() {
+      fromMaybe.bind(null, -1, 0).should.throw();
     });
   });
   describe(`listToMaybe()`, function() {
@@ -133,7 +133,7 @@ describe(`Maybe data type`, function() {
       listToMaybe(list()).should.equal(Nothing);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      listToMaybe.bind(null, 0).should.throw;
+      listToMaybe.bind(null, 0).should.throw();
     });
   });
   describe(`maybeToList()`, function() {
@@ -144,7 +144,7 @@ describe(`Maybe data type`, function() {
       maybeToList(mb2).should.eql(list());
     });
     it(`should throw an error if the argument is not a Maybe value`, function() {
-      maybeToList.bind(null, 0).should.throw;
+      maybeToList.bind(null, 0).should.throw();
     });
   });
   describe(`catMaybes()`, function() {
@@ -152,10 +152,10 @@ describe(`Maybe data type`, function() {
       catMaybes(lst2).should.eql(list(1,2,3,4,5));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      catMaybes.bind(null, 0).should.throw;
+      catMaybes.bind(null, 0).should.throw();
     });
     it(`should throw an error if the list is not a list of Maybe values`, function() {
-      catMaybes.bind(null, lst1).should.throw;
+      catMaybes.bind(null, lst1).should.throw();
     });
   });
   describe(`mapMaybe()`, function() {
@@ -167,7 +167,7 @@ describe(`Maybe data type`, function() {
       mapMaybe.bind(null, g, 0).should.throw
     });
     it(`should throw an error if the provided function does not return a Maybe value`, function() {
-      mapMaybe.bind(null, f, lst3).should.throw;
+      mapMaybe.bind(null, f, lst3).should.throw();
     });
   });
 });

@@ -52,8 +52,8 @@ describe(`Applicative type class`, function() {
       pure(tup1, tup2).should.eql(tuple(unit, lst4));
       pure(lst1, 5).should.eql(list(5));
     });
-    it(`should throw an error if the second argument is not an applicative functor`, function() {
-      pure.bind(null, f, 0).should.throw;
+    it(`should throw an error if the first argument is not an applicative functor`, function() {
+      pure.bind(null, 0, 5).should.throw();
     });
   });
   describe(`ap()`, function() {
@@ -70,8 +70,8 @@ describe(`Applicative type class`, function() {
       ap(pf, a).should.eql(list(30)); // interchange
     });
     it(`should throw an error if either argument is not an applicative functor`, function() {
-      ap.bind(null, 0, pf).should.throw;
-      ap.bind(null, pf, 0).should.throw;
+      ap.bind(null, 0, pf).should.throw();
+      ap.bind(null, pf, 0).should.throw();
     });
   });
   describe(`apFlip()`, function() {

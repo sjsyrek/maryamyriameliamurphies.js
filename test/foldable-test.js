@@ -40,7 +40,7 @@ describe(`Foldable type class`, function() {
       foldMap(f2, lst).should.eql(list(3,6,9));
     });
     it(`should throw an error if the second argument is not a monoid`, function() {
-      foldMap.bind(null, f1, 0).should.throw;
+      foldMap.bind(null, f1, 0).should.throw();
     });
   });
   describe(`foldr()`, function() {
@@ -50,7 +50,7 @@ describe(`Foldable type class`, function() {
       foldr(g, 0, lst).should.eql(6);
     });
     it(`should throw an error if the third argument is not a foldable type`, function() {
-      foldr.bind(null, g, 0, 0).should.throw;
+      foldr.bind(null, g, 0, 0).should.throw();
     });
   });
 });
