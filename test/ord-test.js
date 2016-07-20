@@ -24,6 +24,7 @@ import {
   Nothing,
   just,
   tuple,
+  emptyList,
   list
 } from '../source';
 
@@ -68,6 +69,8 @@ describe(`Ord type class`, function() {
       compare(lst1, lst2).should.equal(LT);
       compare(lst2, lst1).should.equal(GT);
       compare(lst1, list(1,2,3)).should.equal(EQ);
+      compare(emptyList, lst2).should.equal(LT);
+      compare(lst1, emptyList).should.equal(GT);
     });
     it(`should throw a type error if two tuples are not the same type`, function() {
       compare.bind(null, c, `text`).should.throw();

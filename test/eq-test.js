@@ -30,6 +30,7 @@ describe(`Eq type class`, function() {
   const tup2 = tuple(2,1);
   const lst1 = list(1,2,3);
   const lst2 = list(3,2,1);
+  const str = list(`a`,`b`,`c`);
   describe(`isEq()`, function() {
     it(`should return true if two objects are equatable and equal in value`, function() {
       isEq(a, b).should.be.true;
@@ -45,8 +46,11 @@ describe(`Eq type class`, function() {
       isEq(tup1, tup2).should.be.false;
       isEq(lst1, lst2).should.be.false;
     });
-    it(`should throw a type error if two objects are not the same type`, function() {
+    it(`should throw an error if two objects are not the same type`, function() {
       isEq.bind(null, a, d).should.throw();
+    });
+    it(`should throw an error if two lists being compared are not the same type`, function() {
+      isEq.bind(null, lst1, str).should.throw();
     });
   });
   describe(`isNotEq()`, function() {
@@ -64,7 +68,7 @@ describe(`Eq type class`, function() {
       isNotEq(tup1, tuple(1,2)).should.be.false;
       isNotEq(lst1, list(1,2,3)).should.be.false;
     });
-    it(`should throw a type error if two objects are not the same type`, function() {
+    it(`should throw an error if two objects are not the same type`, function() {
       isNotEq.bind(null, a, d).should.throw();
     });
   });

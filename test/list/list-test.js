@@ -50,6 +50,7 @@ describe(`List data type`, function() {
   });
   it(`should return a list string, e.g. "[1:2:3:[]]", as its value`, function() {
     lst1.valueOf().should.equal(`[1:2:3:[]]`);
+    str.valueOf().should.equal(`[abc]`);
   });
   describe(`emptyList`, function() {
     it(`should be an empty list`, function() {

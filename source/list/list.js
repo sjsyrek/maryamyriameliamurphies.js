@@ -92,7 +92,6 @@ export class List extends Type {
   static mappend(as, bs) { return listAppend(as, bs); }
   // Foldable
   static foldr(f, acc, as) {
-    if (isList(as) === false ) { return error.listError(as, this.foldr); }
     if (isEmpty(as)) { return acc; }
     const x = head(as);
     const xs = tail(as);
