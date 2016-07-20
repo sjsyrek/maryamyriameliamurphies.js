@@ -15,6 +15,7 @@ import {
   GT,
   EQ,
   compare,
+  emptyList,
   list,
   listRange,
   reverse,
@@ -37,6 +38,10 @@ describe(`Tests for functions for ordering lists`, function() {
   const lst8 = list(1,2,3,4,5,6,7,8,9,10);
   const lst9 = list(10,9,8,7,6,5,4,3,2,1);
   const lst10 = list(1,2,3,4,5,6,8,9,10);
+  const lst11 = list(10,9,8,6,5,4,3,2,1);
+  const lst12 = list(1,1,4,4,9,9,6,6,3,3,8,8,7,7,5,5,2,2,10,10);
+  const lst13 = list(10,10,2,2,5,5,7,7,8,8,3,3,6,6,9,9,4,4,1,1);
+  const lst14 = list(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10);
   const notCompare = (x, y) => compare(x, y) === EQ ? EQ : (GT ? LT : GT);
   const f = x => x + 1;
   describe(`sort()`, function() {
@@ -44,7 +49,7 @@ describe(`Tests for functions for ordering lists`, function() {
       sort(lst1).should.eql(list(1,2,3,4,5,6,7,8,9,10,11,13,14,23,24,25,26));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      mergeSort.bind(null, 0).should.throw();
+      sort.bind(null, 0).should.throw();
     });
   });
   describe(`sortBy()`, function() {
@@ -60,6 +65,13 @@ describe(`Tests for functions for ordering lists`, function() {
     it(`should sort a list using a merge sort algorithm`, function() {
       mergeSort(lst4).should.eql(list(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,30));
       mergeSort(lst5).should.eql(lst8);
+      mergeSort(lst9).should.eql(lst8);
+      mergeSort(lst11).should.eql(lst10);
+      mergeSort(list(1)).should.eql(list(1));
+      mergeSort(lst8).should.eql(lst8);
+      mergeSort(list()).should.equal(emptyList);
+      mergeSort(lst12).should.eql(lst14);
+      mergeSort(lst13).should.eql(lst14);
     });
     it(`should throw an error if the argument is not a list`, function() {
       mergeSort.bind(null, 0).should.throw();
