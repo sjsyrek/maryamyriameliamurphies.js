@@ -21,6 +21,7 @@ import {
   skip,
   liftA,
   liftA2,
+  Nothing,
   just,
   unit,
   tuple,
@@ -72,6 +73,9 @@ describe(`Applicative type class`, function() {
     it(`should throw an error if either argument is not an applicative functor`, function() {
       ap.bind(null, 0, pf).should.throw();
       ap.bind(null, pf, 0).should.throw();
+    });
+    it(`should return Nothing if Nothing is passed as the first argument`, function() {
+      ap(Nothing, mb1).should.equal(Nothing);
     });
   });
   describe(`apFlip()`, function() {

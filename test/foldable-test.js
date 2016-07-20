@@ -14,6 +14,7 @@ import {
   fold,
   foldMap,
   foldr,
+  Nothing,
   just,
   tuple,
   list
@@ -48,6 +49,7 @@ describe(`Foldable type class`, function() {
       foldr(g, 0, mb).should.eql(1);
       foldr(g, 0, tup).should.eql(2);
       foldr(g, 0, lst).should.eql(6);
+      foldr(g, mb, Nothing).should.eql(mb);
     });
     it(`should throw an error if the third argument is not a foldable type`, function() {
       foldr.bind(null, g, 0, 0).should.throw();

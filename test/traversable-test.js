@@ -14,6 +14,7 @@ import {
   traverse,
   mapM,
   sequence,
+  Nothing,
   just,
   tuple,
   list
@@ -31,6 +32,7 @@ describe(`Traversable type class`, function() {
       traverse(f, mb).should.eql(list(just(list(8))));
       traverse(f, tup).should.eql(list(tuple(1,9)));
       traverse(f, lst).should.eql(list(list(8,9,10)));
+      traverse(f, Nothing).should.eql(just(Nothing));
     });
     it(`should throw an error if the second argument is not a traversable type`, function() {
       traverse.bind(null, f, 0).should.throw();

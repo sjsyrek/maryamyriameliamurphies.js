@@ -42,6 +42,10 @@ describe(`Maybe data type`, function() {
   it(`should return Nothing when cast to a string, if it is Nothing`, function() {
     Nothing.toString().should.equal(`Nothing`);
   });
+  it(`should return its correct type`, function() {
+    mb1.typeOf().should.equal(`Maybe number`);
+    mb2.typeOf().should.equal(`Maybe Nothing`);
+  });
   it(`should return Just <value> as its value, if it is not Nothing`, function() {
     mb1.valueOf().should.equal(`Just 100`);
   });

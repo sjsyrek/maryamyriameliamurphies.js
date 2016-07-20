@@ -19,6 +19,7 @@ import {
   join,
   liftM,
   Do,
+  Nothing,
   just,
   list
 } from '../source';
@@ -46,6 +47,9 @@ describe(`Monad type class`, function() {
     it(`should sequentially compose two actions`, function() {
       flatMap(mb1, doubleJust).should.eql(just(2));
       flatMap(lst, doubleList).should.eql(list(2,4,6));
+    });
+    it(`should return Nothing if Nothing is passed as the first argument`, function() {
+      flatMap(Nothing, mb1).should.equal(Nothing);
     });
     it(`should throw an error if the first argument is not a monad`, function() {
       flatMap.bind(null, 0, doubleJust).should.throw();

@@ -15,6 +15,7 @@ import {
   id,
   fmap,
   fmapReplaceBy,
+  Nothing,
   just,
   tuple,
   list
@@ -37,6 +38,9 @@ describe(`Functor type class`, function() {
       fmap(f, lst1).should.eql(list(11,22,33));
       $(fmap(f))(fmap(g))(lst1).should.eql(lst2);
       fmap($(f)(g))(lst1).should.eql(lst2);
+    });
+    it(`should return Nothing if Nothing is passed as the second argument`, function() {
+      fmap(f, Nothing).should.equal(Nothing);
     });
     it(`should throw an error if the second argument is not a functor`, function() {
       fmap.bind(null, f, 0).should.throw();
