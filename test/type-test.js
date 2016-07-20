@@ -10,6 +10,8 @@
 
 /* global describe, it */
 
+import {Type} from '../source/type';
+
 import {
   defines,
   dataType,
@@ -20,11 +22,27 @@ import {
 } from '../source';
 
 describe(`Type system functions`, function() {
+  const t = new Type();
   const tup1 = tuple(1,2);
   const tup2 = tuple(3,4,5);
   const lst = list(1,2,3);
   const str = `text`;
   const tup3 = tuple(str,10);
+  it(`static method calls to Type.type should return the type of a data type`, function() {
+    Type.type(t).should.equal(`Type`);
+  });
+  it(`static method calls to Type.type should throw an error if the argument is not of type Type`, function() {
+    Type.type.bind(null, 0).should.throw();
+  });
+  it(`instance method calls to Type.toString should return the value of this data type`, function() {
+    t.toString().should.equal(t);
+  });
+  it(`instance method calls to Type.typeOf should return the type of this data type`, function() {
+    t.typeOf().should.equal(`Type`);
+  });
+  it(`instance method calls to Type.valueOf should return the value of this data type`, function() {
+    t.valueOf().should.equal(t);
+  });
   describe(`defines()`, function() {
     const Eq = defines(`isEq`);
     it(`should return a function that checks for membership in a type class`, function() {

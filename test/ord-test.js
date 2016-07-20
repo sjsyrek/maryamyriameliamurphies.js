@@ -40,12 +40,14 @@ describe(`Ord type class`, function() {
   const tup4 = tuple(2,2,2);
   const lst1 = list(1,2,3);
   const lst2 = list(3,2,1);
-  LT.ord().should.equal(`LT`);
-  GT.ord().should.equal(`GT`);
-  EQ.ord().should.equal(`EQ`);
-  LT.valueOf().should.equal(`LT`);
-  GT.valueOf().should.equal(`GT`);
-  EQ.valueOf().should.equal(`EQ`);
+  it(`should return the correct value for each Ordering`, function() {
+    LT.ord().should.equal(`LT`);
+    GT.ord().should.equal(`GT`);
+    EQ.ord().should.equal(`EQ`);
+    LT.valueOf().should.equal(`LT`);
+    GT.valueOf().should.equal(`GT`);
+    EQ.valueOf().should.equal(`EQ`);
+  });
   describe(`compare()`, function() {
     it(`should return the Ordering of two values if they are the same type`, function() {
       compare(a, b).should.equal(LT);
