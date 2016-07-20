@@ -26,8 +26,8 @@ describe(`Boolean functions`, function() {
      and(false, true).should.be.false;
    });
    it(`should throw an error if either argument is not a boolean value`, function() {
-     and.bind(null, true, 0).should.throw;
-     and.bind(null, 0, false).should.throw;
+     and.bind(null, true, 0).should.throw();
+     and.bind(null, 0, false).should.throw();
    });
   });
   describe(`or()`, function() {
@@ -40,8 +40,8 @@ describe(`Boolean functions`, function() {
      or(false, false).should.be.false;
    });
    it(`should throw an error if either argument is not a boolean value`, function() {
-     or.bind(null, true, 0).should.throw;
-     or.bind(null, 0, false).should.throw;
+     or.bind(null, true, 0).should.throw();
+     or.bind(null, 0, false).should.throw();
    });
   });
   describe(`not()`, function() {
@@ -52,7 +52,7 @@ describe(`Boolean functions`, function() {
      not(false);
    });
    it(`should throw an error if the argument is not a boolean value`, function() {
-     and.bind(null, 0).should.throw;
+     not.bind(null, 0).should.throw();
    });
   });
 });

@@ -33,7 +33,7 @@ describe(`Traversable type class`, function() {
       traverse(f, lst).should.eql(list(list(8,9,10)));
     });
     it(`should throw an error if the second argument is not a traversable type`, function() {
-      traverse.bind(null, f, 0).should.throw;
+      traverse.bind(null, f, 0).should.throw();
     });
   });
   describe(`mapM()`, function() {
@@ -42,7 +42,7 @@ describe(`Traversable type class`, function() {
       mapM(f, lst).should.eql(list(list(8,9,10), list()));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
-      mapM.bind(null, f, tup).should.throw;
+      mapM.bind(null, f, tup).should.throw();
     });
   });
   describe(`sequence()`, function() {
@@ -51,7 +51,7 @@ describe(`Traversable type class`, function() {
       sequence(llst).should.eql(list(list(1), list(2), list(3)));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
-      sequence.bind(null, tup).should.throw;
+      sequence.bind(null, tup).should.throw();
     });
   });
 });
