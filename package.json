@@ -74,6 +74,7 @@
     "cover": "nyc --reporter html --reporter text -- npm -s test",
     "doc": "jsdoc source -c conf.json -r -d doc",
     "bundle": "browserify source/index.js -s maryamyriameliamurphies > bundle/maryamyriameliamurphies.js",
+    "build": "npm run clean && npm run compile && npm run bundle && npm run doc",
     "prepublish": "npm run compile"
   }
 }
