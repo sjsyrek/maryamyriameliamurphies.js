@@ -4,11 +4,10 @@
  *
  * index.js
  *
- * @file Top level index.
- * @license ISC
+ * Top level index.
  */
 
-/** @module maryamyriameliamurphies */
+// Base
 
 export {
   partial,
@@ -26,6 +25,8 @@ export {
   print
 } from './base';
 
+// Type
+
 export {
   defines,
   dataType,
@@ -33,10 +34,14 @@ export {
   typeCheck
 } from './type';
 
+// Eq
+
 export {
   isEq,
   isNotEq
 } from './eq';
+
+// Ord
 
 export {
   EQ,
@@ -51,11 +56,15 @@ export {
   min
 } from './ord';
 
+// Monoid
+
 export {
   mempty,
   mappend,
   mconcat
 } from './monoid';
+
+// Foldable
 
 export {
   fold,
@@ -63,16 +72,22 @@ export {
   foldr
 } from './foldable';
 
+// Traversable
+
 export {
   traverse,
   mapM,
   sequence
 } from './traversable';
 
+// Functor
+
 export {
   fmap,
   fmapReplaceBy
 } from './functor';
+
+// Applicative
 
 export {
   pure,
@@ -84,6 +99,8 @@ export {
   liftA2
 } from './applicative';
 
+// Monad
+
 export {
   inject,
   flatMap,
@@ -93,6 +110,8 @@ export {
   liftM,
   Do
 } from './monad';
+
+// Maybe
 
 export {
   Nothing,
@@ -109,6 +128,8 @@ export {
   mapMaybe
 } from './maybe';
 
+// Tuple
+
 export {
   unit,
   tuple,
@@ -122,6 +143,8 @@ export {
   fromArrayToTuple,
   fromTupleToArray
 } from './tuple';
+
+// List
 
 export {
   emptyList,
@@ -196,6 +219,8 @@ export {
   insert,
   insertBy
 } from './list';
+
+// Error
 
 export {
   error,

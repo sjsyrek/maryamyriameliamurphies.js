@@ -4,11 +4,8 @@
  *
  * tuple/index.js
  *
- * @file Top level index for Tuple data type.
- * @license ISC
+ * Top level index for Tuple data type.
  */
-
-/** @module tuple */
 
 export {Tuple} from './tuple';
 

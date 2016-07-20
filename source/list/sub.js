@@ -40,12 +40,13 @@ import {
 
 import {error} from '../error';
 
-/** @function take
+/**
  * Return the prefix of a `List` of a given length.
- * Haskell> take :: Int -> [a] -> [a]
- * @param {number} n - The length of the prefix to take.
- * @param {List} as - The `List` to take from.
- * @returns {List} - A new `List`, the desired prefix of the original list.
+ * <br>`Haskell> take :: Int -> [a] -> [a]`
+ * @param {number} n - The length of the prefix to take
+ * @param {List} as - The `List` to take from
+ * @returns {List} A new `List`, the desired prefix of the original list
+ * @kind function
  * @example
  * const lst = list(1,2,3);
  * take(2, lst);            // => [1:2:[]]
@@ -62,12 +63,13 @@ export const take = (n, as) => {
   return partial(take_, n, as);
 }
 
-/** @function drop
+/**
  * Return the suffix of a `List` after discarding a specified number of values.
- * Haskell> drop :: Int -> [a] -> [a]
- * @param {number} n - The number of values to drop.
- * @param {List} as - The `List` to drop values from.
- * @returns {List} - A new `List`, the desired suffix of the original list.
+ * <br>`Haskell> drop :: Int -> [a] -> [a]`
+ * @param {number} n - The number of values to drop
+ * @param {List} as - The `List` to drop values from
+ * @returns {List} A new `List`, the desired suffix of the original list
+ * @kind function
  * @example
  * const lst = list(1,2,3);
  * drop(2, lst);            // => [3:[]]
@@ -83,30 +85,32 @@ export const drop = (n, as) => {
   return partial(drop_, n, as);
 }
 
-/** @function splitAt
+/**
  * Return a `Tuple` in which the first element is the prefix of a `List` of a given length and the
  * second element is the remainder of the list.
- * Haskell> splitAt :: Int -> [a] -> ([a], [a])
- * @param {number} n - The length of the prefix.
- * @param {List} as - The `List` to split.
- * @returns {Tuple} - The split list.
+ * <br>`Haskell> splitAt :: Int -> [a] -> ([a], [a])`
+ * @param {number} n - The length of the prefix
+ * @param {List} xs - The `List` to split
+ * @returns {Tuple} The split `List`
+ * @kind function
  * @example
  * const lst = list(1,2,3);
  * splitAt(2, lst);         // => ([1:2:[]],[3:[]])
  */
-export const splitAt = (n, as) => {
-  const splitAt_ = (n, as) =>
-    isList(as) ? tuple(take(n, as), drop(n, as)) : error.listError(as, splitAt);
-  return partial(splitAt_, n, as);
+export const splitAt = (n, xs) => {
+  const splitAt_ = (n, xs) =>
+    isList(xs) ? tuple(take(n, xs), drop(n, xs)) : error.listError(xs, splitAt);
+  return partial(splitAt_, n, xs);
 }
 
-/** @function takeWhile
+/**
  * Return the longest prefix (possibly empty) of a `List` of values that satisfy a predicate
  * function.
- * Haskell> takeWhile :: (a -> Bool) -> [a] -> [a]
- * @param {Function} p - The predicate function (should return `boolean`).
- * @param {List} as - The `List` to take from.
- * @returns {List} - The `List` of values that satisfy the predicate function.
+ * <br>`Haskell> takeWhile :: (a -> Bool) -> [a] -> [a]`
+ * @param {Function} p - The predicate function (should return `boolean`)
+ * @param {List} as - The `List` to take from
+ * @returns {List} The `List` of values that satisfy the predicate function
+ * @kind function
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x < 3;
@@ -126,12 +130,13 @@ export const takeWhile = (p, as) => {
   return partial(takeWhile_, p, as);
 }
 
-/** @function dropWhile
+/**
  * Drop values from a `List` while a given predicate function returns `true` for each value.
- * Haskell> dropWhile :: (a -> Bool) -> [a] -> [a]
- * @param {Function} p - The predicate function (should return `boolean`).
- * @param {List} as - The `List` to drop values from.
- * @returns {List} - The `List` of values that do not satisfy the predicate function.
+ * <br>`Haskell> dropWhile :: (a -> Bool) -> [a] -> [a]`
+ * @param {Function} p - The predicate function (should return `boolean`)
+ * @param {List} as - The `List` to drop values from
+ * @returns {List} The `List` of values that do not satisfy the predicate function
+ * @kind function
  * @example
  * const lst = list(1,2,3,4,5,1,2,3);
  * const f = x => x < 3;
@@ -151,48 +156,51 @@ export const dropWhile = (p, as) => {
   return partial(dropWhile_, p, as);
 }
 
-/** @function span
+/**
  * Return a `Tuple` in which the first element is the longest prefix (possibly empty) of a `List` of
  * values that satisfy a predicate function and the second element is the rest of the list.
- * Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])
- * @param {Function} p - The predicate function (should return `boolean`).
- * @param {List} as - A `List`.
- * @returns {Tuple} - The `Tuple` of results.
+ * <br>`Haskell> span :: (a -> Bool) -> [a] -> ([a], [a])`
+ * @param {Function} p - The predicate function (should return `boolean`)
+ * @param {List} xs - A `List`
+ * @returns {Tuple} The `Tuple` of results
+ * @kind function
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x < 3;
  * span(f, lst);                      // => ([1:2:[]],[3:4:1:2:3:4:[]])
  */
-export const span = (p, as) => {
-  const span_ = (p, as) =>
-    isList(as) ? tuple(takeWhile(p, as), dropWhile(p, as)) : error.listError(as, span);
-  return partial(span_, p, as);
+export const span = (p, xs) => {
+  const span_ = (p, xs) =>
+    isList(xs) ? tuple(takeWhile(p, xs), dropWhile(p, xs)) : error.listError(xs, span);
+  return partial(span_, p, xs);
 }
 
-/** @function spanNot
+/**
  * Return a `Tuple` in which the first element is the longest prefix (possibly empty) of a `List` of
  * values that do not satisfy a predicate function and the second element is the rest of the list.
- * Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])
- * @param {Function} p - The predicate function (should return `boolean`).
- * @param {List} as - A `List`.
- * @returns {Tuple} - The `Tuple` of results.
+ * <br>`Haskell> break :: (a -> Bool) -> [a] -> ([a], [a])`
+ * @param {Function} p - The predicate function (should return `boolean`)
+ * @param {List} xs - A `List`
+ * @returns {Tuple} - The `Tuple` of results
+ * @kind function
  * @example
  * const lst = list(1,2,3,4,1,2,3,4);
  * const f = x => x > 3;
  * spanNot(f, lst);                   // => ([1:2:3:[]],[4:1:2:3:4:[]])
  */
-export const spanNot = (p, as) => {
-  const spanNot_ = (p, as) => span($(not)(p), as);
-  return partial(spanNot_, p, as);
+export const spanNot = (p, xs) => {
+  const spanNot_ = (p, xs) => span($(not)(p), xs);
+  return partial(spanNot_, p, xs);
 }
 
-/** @function stripPrefix
- * Drops the given prefix from a `List`. Returns `Nothing` if the list did not start with the prefix
- * given, or `Just` the `List` after the prefix, if it does.
- * Haskell> stripPrefix :: Eq a => [a] -> [a] -> Maybe [a]
- * @param {List} as - The prefix `List` to strip.
- * @param {List} bs - The `List` from which to strip the prefix.
- * @returns {Maybe} - The result `List` contained in a `Just`, or `Nothing`.
+/**
+ * Drops the given prefix from a `List`. Returns `Nothing` if the list does not start with the given
+ * prefix, or `Just` the `List` after the prefix, if it does.
+ * <br>`Haskell> stripPrefix :: Eq a => [a] -> [a] -> Maybe [a]`
+ * @param {List} as - The prefix `List` to strip
+ * @param {List} bs - The `List` from which to strip the prefix
+ * @returns {Maybe} - The result `List` contained in a `Just`, or `Nothing`
+ * @kind function
  * @example
  * const prefix = fromStringToList(`foo`);
  * stripPrefix(prefix, fromStringToList(`foobar`));    // => Just [bar]
@@ -215,26 +223,28 @@ export const stripPrefix = (as, bs) => {
   return partial(stripPrefix_, as, bs);
 }
 
-/** @function group
+/**
  * Take a `List` and return a `List` of lists such that the concatenation of the result is equal to
  * the argument. Each sublist in the result contains only equal values. Use `groupBy` to supply your
  * own equality function.
- * Haskell> group :: Eq a => [a] -> [[a]]
- * @param {List} as - A `List`.
- * @returns {List} - A `List` of result lists.
+ * <br>`Haskell> group :: Eq a => [a] -> [[a]]`
+ * @param {List} xs - A `List`
+ * @returns {List} - A `List` of result lists
+ * @kind function
  * @example
  * const str = fromStringToList(`Mississippi`);
- * group(str);                                  // => [[M]:[i]:[ss]:[i]:[ss]:[i]:[pp]:[i]:[]]
+ * group(str); // => [[M]:[i]:[ss]:[i]:[ss]:[i]:[pp]:[i]:[]]
  */
-export const group = as => groupBy(isEq, as);
+export const group = xs => groupBy(isEq, xs);
 
-/** @function groupBy
+/**
  * Take a `List` and return a `List` of lists such that the concatenation of the result is equal to
  * the argument. Each sublist in the result is grouped according to the the given equality function.
- * Haskell> groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
- * @param {Function} eq - A function to test the equality of elements (must return `boolean`).
- * @param {List} as - A `List`.
- * @returns {List} - A `List` of result lists.
+ * <br>`Haskell> groupBy :: (a -> a -> Bool) -> [a] -> [[a]]`
+ * @param {Function} eq - A function to test the equality of elements (must return `boolean`)
+ * @param {List} as - A `List`
+ * @returns {List} A `List` of result lists
+ * @kind function
  */
 export const groupBy = (eq, as) => {
   const groupBy_ = (eq, as) => {

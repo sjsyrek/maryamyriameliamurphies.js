@@ -20,22 +20,23 @@ import {
 
 import {error} from './error';
 
-/** @const {Function} Eq
+/**
  * The `Eq` type class defines equality and inequality. Instances of `Eq` must define an `isEq`
  * method.
- * @param {*} - Any object.
- * @returns {boolean} - `true` if an object is an instance of `Eq` and `false` otherwise.
+ * @param {*} - Any object
+ * @returns {boolean} `true` if an object is an instance of `Eq` and `false` otherwise
+ * @kind function
  */
 export const Eq = defines(`isEq`);
 
-/** @function isEq
+/**
  * Compare two objects for equality. Both objects must be instances of the `Eq` type class (i.e.
- * they both define an `isEq` static method) and must also be the same data type (or the same
- * primitive type).
- * Haskell> (==) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a === b
+ * they both define an `isEq` method) and must also be the same data type (or primitive type).
+ * <br>`Haskell> (==) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a === b
+ * @kind function
  * @example
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);
@@ -52,14 +53,14 @@ export const isEq = (a, b) => {
   return partial(isEq_, a, b);
 }
 
-/** @function isNotEq
+/**
  * Compare two objects for inequality. Both objects must be instances of the `Eq` type class (i.e.
- * they both define an `isEq` static method) and must be also be the same data type (or the same
- * primitive type).
- * Haskell> (/=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a !== b
+ * they both define an `isEq` method) and must be also be the same data type (or primitive type).
+ * <br>`Haskell> (/=) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a !== b
+ * @kind function
  * @example
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);

@@ -14,12 +14,13 @@ import {partial} from '../base';
 
 import {error} from '../error';
 
-/** @function and
+/**
  * Boolean "and". Return `true` if both arguments are true, `false` otherwise.
- * Haskell> (&&) :: Bool -> Bool -> Bool
- * @param {boolean} a - A boolean value.
- * @param {boolean} b - A boolean value.
- * @returns {boolean} - a && b.
+ * <br>`Haskell> (&&) :: Bool -> Bool -> Bool`
+ * @param {boolean} a - A boolean value
+ * @param {boolean} b - A boolean value
+ * @returns {boolean} a && b
+ * @kind function
  * @example
  * and(true, true); // => true
  * const a = 5 > 0;
@@ -36,12 +37,13 @@ export const and = (a, b) => {
   return partial(and_, a, b);
 }
 
-/** @function or
+/**
  * Boolean "or". Return `true` if either argument is true, `false` otherwise.
- * Haskell> (||) :: Bool -> Bool -> Bool
- * @param {boolean} a - A boolean value.
- * @param {boolean} b - A boolean value.
- * @returns {boolean} - a || b.
+ * <br>`Haskell> (||) :: Bool -> Bool -> Bool`
+ * @param {boolean} a - A boolean value
+ * @param {boolean} b - A boolean value
+ * @returns {boolean} a || b
+ * @kind function
  * @example
  * or(true, false); // => true
  * const a = 5 > 0;
@@ -58,12 +60,12 @@ export const or = (a, b) => {
   return partial(or_, a, b);
 }
 
-/** @function not
+/**
  * Boolean "not". Return `true` if the argument is false, `false` otherwise.
- * Example: {@code not(false) // true }
- * Haskell> not :: Bool -> Bool
- * @param {boolean} a - A boolean value.
- * @returns {boolean} - !a.
+ * <br>`Haskell> not :: Bool -> Bool`
+ * @param {boolean} a - A boolean value
+ * @returns {boolean} !a
+ * @kind function
  * @example
  * not(true);       // => false
  * not(false);      // => true

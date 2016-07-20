@@ -4,11 +4,9 @@
  *
  * maybe/maybe.js
  *
- * @file Maybe data type.
+ * Maybe data type.
  * @license ISC
  */
-
-/** @module maybe/maybe */
 
 import {isEq} from '../eq';
 
@@ -36,17 +34,21 @@ import {
   type
 } from '../type';
 
-/** @class Maybe
+/**
  * The `Maybe` type encapsulates an optional value. A value of type `Maybe a` either contains a
  * value of type `a` (represented as `Just a`), or it is empty (represented as `Nothing`). Using
  * Maybe is a good way to deal with errors or exceptional cases without resorting to drastic
- * measures such as throwing an error. If finer-grained control is necessary, however, use Either.
+ * measures such as throwing an error. If finer-grained control is necessary, however, use `Either`.
+ * @alias module:maybe.Maybe
+ * @kind class
  * @extends Type
+ * @private
  */
 export class Maybe extends Type {
-  /** @constructor
-   * Create a new `Maybe`, which represents either a value or `Nothing`.
-   * @param {*} a - The value to wrap in a `Maybe`.
+  /**
+   * Create a new `Maybe`, which represents either a value or `Nothing`
+   * @param {*} a - The value to wrap in a `Maybe`
+   * @private
    */
   constructor(a) {
     super();

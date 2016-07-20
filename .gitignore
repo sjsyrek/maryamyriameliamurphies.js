@@ -1,6 +1,9 @@
 .DS_STORE
-distribution
 node_modules
-npm-debug.log
-out
+distribution
+doc
+bundle
+coverage
+.nyc_output
+*.log
 *~

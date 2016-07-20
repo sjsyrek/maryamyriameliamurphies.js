@@ -10,12 +10,10 @@
 
 /* eslint no-unused-vars: 0 */
 
-//import {describe, it} from 'mocha'; // unecessary if 'npm run test' is used on the command line
-
 import 'babel-polyfill';
 
 import 'should';
 
 import './base';
 
-//import './list';
+import './list';

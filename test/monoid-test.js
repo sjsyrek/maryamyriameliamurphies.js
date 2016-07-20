@@ -11,7 +11,6 @@
 /* global describe, it */
 
 import {
-  isEq,
   mempty,
   mappend,
   mconcat,
@@ -50,17 +49,17 @@ describe(`Monoid type class`, function() {
   });
   describe(`mappend()`, function() {
     it(`should perform an associative operation on two monoids`, function() {
-      isEq(mappend(lst1, lst2), lst4).should.be.true;
+      mappend(lst1, lst2).should.eql(lst4);
       mappend(mempty(lst1), lst1).should.equal(lst1);
-      isEq(mappend(lst1, mappend(lst2, lst3)), lst5).should.be.true;
-      isEq(mappend(mappend(lst1, lst2), lst3), lst5).should.be.true;
-      isEq(mappend(mb1, mb2), just(lst4)).should.be.true;
+      mappend(lst1, mappend(lst2, lst3)).should.eql(lst5);
+      mappend(mappend(lst1, lst2), lst3).should.eql(lst5);
+      mappend(mb1, mb2).should.eql(just(lst4));
       mappend(mempty(mb1), mb1).should.equal(mb1);
-      isEq(mappend(mb1, mappend(mb2, mb3)), just(lst5)).should.be.true;
-      isEq(mappend(mappend(mb1, mb2), mb3), just(lst5)).should.be.true;
-      isEq(mappend(tup1, tup2), tuple(lst4, list(4,5,6,1,2,3))).should.be.true;
-      isEq(mappend(tup1, mappend(tup2, tup3)), tup4).should.be.true;
-      isEq(mappend(mappend(tup1, tup2), tup3), tup4).should.be.true;
+      mappend(mb1, mappend(mb2, mb3)).should.eql(just(lst5));
+      mappend(mappend(mb1, mb2), mb3).should.eql(just(lst5));
+      mappend(tup1, tup2).should.eql(tuple(lst4, list(4,5,6,1,2,3)));
+      mappend(tup1, mappend(tup2, tup3)).should.eql(tup4);
+      mappend(mappend(tup1, tup2), tup3).should.eql(tup4);
     });
     it(`should throw an error if either of its arguments is not a monoid`, function() {
       mappend.bind(null, 0, 1).should.throw;
@@ -72,7 +71,7 @@ describe(`Monoid type class`, function() {
   describe(`mconcat()`, function() {
     it(`should concatenate a list of monoids into a single list`, function() {
       mconcat(just(mb4)).should.equal(mb4);
-      isEq(mconcat(lst6), lst5).should.be.true;
+      mconcat(lst6).should.eql(lst5);
     });
   });
 });

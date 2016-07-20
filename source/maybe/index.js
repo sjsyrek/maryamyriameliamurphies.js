@@ -4,11 +4,8 @@
  *
  * maybe/index.js
  *
- * @file Top level index for Maybe data type.
- * @license ISC
+ * Top level index for Maybe data type.
  */
-
-/** @module maybe */
 
 export {Maybe} from './maybe';
 

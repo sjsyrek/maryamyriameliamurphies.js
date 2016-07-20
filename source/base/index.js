@@ -4,11 +4,10 @@
  *
  * base/index.js
  *
- * @file Top level index for basic functions.
- * @license ISC
+ * Top level index for basic functions.
  */
 
-/** @module base */
+// Miscellaneous functions
 
 export {
   partial,
@@ -19,16 +18,22 @@ export {
   until
 } from './misc';
 
+// Boolean functions
+
 export {
   and,
   or,
   not
 } from './bool';
 
+// Numeric functions
+
 export {
   even,
   odd
 } from './num';
+
+// I/O functions
 
 export {
   show,

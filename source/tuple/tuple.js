@@ -4,11 +4,9 @@
  *
  * tuple/tuple.js
  *
- * @file Tuple data type.
+ * Tuple data type.
  * @license ISC
  */
-
-/** @module tuple/tuple */
 
 import {
   EQ,
@@ -39,18 +37,21 @@ import {
 
 import {error} from '../error';
 
-/** @class Tuple
+/**
  * A data constructor for a `Tuple`. Unlike Haskell, which provides a separate constructor for every
- * possible number of tuple values, this class will construct tuples of any size. Empty tuples,
- * however, are a special type called `unit`, and single values passed to this constructor will be
- * returned unmodified. In order for them be useful, it is recommended that you create tuples with
- * primitive values only.
+ * possible number of tuple values, this class supports tuples of any size, two values and above.
+ * Empty tuples, however, are a special type called `unit`, and single values passed to the
+ * constructor of this class will be returned unmodified.
+ * @alias module:tuple.Tuple
+ * @kind class
  * @extends Type
+ * @private
  */
 export class Tuple extends Type {
-  /** @constructor
+  /**
    * Create a new `Tuple`.
-   * @param {...*} values - The values to construct into a `Tuple`.
+   * @param {...*} values - The values to construct into a `Tuple`
+   * @private
    */
   constructor(...as) {
     super();

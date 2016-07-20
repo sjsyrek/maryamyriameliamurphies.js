@@ -4,11 +4,9 @@
  *
  * list/list.js
  *
- * @file List data type.
+ * List data type.
  * @license ISC
  */
-
-/** @module list/list */
 
 import {
   compare,
@@ -51,19 +49,23 @@ import {
 
 import {error} from '../error';
 
-/** @class List
+/**
  * A data constructor for a `List`. In Haskell, unlike in JavaScript, the default collection type is
  * a linked list, not an array. Obviously, there are benefits and drawbacks to both, and native
  * Arrays in JavaScript have certain performance advantages that a custom linked list implementation
  * may not be able to outperform, even when performing operations for which linked lists, all other
  * things being equal, have an advantage. Lists may only contain values of a single type.
+ * @alias module:list.List
+ * @kind class
  * @extends Type
+ * @private
  */
 export class List extends Type {
-  /** @constructor
+  /**
    * Create a new `List`.
-   * @param {*} head - The value to put at the head of the list (also determines the list's type).
-   * @param {List} tail - The tail of the list, which is also a list (possibly the empty list).
+   * @param {*} head - The value to put at the head of the `List` (also determines the list's type)
+   * @param {List} tail - The tail of the `List`, which is also a `List` (possibly the empty list)
+   * @private
    */
   constructor(head, tail) {
     super();
@@ -92,7 +94,6 @@ export class List extends Type {
   static foldr(f, acc, as) {
     if (isList(as) === false ) { return error.listError(as, this.foldr); }
     if (isEmpty(as)) { return acc; }
-    //if (typeCheck(acc, head(as)) === false) { return error.typeMismatch(acc, head(as), foldr); }
     const x = head(as);
     const xs = tail(as);
     return f(x, foldr(f, acc, xs));
@@ -114,7 +115,6 @@ export class List extends Type {
   toString() { return `[Object List]`; }
   typeOf() { return `[${isEmpty(this) ? '' : type(head(this))}]`; }
   valueOf() {
-    //return head(this) === null ? `[]` : `${head(this)}:${tail(this).valueOf()}`;
     const value = list => isEmpty(list) ? `[]` : `${head(list)}:${value(tail(list))}`;
     return `[${type(this) === `[string]` ? fromListToString(this) : value(this)}]`;
   }

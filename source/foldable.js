@@ -30,20 +30,22 @@ import {fmap} from './functor';
 
 import {error} from './error';
 
-/** @const {Function} Foldable
+/**
  * A `Foldable` is a data structure that can be folded into a summary value. Lists are a common form
  * of foldable. Instances of Foldable must define a `foldr` method.
- * @param {*} - Any object.
- * @returns {boolean} - `true` if an object is an instance of `Foldable` and `false` otherwise.
+ * @param {*} - Any object
+ * @returns {boolean} `true` if an object is an instance of `Foldable` and `false` otherwise
+ * @kind function
  */
 export const Foldable = defines(`foldr`);
 
-/** @function fold
- * Combine the elements of a structure using a monoid. For example, fold a list of lists into a
+/**
+ * Combine the elements of a structure using the monoid. For example, fold a list of lists into a
  * single list.
- * Haskell> fold :: Monoid m => t m -> m
- * @param {Object} a - The monoid to fold.
- * @returns {Object} - The folded monoid.
+ * <br>`Haskell> fold :: Monoid m => t m -> m`
+ * @param {Object} a - The monoid to fold
+ * @returns {Object} The folded monoid
+ * @kind function
  * @example
  * const mb = just(1);
  * const mmb = just(mb);
@@ -54,12 +56,13 @@ export const Foldable = defines(`foldr`);
  */
 export const fold = a => foldMap(id, a);
 
-/** @function foldMap
+/**
  * Map each element of the structure to a monoid, and combine the results.
- * Haskell> foldMap :: Monoid m => (a -> m) -> t a -> m
- * @param {Function} f - The function to map.
- * @param {Object} a - The monoid to map over.
- * @returns {Object} - A new monoid of the same type, the result of the mapping.
+ * <br>`Haskell> foldMap :: Monoid m => (a -> m) -> t a -> m`
+ * @param {Function} f - The function to map
+ * @param {Object} a - The monoid to map over
+ * @returns {Object} A new monoid of the same type, the result of the mapping
+ * @kind function
  * @example
  * const mb = just(1);
  * const lst = list(1,2,3);
@@ -73,13 +76,15 @@ export const foldMap = (f, a) => {
   return partial(foldMap_, f, a);
  }
 
-/** @function foldr
- * Right-associative fold of a structure. This is the work horse function of `Foldable`.
- * Haskell> foldr :: (a -> b -> b) -> b -> t a -> b
- * @param {Function} f - A binary function.
- * @param {*} z - A base accumulator value.
- * @param {Object} t - A `Foldable` type.
- * @returns {*} - The result of applying the function to the foldable and the accumulator.
+/**
+ * Right-associative fold of a structure. This is the work horse function of `Foldable`. See also
+ * the list reducing function `foldl` for the left-associative version.
+ * <br>`Haskell> foldr :: (a -> b -> b) -> b -> t a -> b`
+ * @param {Function} f - A binary function
+ * @param {*} z - A base accumulator value
+ * @param {Object} t - A `Foldable` type
+ * @returns {*} The result of applying the function to the foldable and the accumulator
+ * @kind function
  * @example
  * const mb = just(1);
  * const tup = tuple(1,2);

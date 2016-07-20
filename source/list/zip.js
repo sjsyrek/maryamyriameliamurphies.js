@@ -25,13 +25,14 @@ import {
 
 import {error} from '../error';
 
-/** @function zip
- * Take two `List` objects and return a `List` of corresponding pairs. If one input list is short,
+/**
+ * Take two `List` objects and return a `List` of corresponding pairs. If one input list is shorter,
  * excess elements of the longer list are discarded.
- * Haskell> zip :: [a] -> [b] -> [(a, b)]
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @returns {List} - The zipped `List` of `Tuple` objects.
+ * <br>`Haskell> zip :: [a] -> [b] -> [(a, b)]`
+ * @param {List} as - The first `List`
+ * @param {List} bs - The second `List`
+ * @returns {List} The zipped `List` of `Tuple` objects
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
@@ -52,14 +53,15 @@ export const zip = (as, bs) => {
   return partial(zip_, as, bs);
 }
 
-/** @function zip3
+/**
  * Take three `List` objects and return a `List` of triples (`Tuple` objects with three values).
  * Analogous to the `zip` function.
- * Haskell> zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @param {List} cs - The third `List`.
- * @returns {List} - The zipped `List` of `Tuple` objects.
+ * <br>`Haskell> zip3 :: [a] -> [b] -> [c] -> [(a, b, c)]`
+ * @param {List} as - The first `List`
+ * @param {List} bs - The second `List`
+ * @param {List} cs - The third `List`
+ * @returns {List} The zipped `List` of `Tuple` objects
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
@@ -83,13 +85,14 @@ export const zip3 = (as, bs, cs) => {
   return partial(zip3_, as, bs, cs);
 }
 
-/** @function zipWith
+/**
  * A generalization of the `zip` function. Zip two `List` objects using a provided function.
- * Haskell> zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
- * @param {Function} f - The zipping function.
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @returns {List} - The zipped `List`.
+ * <br>`Haskell> zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]`
+ * @param {Function} f - The zipping function
+ * @param {List} as - The first `List`
+ * @param {List} bs - The second `List`
+ * @returns {List} The zipped `List`
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
@@ -112,19 +115,20 @@ export const zipWith = (f, as, bs) => {
   return partial(zipWith_, f, as, bs);
 }
 
-/** @function zipWith3
+/**
  * A generalization of the `zip3` function. Zip three `List` objects using a provided function.
- * Haskell> zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
- * @param {Function} f - The zipping function.
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @param {List} cs - The third `List`.
- * @returns {List} - The zipped `List`.
+ * <br>`Haskell> zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]`
+ * @param {Function} f - The zipping function
+ * @param {List} as - The first `List`
+ * @param {List} bs - The second `List`
+ * @param {List} cs - The third `List`
+ * @returns {List} The zipped `List`
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(5,4,3,2,1);
  * const lst3 = list(6,7,8,9,10);
- * const f = (x, y, z) => tuple(x * 3, y ** 2, z % 2);
+ * const f = (x, y, z) => tuple(x * 3, y * y, z % 2);
  * const g = (x, y, z) => x + y + z;
  * zipWith3(f, lst1, lst2, lst3);    // => [(3,25,0):(6,16,1):(9,9,0):(12,4,1):(15,1,0):[]]
  * zipWith3(g, lst1, lst2, lst3);    // => [12:13:14:15:16:[]]

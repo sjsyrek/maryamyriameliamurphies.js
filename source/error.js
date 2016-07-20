@@ -10,7 +10,7 @@
 
 /** @module error */
 
-/** @const {Object} error
+/**
  * When a function from this library throws an error, it calls one of the methods defined on this
  * object, which constructs and then passes an error message to the `throwError` function with the
  * arguments to the original method call applied to the appropriate error template string.
@@ -37,13 +37,15 @@ export const error = {
     throwError(`Arguments '${a}' and '${b}' to function '${f.name}' are not the same type.`)
 };
 
-/** @function throwError
+/**
  * Throw an error, outputting the given message. This is one of the only impure functions in this
  * library and reflects the (some would say unfortunate) inclusion of numerous partial functions in
  * the Haskell Prelude. Whereas a total function will always return a predictable output for a given
  * input, a partial function fails to take into account all possible inputs. One way to address this
  * situation would be to wrap potentially undefined values (such as the head of an empty list) in a
  * Maybe or Either abstraction in order to account for error states.
- * @param {string} e - The error message to display.
+ * @param {string} e - The error message to display
+ * @throws Throws an error with a given message.
+ * @kind function
  */
 export function throwError(e) { throw Error(`*** Error: ${e}`); }

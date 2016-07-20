@@ -24,6 +24,8 @@ import {
   fromTupleToArray
 } from '../source';
 
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
+
 describe(`Tuple data type`, function() {
   const a = tuple(1,2);
   const b = tuple(1,2);
@@ -150,6 +152,12 @@ describe(`Tuple data type`, function() {
   describe(`fromArrayToTuple()`, function() {
     it(`should create a new tuple from the values of an array`, function() {
       fromArrayToTuple([2,1]).should.have.properties({"1":2, "2":1});
+    });
+    it(`should return the value at index 0 if the argument is a single element array`, function() {
+      fromArrayToTuple([1]).should.equal(1);
+    });
+    it(`should return unit if the argument is an empty array`, function() {
+      fromArrayToTuple([]).should.equal(unit);
     });
     it(`should throw an error if the argument is not an array`, function() {
       fromArrayToTuple.bind(null, 0).should.throw;

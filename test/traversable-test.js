@@ -11,7 +11,6 @@
 /* global describe, it */
 
 import {
-  isEq,
   traverse,
   mapM,
   sequence,
@@ -29,9 +28,9 @@ describe(`Traversable type class`, function() {
   const f = x => list(x + 7);
   describe(`traverse()`, function() {
     it(`should map the elements of a structure to an action, then evaluate and collect the results`, function() {
-      isEq(traverse(f, mb), list(just(list(8)))).should.be.true;
-      isEq(traverse(f, tup), list(tuple(1,9))).should.be.true;
-      isEq(traverse(f, lst), list(list(8,9,10), list())).should.be.true;
+      traverse(f, mb).should.eql(list(just(list(8))));
+      traverse(f, tup).should.eql(list(tuple(1,9)));
+      traverse(f, lst).should.eql(list(list(8,9,10)));
     });
     it(`should throw an error if the second argument is not a traversable type`, function() {
       traverse.bind(null, f, 0).should.throw;
@@ -39,8 +38,8 @@ describe(`Traversable type class`, function() {
   });
   describe(`mapM()`, function() {
     it(`should map the elements of a structure to a monadic action, then evaluate and collect the results`, function() {
-      isEq(mapM(f, mb), list(just(list(8)))).should.be.true;
-      isEq(mapM(f, lst), list(list(8,9,10), list())).should.be.true;
+      mapM(f, mb).should.eql(list(just(list(8))));
+      mapM(f, lst).should.eql(list(list(8,9,10), list()));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
       mapM.bind(null, f, tup).should.throw;
@@ -48,8 +47,8 @@ describe(`Traversable type class`, function() {
   });
   describe(`sequence()`, function() {
     it(`should evaluate each monadic action in a structure from left to right, and collect the results`, function() {
-      isEq(sequence(mmb), just(just(1))).should.be.true;
-      isEq(sequence(llst), list(list(1), list(2), list(3))).should.be.true;
+      sequence(mmb).should.eql(just(just(1)));
+      sequence(llst).should.eql(list(list(1), list(2), list(3)));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
       sequence.bind(null, tup).should.throw;

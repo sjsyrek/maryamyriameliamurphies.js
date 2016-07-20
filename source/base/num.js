@@ -15,18 +15,20 @@ import {
   not
 } from '../base';
 
-/** @function even
+/**
  * Return `true` if a value is even, `false` otherwise.
- * Haskell> even :: (Integral a) => a -> Bool
- * @param {*} a - Any value.
- * @returns {boolean} - `true` if even, `false` otherwise.
+ * <br>`Haskell> even :: (Integral a) => a -> Bool`
+ * @param {*} a - Any value
+ * @returns {boolean} `true` if even, `false` otherwise
+ * @kind function
  */
 export const even = a => a % 2 === 0;
 
-/** @function odd
+/**
  * Return `true` if a value is odd, `false` otherwise.
- * Haskell> odd :: (Integral a) => a -> Bool
- * @param {*} a - Any value.
- * @returns {boolean} - `true` if odd, `false` otherwise.
+ * <br>`Haskell> odd :: (Integral a) => a -> Bool`
+ * @param {*} a - Any value
+ * @returns {boolean} `true` if odd, `false` otherwise
+ * @kind function
  */
 export const odd = a => $(not)(even)(a);

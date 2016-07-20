@@ -12,7 +12,6 @@
 
 import {
   print,
-  isEq,
   inject,
   flatMap,
   chain,
@@ -40,8 +39,8 @@ describe(`Monad type class`, function() {
   }
   describe(`inject()`, function() {
     it(`should inject a value into a monadic context`, function() {
-      isEq(inject(mb1, 5), mb2).should.be.true;
-      isEq(inject(lst, 5), list(5)).should.be.true;
+      inject(mb1, 5).should.eql(mb2);
+      inject(lst, 5).should.eql(list(5));
     });
     it(`should throw an error if the first argument is not a monad`, function() {
       inject.bind(null, 0, 0).should.throw;
@@ -49,8 +48,8 @@ describe(`Monad type class`, function() {
   });
   describe(`flatMap()`, function() {
     it(`should sequentially compose two actions`, function() {
-      isEq(flatMap(mb1, doubleJust), just(2)).should.be.true;
-      isEq(flatMap(lst, doubleList), list(2,4,6)).should.be.true;
+      flatMap(mb1, doubleJust).should.eql(just(2));
+      flatMap(lst, doubleList).should.eql(list(2,4,6));
     });
     it(`should throw an error if the first argument is not a monad`, function() {
       flatMap.bind(null, 0, doubleJust).should.throw;
@@ -58,8 +57,8 @@ describe(`Monad type class`, function() {
   });
   describe(`chain()`, function() {
     it(`should sequentially compose two actions and discard any value produced by the first`, function() {
-      isEq(chain(mb1, j), just(10)).should.be.true;
-      isEq(chain(lst, l), list(1,2,3,1,2,3,1,2,3)).should.be.true;
+      chain(mb1, j).should.eql(just(10));
+      chain(lst, l).should.eql(list(1,2,3,1,2,3,1,2,3));
     });
     it(`should throw an error if the first argument is not a monad`, function() {
       chain.bind(null, 0, j).should.throw;
@@ -67,8 +66,8 @@ describe(`Monad type class`, function() {
   });
   describe(`flatMapFlip()`, function() {
     it(`should sequentially compose two actions but with the arguments in reverse order`, function() {
-      isEq(flatMapFlip(doubleJust, mb1), just(2)).should.be.true;
-      isEq(flatMapFlip(doubleList, lst), list(2,4,6)).should.be.true;
+      flatMapFlip(doubleJust, mb1).should.eql(just(2));
+      flatMapFlip(doubleList, lst).should.eql(list(2,4,6));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
       flatMapFlip.bind(null, doubleList, 0).should.throw;
@@ -78,10 +77,10 @@ describe(`Monad type class`, function() {
     it(`should remove one level of monadic structure from a monad`, function() {
       const mmb = just(mb1);
       const llst = list(lst);
-      isEq(mmb, just(just(1))).should.be.true;
-      isEq(join(mmb), mb1).should.be.true;
-      isEq(llst, list(lst)).should.be.true;
-      isEq(join(llst), lst).should.be.true;
+      mmb.should.eql(just(just(1)));
+      join(mmb).should.eql(mb1);
+      llst.should.eql(list(lst));
+      join(llst).should.eql(lst);
     });
     it(`should throw an error if the argument is not a monad`, function() {
       join.bind(null, 0).should.throw;
@@ -90,8 +89,8 @@ describe(`Monad type class`, function() {
   describe(`liftM()`, function() {
     it(`should convert a function into a monad`, function() {
       const f = x => x * 10;
-      isEq(liftM(f, mb1), just(10)).should.be.true;
-      isEq(liftM(f, lst), list(10,20,30)).should.be.true;
+      liftM(f, mb1).should.eql(just(10));
+      liftM(f, lst).should.eql(list(10,20,30));
     });
     it(`should throw an error if the second argument is not a monad`, function() {
       liftM.bind(null, doubleList, 0).should.throw;

@@ -13,7 +13,6 @@
 import {
   $,
   id,
-  isEq,
   fmap,
   fmapReplaceBy,
   just,
@@ -30,14 +29,14 @@ describe(`Functor type class`, function() {
   const g = x => x * 100;
   describe(`fmap()`, function() {
     it(`should map a function over a functor and return the correct value`, function() {
-      isEq(fmap(id, mb), mb).should.be.true;
-      isEq(fmap(f, mb), just(55)).should.be.true;
-      isEq(fmap(id, tup), tup).should.be.true;
-      isEq(fmap(f, tup), tuple(1,22)).should.be.true;
-      isEq(fmap(id, lst1), lst1).should.be.true;
-      isEq(fmap(f, lst1), list(11,22,33)).should.be.true;
-      isEq($(fmap(f))(fmap(g))(lst1), lst2).should.be.true;
-      isEq(fmap($(f)(g))(lst1), lst2).should.be.true;
+      fmap(id, mb).should.eql(mb);
+      fmap(f, mb).should.eql(just(55));
+      fmap(id, tup).should.eql(tup);
+      fmap(f, tup).should.eql(tuple(1,22));
+      fmap(id, lst1).should.eql(lst1);
+      fmap(f, lst1).should.eql(list(11,22,33));
+      $(fmap(f))(fmap(g))(lst1).should.eql(lst2);
+      fmap($(f)(g))(lst1).should.eql(lst2);
     });
     it(`should throw an error if the second argument is not a functor`, function() {
       fmap.bind(null, f, 0).should.throw;
@@ -45,9 +44,9 @@ describe(`Functor type class`, function() {
   });
   describe(`fmapReplaceBy()`, function() {
     it(`should replace all locations in a functor with the same value`, function() {
-      isEq(fmapReplaceBy(1, mb), just(1)).should.be.true;
-      isEq(fmapReplaceBy(2, tup), tuple(2,2)).should.be.true;
-      isEq(fmapReplaceBy(5, lst1), list(5,5,5)).should.be.true;
+      fmapReplaceBy(1, mb).should.eql(just(1));
+      fmapReplaceBy(5, tup).should.eql(tuple(1,5));
+      fmapReplaceBy(5, lst1).should.eql(list(5,5,5));
     });
   });
 });

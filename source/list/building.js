@@ -24,13 +24,14 @@ import {
 
 import {error} from '../error';
 
-/** @function scanl
+/**
  * Scan a `List` from the right to left and return a `List` of successive reduced values.
- * Haskell> scanl :: (b -> a -> b) -> b -> [a] -> [b]
- * @param {Function} f - The function to map over the `List`.
- * @param {*} q - An accumulator value.
- * @param {List} ls - The `List` to scan.
- * @returns {List} - The `List` of reduced values.
+ * <br>`Haskell> scanl :: (b -> a -> b) -> b -> [a] -> [b]`
+ * @param {Function} f - The function to map over the `List`
+ * @param {*} q - An accumulator value
+ * @param {List} ls - The `List` to scan
+ * @returns {List} The `List` of reduced values
+ * @kind function
  * @example
  * const lst = list(1,2,3);
  * const f = (x, y) => x - y;
@@ -47,13 +48,14 @@ export const scanl = (f, q, ls) => {
   return partial(scanl_, f, q, ls);
 }
 
-/** @function scanr
+/**
  * Like `scanl` but scans left to right instead of right to left.
- * Haskell> scanr :: (a -> b -> b) -> b -> [a] -> [b]
- * @param {Function} f - The function to map over the `List`.
- * @param {*} q0 - An accumulator value.
- * @param {List} as - The `List` to scan.
- * @returns {List} - The `List` of reduced values.
+ * <br>`Haskell> scanr :: (a -> b -> b) -> b -> [a] -> [b]`
+ * @param {Function} f - The function to map over the `List`
+ * @param {*} q0 - An accumulator value
+ * @param {List} as - The `List` to scan
+ * @returns {List} The `List` of reduced values
+ * @kind function
  * @example
  * const lst = list(1,2,3);
  * const f = (x, y) => x - y;

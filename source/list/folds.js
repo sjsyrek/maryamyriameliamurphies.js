@@ -24,12 +24,13 @@ import {
 
 import {error} from '../error';
 
-/** @function concat
+/**
  * Concatenate the elements in a container of lists. Currently, this function only works on `List`
  * objects, though it should in the future work on all `Foldable` types.
- * Haskell> concat :: Foldable t => t [a] -> [a]
- * @param {List} xss - A `List` of lists.
- * @returns {List} - The concatenated `List`.
+ * <br>`Haskell> concat :: Foldable t => t [a] -> [a]`
+ * @param {List} xss - A `List` of lists
+ * @returns {List} The concatenated `List`
+ * @kind function
  * @example
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);
@@ -47,20 +48,21 @@ export const concat = xss => {
   return error.listError(xss, concat);
 }
 
-/** @function concatMap
+/**
  * Map a function that takes a value and returns a `List` over a `List` of values and concatenate
  * the resulting list. In the future, should work on all `Foldable` types.
- * Haskell> concatMap :: Foldable t => (a -> [b]) -> t a -> [b]
- * @param {Function} f - The function to map.
- * @param {List} as - The `List` to map over.
- * @returns {List} - The `List` of results of mapping `f` over `as`, concatenated.
+ * <br>`Haskell> concatMap :: Foldable t => (a -> [b]) -> t a -> [b]`
+ * @param {Function} f - The function to map
+ * @param {List} xs - The `List` to map over
+ * @returns {List} The `List` of results of mapping `f` over `xs`, concatenated
+ * @kind function
  * @example
  * const f = x => list(x * 3);
  * const lst = list(1,2,3);    // [1:2:3:[]]
  * map(f, lst);                // => [[3:[]]:[6:[]]:[9:[]]:[]]
  * concatMap(f, lst);          // => [3:6:9:[]]
  */
-export const concatMap = (f, as) => {
-  const concatMap_ = (f, as) => concat(map(f, as));
-  return partial(concatMap_, f, as);
+export const concatMap = (f, xs) => {
+  const concatMap_ = (f, xs) => concat(map(f, xs));
+  return partial(concatMap_, f, xs);
 }

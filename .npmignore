@@ -1,5 +1,9 @@
-archive
+node_modules
 source
 test
-node_modules
-npm-debug.log
+doc
+bundle
+coverage
+.nyc_output
+*.log
+*~

@@ -22,25 +22,27 @@ import {
 
 import {error} from './error';
 
-/** @const {Function} Ord
+/**
  * The `Ord` type class is used for totally ordered datatypes. Instances of `Ord` must define a
  * `compare` method and must also be instances of `Eq`.
- * @param {*} - Any object.
- * @returns {boolean} - `true` if an object is an instance of `Ord` and `false` otherwise.
+ * @param {*} - Any object
+ * @returns {boolean} `true` if an object is an instance of `Ord` and `false` otherwise
+ * @kind function
  */
 export const Ord = defines(`isEq`, `compare`);
 
-/** @class Ordering
+/**
  * A data constructor for orderings of objects that can be compared, implemented as a class because
  * Ordering in Haskell is a monoid. There is no reason to ever create any other new objects from
  * this class.
- * @extends Type
+ * @kind class
+ * @alias module:ord.Ordering
  * @private
  */
 class Ordering {
-  /** @constructor
+  /**
    * Create a new ordering, a relationship that represents a comparison between two objects.
-   * @param {string} ord - A string representing the type of ordering.
+   * @param {string} ord - A string representing the type of ordering
    */
   constructor(ord) { this.ord = () => ord; }
    static mempty() { return EQ; }
@@ -52,30 +54,34 @@ class Ordering {
    valueOf() { return this.ord(); }
 }
 
-/** @const {Ordering} EQ
- * The "equals" Ordering. Equivalent to ===.
+/**
+ * The "equals" `Ordering`. Equivalent to ===.
+ * @const {Ordering} EQ
  */
 export const EQ = new Ordering(`EQ`);
 
-/** @const {Ordering} LT
- * The "less than" Ordering. Equivalent to <.
+/**
+ * The "less than" `Ordering`. Equivalent to <.
+ * @const {Ordering} LT
  */
 export const LT = new Ordering(`LT`);
 
-/** @const {Ordering} GT
- * The "greater than" Ordering. Equivalent to >.
+/**
+ * The "greater than" `Ordering`. Equivalent to >.
+ * @const {Ordering} GT
  */
 export const GT = new Ordering(`GT`);
 
-/** @function compare
+/**
  * Compare two objects and return an `Ordering`. Both values must be instances of the `Ord` type
- * class (i.e. they both define a `compare` static method) and must also be the same data type (or
- * the same primitive type). Only a single comparison is required to determine the precise ordering
+ * class (i.e. they both define a `compare` method) and must also be the same data type (or
+ * primitive type). Note that only a single comparison is required to determine the precise ordering
  * of two objects.
- * Haskell> compare :: a -> a -> Ordering
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {Ordering} - The Ordering value (`EQ`, `LT`, or `GT`).
+ * <br>`Haskell> compare :: a -> a -> Ordering`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {Ordering} The `Ordering` value (`EQ`, `LT`, or `GT`)
+ * @kind function
  * @example
  * const lst1 = list(1,2,3);
  * const lst2 = list(4,5,6);
@@ -103,60 +109,65 @@ export const compare = (a, b) => {
   return partial(compare_, a, b);
 }
 
-/** @function lessThan
+/**
  * Determine whether one value is less than another.
- * Haskell> (<) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a < b.
+ * <br>`Haskell> (<) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a < b
+ * @kind function
  */
 export const lessThan = (a, b) => {
   const lessThan_ = (a, b) => compare(a, b) === LT;
   return partial(lessThan_, a, b);
 }
 
-/** @function lessThanOrEqual
+/**
  * Determine whether one value is less than or equal to another.
- * Haskell> (<=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a <= b.
+ * <br>`Haskell> (<=) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a <= b
+ * @kind function
  */
 export const lessThanOrEqual = (a, b) => {
   const lessThanOrEqual_ = (a, b) => compare(a, b) !== GT;
   return partial(lessThanOrEqual_, a, b);
 }
 
-/** @function greaterThan
+/**
  * Determine whether one value is greater than another.
- * Haskell> (>) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a > b.
+ * <br>`Haskell> (>) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a > b
+ * @kind function
  */
 export const greaterThan = (a, b) => {
   const greaterThan_ = (a, b) => compare(a, b) === GT;
   return partial(greaterThan_, a, b);
 }
 
-/** @function greaterThanOrEqual
+/**
  * Determine whether one value is greater than or equal to another.
- * Haskell> (>=) :: a -> a -> Bool
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {boolean} - a >= b.
+ * <br>`Haskell> (>=) :: a -> a -> Bool`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {boolean} a >= b
+ * @kind function
  */
 export const greaterThanOrEqual = (a, b) => {
   const greaterThanOrEqual_ = (a, b) => compare(a, b) !== LT;
   return partial(greaterThanOrEqual_, a, b);
 }
 
-/** @function max
+/**
  * Return the higher in value of two objects.
- * Haskell> max :: a -> a -> a
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {*} - `a` or `b`, whichever is greater.
+ * <br>`Haskell> max :: a -> a -> a`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {*} `a` or `b`, whichever is greater
+ * @kind function
  * @example
  * const tup1 = tuple(1,2);
  * const tup2 = tuple(2,1);
@@ -170,12 +181,13 @@ export const max = (a, b) => {
   return partial(max_, a, b);
 }
 
-/** @function min
+/**
  * Return the lower in value of two objects.
- * Haskell> min :: a -> a -> a
- * @param {*} a - Any object.
- * @param {*} b - Any object.
- * @returns {*} - `a` or `b`, whichever is lesser.
+ * <br>`Haskell> min :: a -> a -> a`
+ * @param {*} a - Any object
+ * @param {*} b - Any object
+ * @returns {*} `a` or `b`, whichever is lesser
+ * @kind function
  * @example
  * const tup1 = tuple(1,2);
  * const tup2 = tuple(2,1);

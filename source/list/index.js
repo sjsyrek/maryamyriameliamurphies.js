@@ -4,13 +4,12 @@
  *
  * list/index.js
  *
- * @file Top level index for List data type.
- * @license ISC
+ * Top level index for List data type.
  */
 
-/** @module list */
-
 export {List} from './list';
+
+// Basic list functions
 
 export {
   emptyList,
@@ -36,6 +35,8 @@ export {
   fromStringToList
 } from './func';
 
+// List transformation functions
+
 export {
   map,
   reverse,
@@ -44,17 +45,25 @@ export {
   transpose
 } from './trans';
 
+// Functions for reducing lists
+
 export {foldl} from './reducing';
+
+// Special folds for lists
 
 export {
   concat,
   concatMap
 } from './folds';
 
+// Functions for building lists
+
 export {
   scanl,
   scanr
 } from './building';
+
+// Infinite list functions
 
 export {
   listInf,
@@ -64,6 +73,8 @@ export {
   replicate,
   cycle
 } from './inf';
+
+// Sublist functions
 
 export {
   take,
@@ -78,10 +89,14 @@ export {
   groupBy
 } from './sub';
 
+// Functions for searching lists
+
 export {
   lookup,
   filter
 } from './searching';
+
+// Functions for indexing lists
 
 export {
   index,
@@ -92,12 +107,16 @@ export {
   findIndices
 } from './indexing';
 
+// Functions for zipping and unzipping lists
+
 export {
   zip,
   zip3,
   zipWith,
   zipWith3
 } from './zip';
+
+// "Set" operations on lists
 
 export {
   nub,
@@ -107,6 +126,8 @@ export {
   deleteFirsts,
   deleteFirstsBy
 } from './set';
+
+// Functions for ordering lists
 
 export {
   sort,

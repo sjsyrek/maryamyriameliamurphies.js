@@ -31,25 +31,27 @@ import {
 
 import {error} from '../error';
 
-/** @function nub
+/**
  * Remove duplicate values from a `List` by dropping all occurrences after the first. Use `nubBy` to
  * supply your own equality function.
- * Haskell> nub :: Eq a => [a] -> [a]
- * @param {List} as - A `List`.
- * @returns {List} - The essence of `as`.
+ * <br>`Haskell> nub :: Eq a => [a] -> [a]`
+ * @param {List} xs - A `List`
+ * @returns {List} The essence of `xs`
+ * @kind function
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
  * nub(lst); // => [1:2:3:4:5:6:7:8:9:10:[]]
  */
-export const nub = as => isList(as) ? nubBy(isEq, as) : error.listError(as, nub);
+export const nub = xs => isList(xs) ? nubBy(isEq, xs) : error.listError(xs, nub);
 
-/** @function nubBy
+/**
  * Remove duplicate values from a `List` by dropping all occurrences after the first. This function
  * generalizes `nub` by allowing you to supply your own equality test.
- * Haskell> nubBy :: (a -> a -> Bool) -> [a] -> [a]
- * @param {Function} eq - A function to test for equality (must return `boolean`).
- * @param {List} as - A `List`.
- * @returns {List} - The essence of `as`.
+ * <br>`Haskell> nubBy :: (a -> a -> Bool) -> [a] -> [a]`
+ * @param {Function} eq - A function to test for equality (must return `boolean`)
+ * @param {List} as - A `List`
+ * @returns {List} The essence of `as`
+ * @kind function
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
  * const eq = (x, y) => odd(x + y);
@@ -67,53 +69,56 @@ export const nubBy = (eq, as) => {
   return partial(nubBy_, eq, as);
 }
 
-/** @function deleteL
+/**
  * Remove the first occurrence of a value from a `List`. Use `deleteLBy` to supply your own equality
  * function.
- * Haskell> delete :: (Eq a) => a -> [a] -> [a]
- * @param {*} x - The value to delete.
- * @param {List} as - A `List`.
- * @returns {List} - The `List` with the first `a` deleted.
+ * <br>`Haskell> delete :: (Eq a) => a -> [a] -> [a]`
+ * @param {*} x - The value to delete
+ * @param {List} xs - A `List`
+ * @returns {List} The `List` with the first `x` deleted
+ * @kind function
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
  * deleteL(2, lst); // => [1:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
-export const deleteL = (x, as) => {
-  const deleteL_ = (x, as) => isList(as) ? deleteLBy(isEq, x, as) : error.listError(as, deleteL);
-  return partial(deleteL_, x, as);
+export const deleteL = (x, xs) => {
+  const deleteL_ = (x, xs) => isList(xs) ? deleteLBy(isEq, x, xs) : error.listError(xs, deleteL);
+  return partial(deleteL_, x, xs);
 }
 
-/** @function deleteLBy
+/**
  * Remove the first occurrence of a value from a `List` using a provided function to check for
  * equality.
- * Haskell> deleteBy :: (a -> a -> Bool) -> a -> [a] -> [a]
- * @param {Function} eq - A function to test for equality (must return `boolean`).
- * @param {*} x - The value to delete.
- * @param {List} as - A `List`.
- * @returns {List} - The `List` with the first `a` deleted.
+ * <br>`Haskell> deleteBy :: (a -> a -> Bool) -> a -> [a] -> [a]`
+ * @param {Function} eq - A function to test for equality (must return `boolean`)
+ * @param {*} n - The value to delete
+ * @param {List} as - A `List`
+ * @returns {List} The `List` with the first `a` deleted
+ * @kind function
  * @example
  * const lst = list(1,2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10);
  * const eq = (x, y) => odd(x + y);
  * deleteLBy(eq, 2, lst); // => [2:2:3:2:4:2:2:5:2:6:7:7:8:9:10:10:[]]
  */
-export const deleteLBy = (eq, x, as) => {
-  const deleteLBy_ = (eq, x, as) => {
+export const deleteLBy = (eq, n, as) => {
+  const deleteLBy_ = (eq, n, as) => {
     if (isList(as) === false) { return error.listError(as, deleteLBy); }
     if (isEmpty(as)) { return emptyList; }
-    const y = head(as);
-    const ys = tail(as);
-    return eq(x, y) ? ys : cons(y)(deleteLBy(eq, x, ys));
+    const x = head(as);
+    const xs = tail(as);
+    return eq(n, x) ? xs : cons(x)(deleteLBy(eq, n, xs));
   }
-  return partial(deleteLBy_, eq, x, as);
+  return partial(deleteLBy_, eq, n, as);
 }
 
-/** @function deleteFirsts
+/**
  * Non-associative list difference: remove the first occurrence of each value of a `List` in turn
  * from another `List`. Use `deleteFirstsBy` to supply your own equality function.
- * Haskell> (\\) :: Eq a => [a] -> [a] -> [a]
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @returns {List} - The difference of `as` and `bs`.
+ * <br>`Haskell> (\\) :: Eq a => [a] -> [a] -> [a]`
+ * @param {List} xs - The first `List`
+ * @param {List} ys - The second `List`
+ * @returns {List} The difference of `xs` and `ys`
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(6,7,8,9,10);
@@ -121,23 +126,24 @@ export const deleteLBy = (eq, x, as) => {
  * deleteFirsts(lst3, lst1);                            // => [6:7:8:9:10:[]]
  * deleteFirsts(listAppend(lst1, lst2), lst1) === lst2; // => true
  */
-export const deleteFirsts = (as, bs) => {
-  const deleteFirsts_ = (as, bs) => {
-    if (isList(as) === false) { return error.listError(as, deleteFirsts); }
-    if (isList(bs) === false) { return error.listError(bs, deleteFirsts); }
-    return foldl(flip(deleteL), as, bs);
+export const deleteFirsts = (xs, ys) => {
+  const deleteFirsts_ = (xs, ys) => {
+    if (isList(xs) === false) { return error.listError(xs, deleteFirsts); }
+    if (isList(ys) === false) { return error.listError(ys, deleteFirsts); }
+    return foldl(flip(deleteL), xs, ys);
   }
-  return partial(deleteFirsts_, as, bs);
+  return partial(deleteFirsts_, xs, ys);
 }
 
-/** @function deleteFirstsBy
+/**
  * Non-associative list difference: remove the first occurrence of each value of a `List` in turn
  * from another `List` using a provided function to check for equality.
- * Haskell> deleteFirstsBy :: (a -> a -> Bool) -> [a] -> [a] -> [a]
- * @param {Function} eq - A function to test for equality (must return `boolean`).
- * @param {List} as - The first `List`.
- * @param {List} bs - The second `List`.
- * @returns {List} - The difference of `as` and `bs`.
+ * <br>`Haskell> deleteFirstsBy :: (a -> a -> Bool) -> [a] -> [a] -> [a]`
+ * @param {Function} eq - A function to test for equality (must return `boolean`)
+ * @param {List} xs - The first `List`
+ * @param {List} ys - The second `List`
+ * @returns {List} The difference of `xs` and `ys`
+ * @kind function
  * @example
  * const lst1 = list(1,2,3,4,5);
  * const lst2 = list(6,7,8,9,10);
@@ -145,7 +151,7 @@ export const deleteFirsts = (as, bs) => {
  * const eq = (x, y) => even(x * y);
  * deleteFirstsBy(eq, lst3, lst1);      // => [5:7:8:9:10:[]]
  */
-export const deleteFirstsBy = (eq, as, bs) => {
-  const deleteFirstsBy_ = (eq, as, bs) => foldl(flip(deleteLBy(eq)), as, bs);
-  return partial(deleteFirstsBy_, eq, as, bs);
+export const deleteFirstsBy = (eq, xs, ys) => {
+  const deleteFirstsBy_ = (eq, xs, ys) => foldl(flip(deleteLBy(eq)), xs, ys);
+  return partial(deleteFirstsBy_, eq, xs, ys);
 }
