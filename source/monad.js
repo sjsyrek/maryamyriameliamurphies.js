@@ -106,10 +106,8 @@ export const flatMapFlip = (f, m) => {
  * join(n);            // => Just 10
  * join(m);            // => *** Error: 'Just 10' is not a valid argument to function 'join'.
  */
-export const join = m => {
-  if (Monad(m)) { return Monad(flatMap(m, id)) ? flatMap(m, id) : error.typeError(m, join); }
-  return error.typeError(m, join);
-}
+export const join = m =>
+  Monad(m) && Monad(flatMap(m, id)) ? flatMap(m, id) : error.typeError(m, join);
 
 /**
  * Convert, or lift, a function into a monad.
@@ -172,10 +170,14 @@ class DoBlock {
  * const b2 = Do(j).flatMap(doubleJust).chain(j).flatMap(minusOne);
  * const b3 = Do(lst).flatMap(plusOne).flatMap(doubleList);
  * const b4 = Do(lst).flatMap(plusOne).chain(lst).flatMap(doubleList);
+ * const b5 = Do(j).inject(100);
+ * const b6 = Do(lst).inject(100);
  * print(b1);           // => Maybe number >>= Just 19
  * print(b2);           // => Maybe number >>= Just 9
  * print(b3);           // => [number] >>= [4:6:8:[]]
  * print(b4);           // => [number] >>= [2:4:6:2:4:6:2:4:6:[]]
+ * print(b5);           // => Maybe number >>= Just 100
+ * print(b6);           // => [number] >>= [100:[]]
  * Do(j)
  * .flatMap(put)        // => 10
  * .flatMap(doubleJust)

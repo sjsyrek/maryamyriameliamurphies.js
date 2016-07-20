@@ -30,9 +30,10 @@ export const error = {
     throwError(`Unexpected return value from function '${f1.name}' called from '${f2.name}'.`),
   tupleError: (p, f) =>
     throwError(`'${p}' is type '${p.constructor.name}' but function '${f.name}' expects a tuple.`),
-  typeError: (a, f) =>
-    throwError(`'${typeof a === 'function' ? `${typeof a} ${a.name}` : a}' \
-    is not a valid argument to function '${f.name}'.`),
+  typeError: (a, f) => {
+    const n = typeof a === `function` ? `${typeof a} ${a.name}` : a;
+    throwError(`${n} is not a valid argument to function '${f.name}'.`)
+  },
   typeMismatch: (a, b, f) =>
     throwError(`Arguments '${a}' and '${b}' to function '${f.name}' are not the same type.`)
 };
