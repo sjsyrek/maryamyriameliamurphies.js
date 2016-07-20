@@ -45,6 +45,7 @@ describe(`Tuple data type`, function() {
   const uncurried1 = uncurry(curried5);
   const curried6 = curry(uncurried1);
   const uncurried2 = uncurry(curried5)(p);
+  const uncurried3 = uncurry(curried5, p);
   const arr = [1,2];
   it(`should return [Object Tuple] when cast to a string`, function() {
     a.toString().should.equal(`[Object Tuple]`);
@@ -113,10 +114,15 @@ describe(`Tuple data type`, function() {
       uncurried1.should.be.a.Function;
     });
     it(`should return a value when all arguments are applied to the argument function`, function() {
-      uncurried1(p).should.equal(85);
+      uncurried2.should.equal(85);
+      uncurried3.should.equal(85);
     });
     it(`should be transitive with curry`, function() {
       uncurried2.should.equal(85);
+    });
+    it(`should throw an error if the second argument is not a tuple`, function() {
+      uncurry.bind(null, g, 0).should.throw();
+      uncurried1.bind(null, 0).should.throw();
     });
   });
   describe(`swap()`, function() {
@@ -141,14 +147,14 @@ describe(`Tuple data type`, function() {
     });
   });
   describe(`isUnit()`, function() {
-    it(`should return true if the argument is unit, the empty tuple`, function() {
-      isUnit(u).should.be.true;
-    });
     it(`should return false if the argument is a tuple, but is not unit`, function() {
       isUnit(a).should.be.false;
     });
+    it(`should return true if the argument is unit, the empty tuple`, function() {
+      isUnit(u).should.be.true;
+    });
     it(`should throw an error if the argument is not a tuple or unit`, function() {
-      isUnit.bind(null, 0);
+      isUnit.bind(null, 0).should.throw();
     });
   });
   describe(`fromArrayToTuple()`, function() {
@@ -162,7 +168,7 @@ describe(`Tuple data type`, function() {
       fromArrayToTuple([]).should.equal(unit);
     });
     it(`should throw an error if the argument is not an array`, function() {
-      fromArrayToTuple.bind(null, 0).should.throw;
+      fromArrayToTuple.bind(null, 0).should.throw();
     });
   });
   describe(`fromTupleToArray()`, function() {
