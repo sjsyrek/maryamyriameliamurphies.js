@@ -11,8 +11,13 @@
 /* global describe, it */
 
 import {
+  partial,
+  constant,
+  ap,
+  emptyList,
   list,
   fromStringToList,
+  take,
   map,
   reverse,
   intersperse,
@@ -25,9 +30,32 @@ describe(`List data type`, function() {
   const lst2 = list(1,2,3);
   const lst3 = list(4,5,6);
   const f = x => x * 3;
+  const g = constant;
+  const h = (x, y) => {
+    const h_ = (x, y) => x * y;
+    return partial(h_, x, y);
+  }
+  const lstf = list(f, f, f);
+  const lstg = list(g, g, g);
+  const lsth = list(h, h, h);
+  const ap1 = ap(lstg, lst2);
+  const ap2 = ap(lsth, lst2);
+  const abc = fromStringToList(`abc`)
+  const abcs = list(abc)
+  const takeList = list(take, take, take);
+  const apTake = ap(takeList, lst2);
   describe(`map()`, function() {
     it(`should map a function over a list and return the results in a new list`, function() {
       map(f, lst1).should.eql(list(3,6,9,12,15));
+      // map a list of binary functions over a list to apply one argument, map again to fully apply
+      ap(lstf, lst2).should.eql(list(3,6,9,3,6,9,3,6,9));
+      ap(ap1, lst2).should.eql(list(1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3,1,1,1,2,2,2,3,3,3));
+      ap(ap2, lst2).should.eql(list(1,2,3,2,4,6,3,6,9,1,2,3,2,4,6,3,6,9,1,2,3,2,4,6,3,6,9));
+      ap(apTake, abcs).should.eql(list(
+        list(`a`),list(`a`,`b`),list(`a`,`b`,`c`),
+        list(`a`),list(`a`,`b`),list(`a`,`b`,`c`),
+        list(`a`),list(`a`,`b`),list(`a`,`b`,`c`)
+      ));
     });
     it(`should throw an error if the second argument is not a list`, function() {
       map.bind(null, f, 0).should.throw();
@@ -43,6 +71,9 @@ describe(`List data type`, function() {
       intersperse(0, lst1).should.eql(list(1,0,2,0,3,0,4,0,5,0));
       const str = fromStringToList(`abc`);
       intersperse(`|`, str).should.eql(list(`a`,`|`,`b`,`|`,`c`));
+    });
+    it(`should return the empty list if the second argument is the empty list`, function() {
+      intersperse(0, list()).should.equal(emptyList);
     });
     it(`should throw an error if the second argument is not a list`, function() {
       intersperse.bind(null, `|`, 0).should.throw();

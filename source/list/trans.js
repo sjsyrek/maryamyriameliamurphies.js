@@ -27,7 +27,13 @@ import {typeCheck} from '../type';
 import {error} from '../error';
 
 /**
- * Map a function over a `List` and put the results into a new list.
+ * Map a function over a `List` and put the results into a new list. Note that a list of functions
+ * can also be mapped over a list of values using the Applicative type class. If the functions take
+ * multiple arguments, then the elements of the list are each applied in turn to these functions,
+ * resulting in a new list of partially applied functions. If this list of functions is applied
+ * again to a list of values, these new values will be applied. This process may be repeated until
+ * the functions are all fully applied, and a list of raw values is returned. Note that only curried
+ * functions will work in this way.
  * <br>`Haskell> map :: (a -> b) -> [a] -> [b]`
  * @param {Function} f - The function to map
  * @param {List} as - The `List` to map over
@@ -36,7 +42,20 @@ import {error} from '../error';
  * @example
  * const lst = list(1,2,3,4,5);
  * const f = x => x * 3;
- * map(f, lst));                // => [3:6:9:12:15:[]]
+ * map(f, lst));                 // => [3:6:9:12:15:[]]
+ * const lst2 = list(1,2,3);
+ * const g = (x, y) => {
+ *   const g_ = (x, y) => x * y;
+ *   return partial(g_, x, y);
+ * }
+ * const lstg = list(g, g, g);
+ * const apList = (lstg, lst2);
+ * ap(apList, lst2);             // => [1:2:3:2:4:6:3:6:9:1:2:3:2:4:6:3:6:9:1:2:3:2:4:6:3:6:9:[]]
+ * const abc = fromStringToList(`abc`);
+ * const abcs = list(abc);
+ * const takeList = list(take, take, take);
+ * const apTake = ap(takeList, lst2);
+ * ap(apTake, abcs);             // => [[a]:[ab]:[abc]:[a]:[ab]:[abc]:[a]:[ab]:[abc]:[]]
  */
 export const map = (f, as) => {
   const map_ = (f, as) => {
@@ -80,10 +99,10 @@ export const reverse = xs => {
 export const intersperse = (sep, as) => {
   const intersperse_ = (sep, as) => {
     if (isList(as) === false) { return error.listError(as, intersperse); }
+    if (isEmpty(as)) { return emptyList; }
     if (typeCheck(sep, head(as)) === false) {
       return error.typeMismatch(sep, head(as), intersperse);
     }
-    if (isEmpty(as)) { return emptyList; }
     const x = head(as);
     const xs = tail(as);
     return cons(x)(prependToAll(sep, xs));
