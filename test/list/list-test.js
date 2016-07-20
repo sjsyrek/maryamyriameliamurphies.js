@@ -12,6 +12,7 @@
 
 import {
   even,
+  Nothing,
   just,
   tuple,
   emptyList,
@@ -34,7 +35,8 @@ import {
   fromArrayToList,
   fromListToArray,
   fromListToString,
-  fromStringToList
+  fromStringToList,
+  take
 } from '../../source';
 
 describe(`List data type`, function() {
@@ -79,6 +81,17 @@ describe(`List data type`, function() {
     it(`should build a list from a range of values and using a custom step function`, function() {
       listRangeLazyBy(1, 25, f).should.eql(list(1,6,11,16,21));
     });
+    it(`should return a singleton list if the start and end values are the same`, function() {
+      listRangeLazyBy(1, 1, f).should.eql(list(1));
+    });
+    it(`should return the empty list if the start value is greater than the end value`, function() {
+      listRangeLazyBy(1, 0, f).should.equal(emptyList);
+    });
+    it(`should evaluate the elements of a list only as needed until the end of the list is reached`, function() {
+      const lazyList = listRangeLazyBy(1, 20, f);
+      length(lazyList).should.equal(5);
+      take(5, lazyList).should.eql(list(1,6,11,16,21));
+    });
   });
   describe(`listFilter()`, function() {
     it(`should build a list from a range of enumerated values, filtered through a boolean function`, function() {
@@ -100,6 +113,12 @@ describe(`List data type`, function() {
   describe(`cons()`, function() {
     it(`should create a new list from a head and tail`, function() {
       cons(3)(lst2).should.eql(list(3,4,5,6));
+    });
+    it(`should throw an error if the second argument is not a list`, function() {
+      cons.bind(null, 3, 0).should.throw();
+    });
+    it(`should throw an error if the first argument is not the same type as the head of the list`, function() {
+      cons.bind(null, 3, str).should.throw();
     });
   });
   describe(`head()`, function() {
@@ -150,6 +169,9 @@ describe(`List data type`, function() {
     it(`should decompose a list into its head and tail`, function() {
       uncons(lst1).should.eql(just(tuple(1,list(2,3))));
     });
+    it(`should return Nothing if the list is empty`, function() {
+      uncons(emptyList).should.equal(Nothing);
+    });
   });
   describe(`empty()`, function() {
     it(`should return true if a foldable structure is empty`, function() {
@@ -192,7 +214,7 @@ describe(`List data type`, function() {
       fromArrayToList(arr).should.eql(lst1);
     });
     it(`should throw an error if the argument is not an array`, function() {
-      isEmpty.bind(null, 0).should.throw();
+      fromArrayToList.bind(null, 0).should.throw();
     });
   });
   describe(`fromListToArray()`, function() {
@@ -216,7 +238,7 @@ describe(`List data type`, function() {
       fromStringToList(`abc`).should.eql(str);
     });
     it(`should throw an error if the argument is not a string`, function() {
-      fromListToArray.bind(null, 0).should.throw();
+      fromStringToList.bind(null, 0).should.throw();
     });
   });
 });

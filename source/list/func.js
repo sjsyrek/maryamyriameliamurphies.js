@@ -196,8 +196,8 @@ export const listAppend = (xs, ys) => {
  */
 export const cons = (x, xs) => {
   const cons_ = (x, xs) => {
-    if (xs === undefined || isEmpty(xs)) { return new List(x, emptyList); }
-    if (xs instanceof List === false) { return error.listError(xs, cons); }
+    if (isList(xs) === false) { return error.listError(xs, cons); }
+    if (isEmpty(xs)) { return new List(x, emptyList); }
     if (typeCheck(x, head(xs))) { return new List(x, xs); }
     return error.typeError(head(xs), cons);
   }
