@@ -35,6 +35,8 @@ describe(`Ord type class`, function() {
   const mb2 = just(2);
   const tup1 = tuple(1,2);
   const tup2 = tuple(2,1);
+  const tup3 = tuple(2,2,1);
+  const tup4 = tuple(2,2,2);
   const lst1 = list(1,2,3);
   const lst2 = list(3,2,1);
   describe(`compare()`, function() {
@@ -47,6 +49,8 @@ describe(`Ord type class`, function() {
       compare(mb1, just(1)).should.equal(EQ);
       compare(tup1, tup2).should.equal(LT);
       compare(tup2, tup1).should.equal(GT);
+      compare(tup3, tup4).should.equal(LT);
+      compare(tup4, tup3).should.equal(GT);
       compare(tup1, tuple(1,2)).should.equal(EQ);
       compare(lst1, lst2).should.equal(LT);
       compare(lst2, lst1).should.equal(GT);
