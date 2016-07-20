@@ -45,7 +45,7 @@ describe(`Tests for functions for searching lists`, function() {
       filter.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the first argument is not a function that returns a boolean value`, function() {
-      filter.bind(null, g, 0).should.throw();
+      filter.bind(null, g, lst).should.throw();
     });
   });
 });
