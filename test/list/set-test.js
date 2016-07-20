@@ -58,7 +58,7 @@ describe(`Tests for "set" operations on lists`, function() {
       deleteLBy(eq, 2, lst1).should.eql(list(2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10));
     });
     it(`should throw an error if the third argument is not a list`, function() {
-      deleteL.bind(null, eq, 2, 0).should.throw();
+      deleteLBy.bind(null, eq, 2, 0).should.throw();
     });
   });
   describe(`deleteFirsts()`, function() {
