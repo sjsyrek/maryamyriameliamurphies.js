@@ -89,11 +89,11 @@ describe(`List data type`, function() {
       listAppend(lst1, lst2).should.eql(list(1,2,3,4,5,6));
     });
     it(`should throw an error if either argument is not a list`, function() {
-      listAppend.bind(null, 0, lst2).should.throw;
-      listAppend.bind(null, lst1, 0).should.throw;
+      listAppend.bind(null, 0, lst2).should.throw();
+      listAppend.bind(null, lst1, 0).should.throw();
     });
     it(`should throw an error if the lists are not the same type`, function() {
-      listAppend.bind(null, lst1, str).should.throw;
+      listAppend.bind(null, lst1, str).should.throw();
     });
   });
   describe(`cons()`, function() {
@@ -106,10 +106,10 @@ describe(`List data type`, function() {
       head(lst1).should.equal(1);
     });
     it(`should throw an error if the list is empty`, function() {
-      head.bind(null, lst3).should.throw;
+      head.bind(null, lst3).should.throw();
     });
     it(`should throw an error if the argument is not a list`, function() {
-      head.bind(null, 0).should.throw;
+      head.bind(null, 0).should.throw();
     });
   });
   describe(`last()`, function() {
@@ -117,10 +117,10 @@ describe(`List data type`, function() {
       last(lst1).should.equal(3);
     });
     it(`should throw an error if the list is empty`, function() {
-      last.bind(null, lst3).should.throw;
+      last.bind(null, lst3).should.throw();
     });
     it(`should throw an error if the argument is not a list`, function() {
-      last.bind(null, 0).should.throw;
+      last.bind(null, 0).should.throw();
     });
   });
   describe(`tail()`, function() {
@@ -128,10 +128,10 @@ describe(`List data type`, function() {
       tail(lst1).should.eql(list(2,3));
     });
     it(`should throw an error if the list is empty`, function() {
-      tail.bind(null, lst3).should.throw;
+      tail.bind(null, lst3).should.throw();
     });
     it(`should throw an error if the argument is not a list`, function() {
-      tail.bind(null, 0).should.throw;
+      tail.bind(null, 0).should.throw();
     });
   });
   describe(`init()`, function() {
@@ -139,10 +139,10 @@ describe(`List data type`, function() {
       init(lst1).should.eql(list(1,2));
     });
     it(`should throw an error if the list is empty`, function() {
-      init.bind(null, lst3).should.throw;
+      init.bind(null, lst3).should.throw();
     });
     it(`should throw an error if the argument is not a list`, function() {
-      init.bind(null, 0).should.throw;
+      init.bind(null, 0).should.throw();
     });
   });
   describe(`uncons()`, function() {
@@ -163,7 +163,7 @@ describe(`List data type`, function() {
       length(lst1).should.equal(3);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      length.bind(null, 0).should.throw;
+      length.bind(null, 0).should.throw();
     });
   });
   describe(`isList()`, function() {
@@ -183,7 +183,7 @@ describe(`List data type`, function() {
       isEmpty(lst1).should.be.false;
     });
     it(`should throw an error if the argument is not a list`, function() {
-      isEmpty.bind(null, 0).should.throw;
+      isEmpty.bind(null, 0).should.throw();
     });
   });
   describe(`fromArrayToList()`, function() {
@@ -191,7 +191,7 @@ describe(`List data type`, function() {
       fromArrayToList(arr).should.eql(lst1);
     });
     it(`should throw an error if the argument is not an array`, function() {
-      isEmpty.bind(null, 0).should.throw;
+      isEmpty.bind(null, 0).should.throw();
     });
   });
   describe(`fromListToArray()`, function() {
@@ -199,7 +199,7 @@ describe(`List data type`, function() {
       fromListToArray(lst1).should.eql(arr);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      fromListToArray.bind(null, 0).should.throw;
+      fromListToArray.bind(null, 0).should.throw();
     });
   });
   describe(`fromListToString()`, function() {
@@ -207,7 +207,7 @@ describe(`List data type`, function() {
       fromListToString(str).should.equal(`abc`);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      fromListToString.bind(null, 0).should.throw;
+      fromListToString.bind(null, 0).should.throw();
     });
   });
   describe(`fromStringToList()`, function() {
@@ -215,7 +215,7 @@ describe(`List data type`, function() {
       fromStringToList(`abc`).should.eql(str);
     });
     it(`should throw an error if the argument is not a string`, function() {
-      fromListToArray.bind(null, 0).should.throw;
+      fromListToArray.bind(null, 0).should.throw();
     });
   });
 });

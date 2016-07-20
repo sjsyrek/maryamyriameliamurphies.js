@@ -24,7 +24,7 @@ describe(`Tests for functions for building lists`, function() {
       scanl(f, 0, lst).should.eql(list(0,-1,-3,-6));
     });
     it(`should throw an error if the third argument is not a list`, function() {
-      scanl.bind(null, f, 0, 0).should.throw;
+      scanl.bind(null, f, 0, 0).should.throw();
     });
   });
   describe(`scanr()`, function() {
@@ -32,7 +32,7 @@ describe(`Tests for functions for building lists`, function() {
       scanr(f, 0, lst).should.eql(list(2,-1,3,0));
     });
     it(`should throw an error if the third argument is not a list`, function() {
-      scanr.bind(null, f, 0, 0).should.throw;
+      scanr.bind(null, f, 0, 0).should.throw();
     });
   });
 });

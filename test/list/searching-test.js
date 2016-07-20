@@ -31,7 +31,7 @@ describe(`Tests for functions for searching lists`, function() {
       lookup(5, assocs).should.equal(Nothing);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      lookup.bind(null, 3, 0).should.throw;
+      lookup.bind(null, 3, 0).should.throw();
     });
   });
   describe(`filter()`, function() {
@@ -42,10 +42,10 @@ describe(`Tests for functions for searching lists`, function() {
       filter(f, lst).should.eql(list(27,29,31,33,35,37,39,41,43,45,47,49));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      filter.bind(null, f, 0).should.throw;
+      filter.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the first argument is not a function that returns a boolean value`, function() {
-      filter.bind(null, g, 0).should.throw;
+      filter.bind(null, g, 0).should.throw();
     });
   });
 });

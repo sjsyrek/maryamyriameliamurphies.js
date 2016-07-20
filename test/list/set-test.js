@@ -34,7 +34,7 @@ describe(`Tests for "set" operations on lists`, function() {
       nub(lst1).should.eql(list(1,2,3,4,5,6,7,8,9,10));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      nub.bind(null, 0).should.throw;
+      nub.bind(null, 0).should.throw();
     });
   });
   describe(`nubBy()`, function() {
@@ -42,7 +42,7 @@ describe(`Tests for "set" operations on lists`, function() {
       nubBy(eq, lst1).should.eql(list(1,3,5,7,7,9));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      nubBy.bind(null, eq, 0).should.throw;
+      nubBy.bind(null, eq, 0).should.throw();
     });
   });
   describe(`deleteL()`, function() {
@@ -50,7 +50,7 @@ describe(`Tests for "set" operations on lists`, function() {
       deleteL(2, lst1).should.eql(list(1,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      deleteL.bind(null, 2, 0).should.throw;
+      deleteL.bind(null, 2, 0).should.throw();
     });
   });
   describe(`deleteLBy()`, function() {
@@ -58,7 +58,7 @@ describe(`Tests for "set" operations on lists`, function() {
       deleteLBy(eq, 2, lst1).should.eql(list(2,2,3,2,4,2,2,5,2,6,7,7,8,9,10,10));
     });
     it(`should throw an error if the third argument is not a list`, function() {
-      deleteL.bind(null, eq, 2, 0).should.throw;
+      deleteL.bind(null, eq, 2, 0).should.throw();
     });
   });
   describe(`deleteFirsts()`, function() {
@@ -67,8 +67,8 @@ describe(`Tests for "set" operations on lists`, function() {
       deleteFirsts(listAppend(lst2, lst3), lst2).should.eql(lst3);
     });
     it(`should throw an error if either argument is not a list`, function() {
-      deleteFirsts.bind(null, lst1, 0).should.throw;
-      deleteFirsts.bind(null, 0, lst2).should.throw;
+      deleteFirsts.bind(null, lst1, 0).should.throw();
+      deleteFirsts.bind(null, 0, lst2).should.throw();
     });
   });
   describe(`deleteFirstsBy()`, function() {

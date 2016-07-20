@@ -40,7 +40,7 @@ describe(`Tests for sublist functions`, function() {
       take(2, lst1).should.eql(list(1,2));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      take.bind(null, 2, 0).should.throw;
+      take.bind(null, 2, 0).should.throw();
     });
   });
   describe(`drop()`, function() {
@@ -48,7 +48,7 @@ describe(`Tests for sublist functions`, function() {
       drop(2, lst1).should.eql(list(3));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      drop.bind(null, 2, 0).should.throw;
+      drop.bind(null, 2, 0).should.throw();
     });
   });
   describe(`splitAt()`, function() {
@@ -56,7 +56,7 @@ describe(`Tests for sublist functions`, function() {
       splitAt(2, lst1).should.eql(tuple(list(1,2),list(3)));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      splitAt.bind(null, 2, 0).should.throw;
+      splitAt.bind(null, 2, 0).should.throw();
     });
   });
   describe(`takeWhile()`, function() {
@@ -64,10 +64,10 @@ describe(`Tests for sublist functions`, function() {
       takeWhile(f, lst2).should.eql(list(1,2));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      takeWhile.bind(null, f, 0).should.throw;
+      takeWhile.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the predicate function does not return a boolean value`, function() {
-      takeWhile.bind(null, g, 0).should.throw;
+      takeWhile.bind(null, g, 0).should.throw();
     });
   });
   describe(`dropWhile()`, function() {
@@ -75,10 +75,10 @@ describe(`Tests for sublist functions`, function() {
       dropWhile(f, lst3).should.eql(list(3,4,5,1,2,3));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      dropWhile.bind(null, f, 0).should.throw;
+      dropWhile.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the predicate function does not return a boolean value`, function() {
-      dropWhile.bind(null, g, 0).should.throw;
+      dropWhile.bind(null, g, 0).should.throw();
     });
   });
   describe(`span()`, function() {
@@ -86,7 +86,7 @@ describe(`Tests for sublist functions`, function() {
       span(f, lst2).should.eql(tuple(list(1,2),list(3,4,1,2,3,4)));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      span.bind(null, f, 0).should.throw;
+      span.bind(null, f, 0).should.throw();
     });
   });
   describe(`spanNot()`, function() {
@@ -105,8 +105,8 @@ describe(`Tests for sublist functions`, function() {
       stripPrefix(prefix, fromStringToList(`barfoobaz`)).should.equal(Nothing);
     });
     it(`should throw an error if either argument is not a list`, function() {
-      stripPrefix.bind(null, prefix, 0).should.throw;
-      stripPrefix.bind(null, 0, fromStringToList(`foobar`)).should.throw;
+      stripPrefix.bind(null, prefix, 0).should.throw();
+      stripPrefix.bind(null, 0, fromStringToList(`foobar`)).should.throw();
     });
   });
   describe(`group()`, function() {
@@ -120,7 +120,7 @@ describe(`Tests for sublist functions`, function() {
       groupBy(isEq, list(1,2,3,3,2,1,2,1,3)).should.eql(list(list(1,1,1),list(2,2,2),list(3,3,3)));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      groupBy.bind(null, f, 0).should.throw;
+      groupBy.bind(null, f, 0).should.throw();
     });
   });
 });

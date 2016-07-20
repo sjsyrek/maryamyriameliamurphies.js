@@ -30,7 +30,7 @@ describe(`List data type`, function() {
       map(f, lst1).should.eql(list(3,6,9,12,15));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      map.bind(null, f, 0).should.throw;
+      map.bind(null, f, 0).should.throw();
     });
   });
   describe(`reverse()`, function() {
@@ -45,10 +45,10 @@ describe(`List data type`, function() {
       intersperse(`|`, str).should.eql(list(`a`,`|`,`b`,`|`,`c`));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      intersperse.bind(null, `|`, 0).should.throw;
+      intersperse.bind(null, `|`, 0).should.throw();
     });
     it(`should throw an error if the separator is not the same type as the list`, function() {
-      intersperse.bind(null, `|`, lst1).should.throw;
+      intersperse.bind(null, `|`, lst1).should.throw();
     });
   });
   describe(`intercalate()`, function() {
@@ -69,10 +69,10 @@ describe(`List data type`, function() {
       transpose(xss2).should.eql(list(list(10,20,30), list(11,31), list(32)));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      transpose.bind(null, 0).should.throw;
+      transpose.bind(null, 0).should.throw();
     });
     it(`should throw an error if the argument elements are not also lists`, function() {
-      transpose.bind(null, lst1).should.throw;
+      transpose.bind(null, lst1).should.throw();
     });
   });
 });

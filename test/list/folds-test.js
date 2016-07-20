@@ -27,10 +27,10 @@ describe(`Tests for special folds for lists`, function() {
       concat(xss).should.eql(list(1,2,3,4,5,6,7,8,9));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      concat.bind(null, 0).should.throw;
+      concat.bind(null, 0).should.throw();
     });
     it(`should throw an error if the argument elements are not also lists`, function() {
-      concat.bind(null, lst1).should.throw;
+      concat.bind(null, lst1).should.throw();
     });
   });
   describe(`concatMap()`, function() {

@@ -35,13 +35,13 @@ describe(`Tests for functions for indexing lists`, function() {
       index(lst1, 3).should.equal(4);
     });
     it(`should throw an error if the first argument is not a list`, function() {
-      index.bind(null, 0, 3).should.throw;
+      index.bind(null, 0, 3).should.throw();
     });
     it(`should throw an error if the index value specified is less than 0`, function() {
-      index.bind(null, lst1, -1).should.throw;
+      index.bind(null, lst1, -1).should.throw();
     });
     it(`should throw an error if the list is empty`, function() {
-      index.bind(null, list(), 3).should.throw;
+      index.bind(null, list(), 3).should.throw();
     });
   });
   describe(`elemIndex()`, function() {
@@ -52,7 +52,7 @@ describe(`Tests for functions for indexing lists`, function() {
       elemIndex(10, lst2).should.equal(Nothing);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      elemIndex.bind(null, 8, 0).should.throw;
+      elemIndex.bind(null, 8, 0).should.throw();
     });
   });
   describe(`elemIndices()`, function() {
@@ -61,7 +61,7 @@ describe(`Tests for functions for indexing lists`, function() {
       elemIndices(10, lst2).should.eql(list());
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      elemIndices.bind(null, 2, 0).should.throw;
+      elemIndices.bind(null, 2, 0).should.throw();
     });
   });
   describe(`find()`, function() {
@@ -72,7 +72,7 @@ describe(`Tests for functions for indexing lists`, function() {
       find(pred2, lst3).should.equal(Nothing);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      find.bind(null, pred1, 0).should.throw;
+      find.bind(null, pred1, 0).should.throw();
     });
   });
   describe(`findIndex()`, function() {
@@ -83,7 +83,7 @@ describe(`Tests for functions for indexing lists`, function() {
       findIndex(pred2, lst3).should.equal(Nothing);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      findIndex.bind(null, pred1, 0).should.throw;
+      findIndex.bind(null, pred1, 0).should.throw();
     });
   });
   describe(`findIndices()`, function() {
@@ -91,7 +91,7 @@ describe(`Tests for functions for indexing lists`, function() {
       findIndices(pred3, lst3).should.eql(list(1,3,5,7,9));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      findIndices.bind(null, pred3, 0).should.throw;
+      findIndices.bind(null, pred3, 0).should.throw();
     });
   });
 });

@@ -65,10 +65,10 @@ describe(`Tests for infinite list functions`, function() {
       index(c, 100).should.equal(2);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      cycle.bind(null, 0).should.throw;
+      cycle.bind(null, 0).should.throw();
     });
     it(`should throw an error if the argument is an empty list`, function() {
-      cycle.bind(null, list()).should.throw;
+      cycle.bind(null, list()).should.throw();
     });
   });
 });

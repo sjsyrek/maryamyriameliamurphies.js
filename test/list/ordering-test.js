@@ -44,7 +44,7 @@ describe(`Tests for functions for ordering lists`, function() {
       sort(lst1).should.eql(list(1,2,3,4,5,6,7,8,9,10,11,13,14,23,24,25,26));
     });
     it(`should throw an error if the argument is not a list`, function() {
-      mergeSort.bind(null, 0).should.throw;
+      mergeSort.bind(null, 0).should.throw();
     });
   });
   describe(`sortBy()`, function() {
@@ -53,7 +53,7 @@ describe(`Tests for functions for ordering lists`, function() {
       sortBy(notCompare, lst3).should.eql(lst9);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      sortBy.bind(null, notCompare, 0).should.throw;
+      sortBy.bind(null, notCompare, 0).should.throw();
     });
   });
   describe(`mergeSort()`, function() {
@@ -62,7 +62,7 @@ describe(`Tests for functions for ordering lists`, function() {
       mergeSort(lst5).should.eql(lst8);
     });
     it(`should throw an error if the argument is not a list`, function() {
-      mergeSort.bind(null, 0).should.throw;
+      mergeSort.bind(null, 0).should.throw();
     });
   });
   describe(`mergeSortBy()`, function() {
@@ -71,7 +71,7 @@ describe(`Tests for functions for ordering lists`, function() {
       mergeSortBy(notCompare, lst7).should.eql(lst9);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      mergeSortBy.bind(null, notCompare, 0).should.throw;
+      mergeSortBy.bind(null, notCompare, 0).should.throw();
     });
   });
   describe(`insert()`, function() {
@@ -79,7 +79,7 @@ describe(`Tests for functions for ordering lists`, function() {
       insert(7, lst10).should.eql(lst8);
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      insert.bind(null, 7, 0).should.throw;
+      insert.bind(null, 7, 0).should.throw();
     });
   });
   describe(`insertBy()`, function() {
@@ -87,7 +87,7 @@ describe(`Tests for functions for ordering lists`, function() {
       insertBy(notCompare, 7, lst10).should.eql(list(7,1,2,3,4,5,6,8,9,10));
     });
     it(`should throw an error if the third argument is not a list`, function() {
-      insertBy.bind(null, notCompare, 7, 0).should.throw;
+      insertBy.bind(null, notCompare, 7, 0).should.throw();
     });
   });
 });
