@@ -38,12 +38,13 @@ describe(`Tuple data type`, function() {
   const x = 10;
   const y = 2;
   const curried1 = curry(f);
-  const curried2 = curry(f, x, y)
-  const curried3 = curry(f)(x)(y);
-  const curried4 = curry(g);
-  const uncurried1 = uncurry(curried4);
-  const curried5 = curry(uncurried1);
-  const uncurried2 = uncurry(curried4)(p);
+  const curried2 = curry(f, x);
+  const curried3 = curry(f, x, y)
+  const curried4 = curry(f)(x)(y);
+  const curried5 = curry(g);
+  const uncurried1 = uncurry(curried5);
+  const curried6 = curry(uncurried1);
+  const uncurried2 = uncurry(curried5)(p);
   const arr = [1,2];
   it(`should return [Object Tuple] when cast to a string`, function() {
     a.toString().should.equal(`[Object Tuple]`);
@@ -94,17 +95,17 @@ describe(`Tuple data type`, function() {
   describe(`curry()`, function() {
     it(`should return a function when no arguments are applied to the argument function`, function() {
       curried1.should.be.a.Function;
-      curried1(x).should.be.a.Function;
+      curried2.should.be.a.Function;
     });
     it(`should return a function when arguments are partially applied to the argument function`, function() {
       curried1.should.be.a.Function;
     });
     it(`should return a value when all arguments are applied to the argument function`, function() {
-      curried2.should.equal(8);
       curried3.should.equal(8);
+      curried4.should.equal(8);
     });
     it(`should be transitive with uncurry`, function() {
-      (curried4(100)(15) === uncurried1(p) === curried5(100)(15)).should.be.true;
+      (curried5(100)(15) === uncurried1(p) === curried6(100)(15)).should.be.true;
     });
   });
   describe(`uncurry()`, function() {
