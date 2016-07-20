@@ -15,6 +15,7 @@ import {
   Nothing,
   just,
   tuple,
+  emptyList,
   list,
   fromStringToList,
   take,
@@ -39,6 +40,9 @@ describe(`Tests for sublist functions`, function() {
     it(`should return the prefix of a list of a given length`, function() {
       take(2, lst1).should.eql(list(1,2));
     });
+    it(`should return the empty list if the second argument is the empty list`, function() {
+      take(2, list()).should.equal(emptyList);
+    });
     it(`should throw an error if the second argument is not a list`, function() {
       take.bind(null, 2, 0).should.throw();
     });
@@ -46,6 +50,9 @@ describe(`Tests for sublist functions`, function() {
   describe(`drop()`, function() {
     it(`should return the suffix of a list after discarding a specified number of values`, function() {
       drop(2, lst1).should.eql(list(3));
+    });
+    it(`should return the empty list if the second argument is the empty list`, function() {
+      drop(2, list()).should.equal(emptyList);
     });
     it(`should throw an error if the second argument is not a list`, function() {
       drop.bind(null, 2, 0).should.throw();
@@ -67,7 +74,7 @@ describe(`Tests for sublist functions`, function() {
       takeWhile.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the predicate function does not return a boolean value`, function() {
-      takeWhile.bind(null, g, 0).should.throw();
+      takeWhile.bind(null, g, lst2).should.throw();
     });
   });
   describe(`dropWhile()`, function() {
@@ -78,7 +85,7 @@ describe(`Tests for sublist functions`, function() {
       dropWhile.bind(null, f, 0).should.throw();
     });
     it(`should throw an error if the predicate function does not return a boolean value`, function() {
-      dropWhile.bind(null, g, 0).should.throw();
+      dropWhile.bind(null, g, lst3).should.throw();
     });
   });
   describe(`span()`, function() {
