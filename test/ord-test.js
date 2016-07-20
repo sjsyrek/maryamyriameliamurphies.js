@@ -21,6 +21,7 @@ import {
   greaterThanOrEqual,
   max,
   min,
+  Nothing,
   just,
   tuple,
   list
@@ -39,13 +40,23 @@ describe(`Ord type class`, function() {
   const tup4 = tuple(2,2,2);
   const lst1 = list(1,2,3);
   const lst2 = list(3,2,1);
+  LT.ord().should.equal(`LT`);
+  GT.ord().should.equal(`GT`);
+  EQ.ord().should.equal(`EQ`);
+  LT.valueOf().should.equal(`LT`);
+  GT.valueOf().should.equal(`GT`);
+  EQ.valueOf().should.equal(`EQ`);
   describe(`compare()`, function() {
     it(`should return the Ordering of two values if they are the same type`, function() {
       compare(a, b).should.equal(LT);
       compare(b, a).should.equal(GT);
       compare(b, c).should.equal(EQ);
+      compare(Infinity, b).should.equal(GT);
+      compare(a, Infinity).should.equal(LT);
       compare(mb1, mb2).should.equal(LT);
       compare(mb2, mb1).should.equal(GT);
+      compare(Nothing, mb1).should.equal(LT);
+      compare(mb1, Nothing).should.equal(GT);
       compare(mb1, just(1)).should.equal(EQ);
       compare(tup1, tup2).should.equal(LT);
       compare(tup2, tup1).should.equal(GT);
@@ -129,6 +140,7 @@ describe(`Ord type class`, function() {
   describe(`max()`, function() {
     it(`should return the greater of two values`, function() {
       max(a, b).should.equal(2);
+      max(b, a).should.equal(2);
       max(mb1, mb2).should.equal(mb2);
       max(tup1, tup2).should.equal(tup2);
       max(lst1, lst2).should.equal(lst2);
@@ -137,6 +149,7 @@ describe(`Ord type class`, function() {
   describe(`min()`, function() {
     it(`should return the lesser of two values`, function() {
       min(a, b).should.equal(1);
+      min(b, a).should.equal(1);
       min(mb1, mb2).should.equal(mb1);
       min(tup1, tup2).should.equal(tup1);
       min(lst1, lst2).should.equal(lst1);

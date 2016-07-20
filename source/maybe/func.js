@@ -207,9 +207,8 @@ export const mapMaybe = (f, as) => {
     const xs = tail(as);
     const r = f(x);
     const rs = mapMaybe.bind(this, f, xs);
-    if (isNothing(r)) { return rs(); }
-    if (isJust(r)) { return cons(fromJust(r))(rs()); }
-    return error.returnError(f, mapMaybe);
+    if (isMaybe(r) === false) { return error.returnError(f, mapMaybe); }
+    return isNothing(r) ? rs() : cons(fromJust(r))(rs());
   }
   return partial(mapMaybe_, f, as);
 }

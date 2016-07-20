@@ -164,7 +164,7 @@ describe(`Maybe data type`, function() {
       mapMaybe(g, lst3).should.eql(list(4,8,12,16,20,24,28,32,36,40,44,48));
     });
     it(`should throw an error if the second argument is not a list`, function() {
-      mapMaybe.bind(null, g, 0).should.throw
+      mapMaybe.bind(null, g, 0).should.throw();
     });
     it(`should throw an error if the provided function does not return a Maybe value`, function() {
       mapMaybe.bind(null, f, lst3).should.throw();

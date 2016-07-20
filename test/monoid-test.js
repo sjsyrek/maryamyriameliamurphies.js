@@ -11,6 +11,9 @@
 /* global describe, it */
 
 import {
+  LT,
+  GT,
+  EQ,
   mempty,
   mappend,
   mconcat,
@@ -42,6 +45,9 @@ describe(`Monoid type class`, function() {
       mempty(mb1).should.equal(Nothing);
       mempty(tup1).should.equal(unit);
       mempty(lst1).should.equal(emptyList);
+      mempty(LT).should.equal(EQ);
+      mempty(GT).should.equal(EQ);
+      mempty(EQ).should.equal(EQ);
     });
     it(`should throw an error if its argument is not a monoid`, function() {
       mempty.bind(null, 0).should.throw();
@@ -60,6 +66,11 @@ describe(`Monoid type class`, function() {
       mappend(tup1, tup2).should.eql(tuple(lst4, list(4,5,6,1,2,3)));
       mappend(tup1, mappend(tup2, tup3)).should.eql(tup4);
       mappend(mappend(tup1, tup2), tup3).should.eql(tup4);
+      mappend(LT, EQ).should.equal(LT);
+      mappend(GT, EQ).should.equal(GT)
+      mappend(EQ, EQ).should.equal(EQ);
+      mappend(EQ, LT).should.equal(LT);
+      mappend(EQ, GT).should.equal(GT);
     });
     it(`should throw an error if either of its arguments is not a monoid`, function() {
       mappend.bind(null, 0, 1).should.throw();

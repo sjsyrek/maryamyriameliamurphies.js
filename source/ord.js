@@ -47,9 +47,8 @@ class Ordering {
   constructor(ord) { this.ord = () => ord; }
    static mempty() { return EQ; }
    static mappend(a, b) {
-     if (a === LT) { return LT; }
      if (a === EQ) { return b; }
-     if (a === GT) { return GT; }
+     return a === LT ? LT : GT;
    }
    valueOf() { return this.ord(); }
 }
@@ -101,8 +100,7 @@ export const compare = (a, b) => {
     if (typeCheck(a, b)) {
       if (Ord(a)) { return dataType(a).compare(a, b); }
       if (isEq(a, b)) { return EQ; }
-      if (a < b) { return LT; }
-      if (a > b) { return GT; }
+      return a < b ? LT : GT;
     }
     return error.typeMismatch(a, b, compare);
   }
