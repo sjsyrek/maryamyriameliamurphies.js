@@ -74,7 +74,9 @@ describe(`List data type`, function() {
   });
   describe(`listRangeLazy()`, function() {
     it(`should build a list from a range of values`, function() {
-      listRangeLazy(1,5).should.eql(list(1,2,3,4,5));
+      const lazyList = listRangeLazy(1,3);
+      length(lazyList).should.equal(3);
+      take(3, lazyList).should.eql(lst1);
     });
   });
   describe(`listRangeLazyBy()`, function() {
@@ -88,9 +90,9 @@ describe(`List data type`, function() {
       listRangeLazyBy(1, 0, f).should.equal(emptyList);
     });
     it(`should evaluate the elements of a list only as needed until the end of the list is reached`, function() {
-      const lazyList = listRangeLazyBy(1, 20, f);
-      length(lazyList).should.equal(5);
-      take(5, lazyList).should.eql(list(1,6,11,16,21));
+      const lazyByList = listRangeLazyBy(1, 20, f);
+      length(lazyByList).should.equal(5);
+      take(5, lazyByList).should.eql(list(1,6,11,16,21));
     });
   });
   describe(`listFilter()`, function() {
