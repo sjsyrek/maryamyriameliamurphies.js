@@ -31,11 +31,8 @@ import {
 
 import {
   Type,
-  type,
-  dataType
+  type
 } from '../type';
-
-import {error} from '../error';
 
 /**
  * A data constructor for a `Tuple`. Unlike Haskell, which provides a separate constructor for every
@@ -58,7 +55,7 @@ export class Tuple extends Type {
     if (as.length === 0) { this[0] = null; }
     as.forEach((v, i) => this[i + 1] = v );
   }
-  static type(a) { return dataType(a) === this ? a.typeOf() : error.typeError(a, this.type); }
+  static type(a) { return a.typeOf(); }
   // Eq
   static isEq(a, b) { return fromTupleToArray(a).every((a, i) => a === fromTupleToArray(b)[i]); }
   // Ord

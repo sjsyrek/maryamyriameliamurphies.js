@@ -28,8 +28,8 @@ import {
 
 describe(`Tuple data type`, function() {
   const a = tuple(1,2);
-  const b = tuple(1,2);
-  const c = swap(b);
+  const b = swap(a);
+  const c = tuple(`a`, `b`);
   const p = tuple(100,15);
   const v = tuple(7);
   const u = tuple();
@@ -50,6 +50,7 @@ describe(`Tuple data type`, function() {
   });
   it(`should return a tuple string, e.g. "(1,2)", as its value`, function() {
     a.valueOf().should.equal(`(1,2)`);
+    c.valueOf().should.equal(`('a','b')`);
   });
   describe(`unit`, function() {
     it(`should be the empty tuple`, function() {
@@ -119,7 +120,7 @@ describe(`Tuple data type`, function() {
   });
   describe(`swap()`, function() {
     it(`should swap the values of a tuple and return a new tuple`, function() {
-      c.should.have.properties({"1":2, "2":1});
+      b.should.have.properties({"1":2, "2":1});
     });
     it(`should throw an error if the argument is not a tuple`, function() {
       swap.bind(null, unit).should.throw();
