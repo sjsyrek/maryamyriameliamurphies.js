@@ -8,4 +8,5 @@ addons:
         repo_token: 5e219fc4ec0ebb906e90eb7b4d7d09b930a02d06057eea46c559e5edefef243e
 
 after_script:
+  - npm run cover
   - codeclimate < ./coverage/lcov.info
