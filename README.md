@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![codecov](https://codecov.io/gh/sjsyrek/maryamyriameliamurphies.js/branch/master/graph/badge.svg)](https://codecov.io/gh/sjsyrek/maryamyriameliamurphies.js)
 
-[![NPM](https://nodei.co/npm/maryamyriameliamurphies.png&downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
+[![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
 
 > All told, a monad in _X_ is just a monoid in the category of endofunctors of _X_, with product × replaced by composition of endofunctors and unit set by the identity endofunctor.
 > — Saunders Mac Lane, [_Categories for the Working Mathematician_](http://bit.ly/1MbDPv3)
