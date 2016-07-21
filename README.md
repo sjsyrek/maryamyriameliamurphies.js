@@ -1,7 +1,7 @@
 # maryamyriameliamurphies.js
 [![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)](./LICENSE.txt)
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
-[![codecov](https://codecov.io/gh/sjsyrek/maryamyriameliamurphies.js/branch/master/graph/badge.svg)](https://codecov.io/gh/sjsyrek/maryamyriameliamurphies.js)
+[![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
 
 [![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
 
