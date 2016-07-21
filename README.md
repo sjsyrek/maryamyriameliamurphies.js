@@ -1,8 +1,22 @@
 # maryamyriameliamurphies.js
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
 
 [![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
+
+**Learn functional programming in ES2015 JavaScript from the principles and code patterns of Haskell**
+
+**Make your own code more functional by using this library as it is or just implementing its ideas yourself**
+
+## Now in version 1.0
+- Comprehensive HTML documentation!
+- Linting your mother would be proud of!
+- Fully tested—with guaranteed 100% code coverage!
+- Standalone browser bundles for free!
+- Now ISC licensed!
+- Not scary!
+- Monads!
 
 > All told, a monad in _X_ is just a monoid in the category of endofunctors of _X_, with product × replaced by composition of endofunctors and unit set by the identity endofunctor.
 > — Saunders Mac Lane, [_Categories for the Working Mathematician_](http://bit.ly/1MbDPv3)
@@ -18,15 +32,15 @@
 
 ## About
 
-**maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax.
+**maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms implemented in JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. That is, it's a collection of pure functions designed to showcase in a more widely-used language than Haskell the ways and means of functional programming, for which the newest dialect of JavaScript has improved support. If you're interested in functional programming or even Haskell itself, but find that world intimidating, this library may be a useful conceptual bridge. The syntax I use will probably come across as unconventional, as it mirrors as closely as possible the terse, efficient style of Haskell. Eventually, however, you may find it easy enough to reason about, thanks to its relative lack of side effects and foundation in function composition. If you're curious about strange-sounding things like functors, monads, partial application, currying, and lazy evaluation, then there's something here for you.
 
 First published entirely by chance on St. Patrick's Day, 2016.
 
 ### How to install
 
-* Copy and paste the code. Go nuts.
-* `git clone` this repo and then execute `npm install && npm run compile` to compile the code.
-* [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) `npm install --save-dev maryamyriameliamurphies`.
+- Copy and paste the code. Go nuts.
+- `git clone` this repo and then execute `npm install && npm run compile` to compile the code.
+- [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) `npm install --save-dev maryamyriameliamurphies`.
 
 ### How to use with npm if you clone
 
@@ -40,6 +54,24 @@ First published entirely by chance on St. Patrick's Day, 2016.
 - `npm run build` to run `clean`, `compile`, `bundle`, and `doc` all at once.
 
 These commands require that you have certain [npm](https://www.npmjs.com) packages installed. See below.
+
+### How to test in the browser
+
+- Create a new HTML file in the `./bundle` directory, for example `maryamyriameliamurphies.html`.
+- Paste this code into it, after any other content: `<script src="maryamyriameliamurphies.js"></script>`.
+- Open your browser's JavaScript console.
+- Test functions using the library namespace, e.g.:
+```js
+const m = maryamyriameliamurphies; // yes, I know it's too long
+const hello = str => {
+  m.print(`Hello ${str}!`);
+  return m.just(str);
+}
+const str = m.just(`world`);
+m.Do(str).flatMap(hello).inject(`monad`).flatMap(hello);
+```
+
+Your mileage may vary, depending on which browser you use to test. This example works in the latest version of Chrome, but ES2015 syntax is not fully supported in Safari as of this writing.
 
 ### Description
 
@@ -58,7 +90,7 @@ As mentioned above, data types can be constrained (or not) by type classes, so a
 
 Since JavaScript is not a strongly typed language by nature, it seemed unnecessary to me (and, for better or worse, antithetical to the JS spirit) to recreate the entirety of Haskell's static type system, though I do provide a limited amount of type checking. Anyone interested in better type safety should probably be using something like [PureScript](http://www.purescript.org) or [GHCJS](https://github.com/ghcjs/ghcjs). Instead, I use the new ES2015 `class` pattern for data types with static methods defined on those classes to provide the functionality of type classes. Since the classes and their constructors are not exposed in the API this library provides, instances of data types must be created using specialized functions provided for this purpose. This keeps the static "type class" methods private and affords some degree of namespace protection for the data types.
 
-ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack. When it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls).
+ES2015 specifies [tail call optimization](https://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html#%_sec_1.2.1), which will ensure that all the nifty Haskell-esque recursions this library uses won't blow up your call stack (when it's [actually implemented](http://babeljs.io/docs/learn-es2015/#tail-calls)).
 
 #### See also
 
