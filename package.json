@@ -71,7 +71,7 @@
     "compile": "babel source --out-dir distribution",
     "lint": "eslint source",
     "mocha": "cross-env NODE_ENV=test mocha --compilers js:babel-register",
-    "test": "nyc --reporter html --reporter text -- npm -s mocha",
+    "test": "nyc --reporter html --reporter text -- npm run -s mocha",
     "doc": "jsdoc source -c conf.json -r -d doc",
     "bundle": "browserify source/index.js -s maryamyriameliamurphies > bundle/maryamyriameliamurphies.js",
     "build": "npm run clean && npm run compile && npm run bundle && npm run doc",
