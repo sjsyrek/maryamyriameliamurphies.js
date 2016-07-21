@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: list/building</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: list/building</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".scanl"><span class="type-signature">(static) </span>scanl<span class="signature">(f, q, ls)</span><span class="type-signature"> &rarr; {List}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Scan a <code>List</code> from the right to left and return a <code>List</code> of successive reduced values.
+<br><code>Haskell&gt; scanl :: (b -&gt; a -&gt; b) -&gt; b -&gt; [a] -&gt; [b]</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>f</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function to map over the <code>List</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An accumulator value</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">List</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <code>List</code> to scan</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="list_building.js.html">list/building.js</a>, <a href="list_building.js.html#line40">line 40</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The <code>List</code> of reduced values</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">List</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const lst = list(1,2,3);
+const f = (x, y) => x - y;
+scanl(f, 0, lst);          // => [0:-1:-3:-6:[]]</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".scanr"><span class="type-signature">(static) </span>scanr<span class="signature">(f, q0, as)</span><span class="type-signature"> &rarr; {List}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Like <code>scanl</code> but scans left to right instead of right to left.
+<br><code>Haskell&gt; scanr :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; [b]</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>f</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function to map over the <code>List</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>q0</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An accumulator value</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>as</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">List</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <code>List</code> to scan</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="list_building.js.html">list/building.js</a>, <a href="list_building.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The <code>List</code> of reduced values</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">List</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const lst = list(1,2,3);
+const f = (x, y) => x - y;
+scanr(f, 0, lst);          // => [2:-1:3:0:[]]</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-applicative.html">applicative</a></li><li><a href="module-base_bool.html">base/bool</a></li><li><a href="module-base_io.html">base/io</a></li><li><a href="module-base_misc.html">base/misc</a></li><li><a href="module-base_num.html">base/num</a></li><li><a href="module-eq.html">eq</a></li><li><a href="module-error.html">error</a></li><li><a href="module-foldable.html">foldable</a></li><li><a href="module-functor.html">functor</a></li><li><a href="module-list_building.html">list/building</a></li><li><a href="module-list_folds.html">list/folds</a></li><li><a href="module-list_func.html">list/func</a></li><li><a href="module-list_indexing.html">list/indexing</a></li><li><a href="module-list_inf.html">list/inf</a></li><li><a href="module-list_reducing.html">list/reducing</a></li><li><a href="module-list_searching.html">list/searching</a></li><li><a href="module-list_set.html">list/set</a></li><li><a href="module-list_sub.html">list/sub</a></li><li><a href="module-list_trans.html">list/trans</a></li><li><a href="module-list_zip.html">list/zip</a></li><li><a href="module-maybe_func.html">maybe/func</a></li><li><a href="module-monad.html">monad</a></li><li><a href="module-monoid.html">monoid</a></li><li><a href="module-ord.html">ord</a></li><li><a href="module-traversable.html">traversable</a></li><li><a href="module-tuple_func.html">tuple/func</a></li><li><a href="module-type.html">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 21 2016 17:04:18 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

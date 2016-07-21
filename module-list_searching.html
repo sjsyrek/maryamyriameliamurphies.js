@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: list/searching</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: list/searching</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".filter"><span class="type-signature">(static) </span>filter<span class="signature">(f, as)</span><span class="type-signature"> &rarr; {List}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Return the <code>List</code> of elements in a <code>List</code> for which a function <code>f</code> returns <code>true</code>.
+<br><code>Haskell&gt; filter :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>f</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The filter function. Must return a <code>boolean</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>as</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">List</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The <code>List</code> to filter</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="list_searching.js.html">list/searching.js</a>, <a href="list_searching.js.html#line75">line 75</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The filtered <code>List</code></p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">List</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const lst = listRange(1,50);
+const f = x => and(odd(x), greaterThan(x, 10));
+filter(f, lst); // => [11:13:15:17:19:21:23:25:27:29:31:33:35:37:39:41:43:45:47:49:[]]</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".lookup"><span class="type-signature">(static) </span>lookup<span class="signature">(key, assocs)</span><span class="type-signature"> &rarr; {Maybe}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Look up a key in an association list. For a list of <code>Tuple</code> objects, returns the second element
+of the first tuple for which the key matches the first element.
+<br><code>Haskell&gt; lookup :: Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The key value to lookup</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>assocs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">List</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A <code>List</code> of <code>Tuple</code> objects</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="list_searching.js.html">list/searching.js</a>, <a href="list_searching.js.html#line49">line 49</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The matching value in a <code>Just</code> or <code>Nothing</code>, otherwise</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Maybe</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const assocs = list(tuple(1,2), tuple(3,4), tuple(3,3), tuple(4,2));
+lookup(3, assocs);                                      // => Just 4
+lookup(5, assocs);                                      // => Nothing</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-applicative.html">applicative</a></li><li><a href="module-base_bool.html">base/bool</a></li><li><a href="module-base_io.html">base/io</a></li><li><a href="module-base_misc.html">base/misc</a></li><li><a href="module-base_num.html">base/num</a></li><li><a href="module-eq.html">eq</a></li><li><a href="module-error.html">error</a></li><li><a href="module-foldable.html">foldable</a></li><li><a href="module-functor.html">functor</a></li><li><a href="module-list_building.html">list/building</a></li><li><a href="module-list_folds.html">list/folds</a></li><li><a href="module-list_func.html">list/func</a></li><li><a href="module-list_indexing.html">list/indexing</a></li><li><a href="module-list_inf.html">list/inf</a></li><li><a href="module-list_reducing.html">list/reducing</a></li><li><a href="module-list_searching.html">list/searching</a></li><li><a href="module-list_set.html">list/set</a></li><li><a href="module-list_sub.html">list/sub</a></li><li><a href="module-list_trans.html">list/trans</a></li><li><a href="module-list_zip.html">list/zip</a></li><li><a href="module-maybe_func.html">maybe/func</a></li><li><a href="module-monad.html">monad</a></li><li><a href="module-monoid.html">monoid</a></li><li><a href="module-ord.html">ord</a></li><li><a href="module-traversable.html">traversable</a></li><li><a href="module-tuple_func.html">tuple/func</a></li><li><a href="module-type.html">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 21 2016 17:04:18 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

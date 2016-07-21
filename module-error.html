@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: error</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: error</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".error"><span class="type-signature">(static, constant) </span>error<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>When a function from this library throws an error, it calls one of the methods defined on this
+object, which constructs and then passes an error message to the <code>throwError</code> function with the
+arguments to the original method call applied to the appropriate error template string.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="error.js.html">error.js</a>, <a href="error.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>error.typeError(0, and); // => *** Error: '0' is not a valid argument to function 'and'.</code></pre>
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".throwError"><span class="type-signature">(static) </span>throwError<span class="signature">(e)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Throw an error, outputting the given message. This is one of the only impure functions in this
+library and reflects the (some would say unfortunate) inclusion of numerous partial functions in
+the Haskell Prelude. Whereas a total function will always return a predictable output for a given
+input, a partial function fails to take into account all possible inputs. One way to address this
+situation would be to wrap potentially undefined values (such as the head of an empty list) in a
+Maybe or Either abstraction in order to account for error states.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The error message to display</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="error.js.html">error.js</a>, <a href="error.js.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>Throws an error with a given message.</p>
+    
+    </div>
+
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-applicative.html">applicative</a></li><li><a href="module-base_bool.html">base/bool</a></li><li><a href="module-base_io.html">base/io</a></li><li><a href="module-base_misc.html">base/misc</a></li><li><a href="module-base_num.html">base/num</a></li><li><a href="module-eq.html">eq</a></li><li><a href="module-error.html">error</a></li><li><a href="module-foldable.html">foldable</a></li><li><a href="module-functor.html">functor</a></li><li><a href="module-list_building.html">list/building</a></li><li><a href="module-list_folds.html">list/folds</a></li><li><a href="module-list_func.html">list/func</a></li><li><a href="module-list_indexing.html">list/indexing</a></li><li><a href="module-list_inf.html">list/inf</a></li><li><a href="module-list_reducing.html">list/reducing</a></li><li><a href="module-list_searching.html">list/searching</a></li><li><a href="module-list_set.html">list/set</a></li><li><a href="module-list_sub.html">list/sub</a></li><li><a href="module-list_trans.html">list/trans</a></li><li><a href="module-list_zip.html">list/zip</a></li><li><a href="module-maybe_func.html">maybe/func</a></li><li><a href="module-monad.html">monad</a></li><li><a href="module-monoid.html">monoid</a></li><li><a href="module-ord.html">ord</a></li><li><a href="module-traversable.html">traversable</a></li><li><a href="module-tuple_func.html">tuple/func</a></li><li><a href="module-type.html">type</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 21 2016 17:04:18 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
