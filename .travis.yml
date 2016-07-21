@@ -9,4 +9,4 @@ before_script:
 script: npm run cover:report
 
 after_script:
-  - codeclimate-test-reporter < lcov.info
+  - codeclimate-test-reporter < coverage.lcov
