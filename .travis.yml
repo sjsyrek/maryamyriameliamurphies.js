@@ -1,4 +1,4 @@
 language: node_js
 node_js:
 - node
-after_success: npm run codecov-update
+after_success: npm run report-coverage

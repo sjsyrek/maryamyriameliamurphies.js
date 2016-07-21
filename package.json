@@ -76,6 +76,6 @@
     "bundle": "browserify source/index.js -s maryamyriameliamurphies > bundle/maryamyriameliamurphies.js",
     "build": "npm run clean && npm run compile && npm run bundle && npm run doc",
     "prepublish": "npm run compile",
-    "codecov-update": "nyc tap test && nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "report-coverage": "nyc tap test && nyc report --reporter=lcov > coverage.lcov && codecov"
   }
 }
