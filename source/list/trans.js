@@ -61,7 +61,7 @@ export const map = (f, as) => {
   const map_ = (f, as) => {
     if (isList(as) === false ) { return error.listError(as, map); }
     if (isEmpty(as)) { return emptyList; }
-    const x = f(head(as)) === undefined ? f.bind(f, head(as)) : f(head(as));
+    const x = f(head(as)); // f(head(as)) === undefined ? f.bind(f, head(as)) : f(head(as));
     const xs = tail(as);
     return cons(x)(map(f)(xs));
   }
