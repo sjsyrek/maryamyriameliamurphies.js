@@ -18,24 +18,28 @@
 
 ## About
 
-**maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. Also available as a [Node.js package on npm](https://www.npmjs.com/package/maryamyriameliamurphies).
+**maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms ported to JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax.
 
 First published entirely by chance on St. Patrick's Day, 2016.
 
 ### How to install
 
 * Copy and paste the code. Go nuts.
-* `git clone` this repo, `npm install && npm run compile`, and `import` it into your projects.
-* [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) locally `npm install maryamyriameliamurphies` or globally `npm -g maryamyriameliamurphies`.
+* `git clone` this repo and then execute `npm install && npm run compile` to compile the code.
+* [Install with npm](https://www.npmjs.com/package/maryamyriameliamurphies) `npm install --save-dev maryamyriameliamurphies`.
 
 ### How to use with npm if you clone
 
-- `npm test` Run Mocha tests on all files imported into `./test/index.js`.
-- `npm run compile` Run Babel on `./source/index.js` and output to `./distribution/index.js`.
-- `npm run build` Test and compile.
-- `npm run lint` Run ESlint on all files imported into `/source/index.js`.
+- `npm run compile` to run Babel on ES2015 code in `./source` and output transpiled ES5 code to `./distribution`.
+- `npm run lint` to run ESlint to check the source code for errors.
+- `npm test` to run Mocha on the test code in `./test`.
+- `npm run cover` to run nyc on the source code and generate testing coverage reports.
+- `npm run doc` to run JSDoc to generate HTML documentation for the entire library.
+- `npm run bundle` to run Browserify to bundle the library for use in the browser.
+- `npm run clean` to delete all files in `./distribution`.
+- `npm run build` to run `clean`, `compile`, `bundle`, and `doc` all at once.
 
-These commands require that you have certain npm packages installed. See below.
+These commands require that you have certain [npm](https://www.npmjs.com) packages installed. See below.
 
 ### Description
 
@@ -68,18 +72,24 @@ ES2015 features [tail call optimization](https://mitpress.mit.edu/sicp/full-text
 
 Requires:
 
-* [Node.js](https://nodejs.org/en/)
-* [Babel](http://babeljs.io/)
-* [babel-polyfill](http://babeljs.io/docs/usage/polyfill/)
-* [Mocha](http://mochajs.org)
-* [Should.js](http://shouldjs.github.io)
-* [ESLint](http://eslint.org)
-* [babel-eslint](https://www.npmjs.com/package/babel-eslint)
-* [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+- [Node](https://nodejs.org/en/) - JavaScript runtime for the server
+- [npm](https://www.npmjs.com) - node package manager
+- [Babel](http://babeljs.io/) - ES2015 and later to ES5 JavaScript compiler
+- [Mocha](http://mochajs.org) - testing framework
+- [Should](http://shouldjs.github.io) - assertion library
+- [ESLint](http://eslint.org) - static analysis of code for JavaScript
+- [nyc](https://github.com/istanbuljs/nyc) - an interface for [istanbul](https://gotwarlost.github.io/istanbul/) compatible with ES2015
+- [babelify](https://github.com/babel/babelify) - Browserify transform for Babel
+- [JSDoc](http://usejsdoc.org) - documentation utility
 
-I develop the code on [Node.js](https://nodejs.org/en/) using [Babel](http://babeljs.io/), lint it with [ESLint](http://eslint.org) using the [babel-eslint](https://www.npmjs.com/package/babel-eslint) parser and [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb) rule set, and test the transpiled ES5 output with [Mocha](http://mochajs.org) and the [Should.js](http://shouldjs.github.io) assertion library. Since this library uses the ES2015 [Reflect](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect) and [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects, you will need to install the [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) package with [npm](https://www.npmjs.com) and include it in your project or copy and paste the code from `polyfill.js` to get it to work in Node or the browser, respectively. ES2015 features may not be uniformly supported in all environments, and certain features (such as Proxy) cannot be polyfilled.
+Babel packages:
 
-ES2015 code is located in the `./source` directory and babel-transpiled ES5 code in the `./distribution` directory. Mocha tests are in `./test` and example projects are in `./examples`.
+- babel-cli
+- babel-core
+- babel-plugin-istanbul
+- babel-plugin-transform-runtime
+- babel-preset-es2015
+- babel-register
 
 ### What the name of this library means
 
@@ -87,245 +97,244 @@ The word "maryamyriameliamurphies" occurs on pg. 293 of James Joyce's _Finnegans
 
 Here's my own interpretation of maryamyriameliamurphies:
 
-* **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!" Also a mild oath, since it refers to the Virgin Mary (as pure as a monadic interface, she was).
-* **myria** — Probably the word myriad, "many people or things." Also the ancient Greek word for 10,000, though used just as often to mean an uncountably large number of things (because who would ever need to count higher than 10,000?).
-* **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet (or, at a stretch, the Latin word "meliora" meaning "better than").
-* **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics, though it's doubtful this would have occurred to Joyce.
+- **mary** — A variant of the interjection "marry" common during the early modern period. It expresses surprise or outrage, more or less equivalent to "wow!" Also a mild oath, since it refers to the Virgin Mary (as pure as a monadic interface, she was).
+- **myria** — Probably the word myriad, "many people or things." Also the ancient Greek word for 10,000, though used just as often to mean an uncountably large number of things (because who would ever need to count higher than 10,000?).
+- **melia** — Similar to the Latin word for a thousand (mille), but it also looks to me like the plural of the Greek word for "honey," which can also be used to describe something sweet (or, at a stretch, the Latin word "meliora" meaning "better than").
+- **murphies** — As an allusion to Morpheus, refers to the Greek word for "form" since dreaming is an experience of many forms shifting and changing. A "morphism" is also another word for a "mapping" or "function" in various branches of mathematics, though it's doubtful this would have occurred to Joyce.
 
 #### **maryamyriameliamurphies** — Wow, a whole bunch of sweet functions!
 
 ## API
 
-See the code comments for more extensive documentation and examples.
+See the documentation for more extensive explanations and examples.
 
 ### Basic functions
 See Haskell [Data.Function](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Function.html#v:-46-) and [Prelude](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html).
 
-* `partial(f, ...as)` Partially applies arguments `as` to function `f`.
-* `$(f)` Composes function `f` with another function `g`.
-* `flip(f)` Reverses the order of arguments to a function.
-* `id(a)` Returns `a`. The identity function.
-* `constant(a, b)` Returns `a`, discarding `b`.
-* `until(pred, f, x)` Apply `f` to `x` until `pred` is true.
-* `and(a, b)` Boolean "and".
-* `or(a, b)` Boolean "or".
-* `not(a)` Boolean "not".
-* `even(a)` Return true if `a` is even.
-* `odd(a)` Return true if `a` is odd.
-* `isEmpty(a)` Return true if `a` is an empty list, tuple, or array.
-* `show(a)` Return a string representation of a value (for data types from this library).
-* `print(a)` Display the results of `show` on the console.
+- `partial(f, ...as)` Partially applies arguments `as` to function `f`.
+- `$(f)` Composes function `f` with another function `g`.
+- `flip(f)` Reverses the order of arguments to a function.
+- `id(a)` Returns `a`. The identity function.
+- `constant(a, b)` Returns `a`, discarding `b`.
+- `until(pred, f, x)` Apply `f` to `x` until `pred` is true.
+- `and(a, b)` Boolean "and".
+- `or(a, b)` Boolean "or".
+- `not(a)` Boolean "not".
+- `even(a)` Return true if `a` is even.
+- `odd(a)` Return true if `a` is odd.
+- `isEmpty(a)` Return true if `a` is an empty list, tuple, or array.
+- `show(a)` Return a string representation of a value (for data types from this library).
+- `print(a)` Display the results of `show` on the console.
 
 ### Eq
 See Haskell [Eq](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html#t:Eq).
 
-* `isEq(a, b)` Returns true if `a` equals `b`.
-* `isNotEq(a, b)` Returns true if `a` does not equal `b`.
+- `isEq(a, b)` Returns true if `a` equals `b`.
+- `isNotEq(a, b)` Returns true if `a` does not equal `b`.
 
 ### Ord
 See Haskell [Ord](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html#t:Ord).
 
-* `EQ` Ordering for equals.
-* `LT` Ordering for less than.
-* `GT` Ordering for greater than.
-* `compare(a, b)` Return the Ordering of `a` as compared to `b`.
-* `lessThan(a, b)` Return true if `a` is less than `b`.
-* `lessThanOrEqual(a, b)` Return true if `a` is less than or equal to `b`.
-* `greaterThan(a, b)` Return true if `a` is greater than `b`.
-* `greaterThanOrEqual(a, b)` Return true if `a` is greater than or equal to `b`.
-* `max(a, b)` Return the greater of `a` and `b`.
-* `min(a, b)` Return the lesser of `a` and `b`.
+- `EQ` Ordering for equals.
+- `LT` Ordering for less than.
+- `GT` Ordering for greater than.
+- `compare(a, b)` Return the Ordering of `a` as compared to `b`.
+- `lessThan(a, b)` Return true if `a` is less than `b`.
+- `lessThanOrEqual(a, b)` Return true if `a` is less than or equal to `b`.
+- `greaterThan(a, b)` Return true if `a` is greater than `b`.
+- `greaterThanOrEqual(a, b)` Return true if `a` is greater than or equal to `b`.
+- `max(a, b)` Return the greater of `a` and `b`.
+- `min(a, b)` Return the lesser of `a` and `b`.
 
 ### Monoid
 See Haskell [Monoid](https://hackage.haskell.org/package/base-4.8.1.0/docs/Data-Monoid.html).
 
-* `mempty(a)` Return the identity for the monoid.
-* `mappend(a, b)` Perform an associative operation on two monoids.
-* `mconcat(a)` Fold a list using the monoid.
+- `mempty(a)` Return the identity for the monoid.
+- `mappend(a, b)` Perform an associative operation on two monoids.
+- `mconcat(a)` Fold a list using the monoid.
 
 ### Functor
 See Haskell [Functor](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Functor.html).
 
-* `fmap(f, a)` Map the function `f` over the functor `a`.
-* `fmapReplaceBy(a, b)` Replace all `b` with `a` in a functor.
+- `fmap(f, a)` Map the function `f` over the functor `a`.
+- `fmapReplaceBy(a, b)` Replace all `b` with `a` in a functor.
 
 ### Applicative
 See Haskell [Applicative](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Applicative.html).
 
-* `pure(f, a)` Lift `a` into applicative context `f`.
-* `ap(f, a)` Apply applicative function `f` to applicative value `a`.
-* `apFlip(f, a, b)` `ap` with its arguments reversed.
-* `then(a1, a2)` Sequence actions, discarding the value of `a1`.
-* `skip(a1, a2)` Sequence actions, discarding the value of `a2`.
-* `liftA(f, a)` Lift function `f` into applicative context `a`.
-* `liftA2(f, a, b)` Lift binary function `f` into applicative context `a`.
-* `liftA3(f, a, b, c)` Lift ternary function `f` into applicative context `a`.
+- `pure(f, a)` Lift `a` into applicative context `f`.
+- `ap(f, a)` Apply applicative function `f` to applicative value `a`.
+- `apFlip(f, a, b)` `ap` with its arguments reversed.
+- `then(a1, a2)` Sequence actions, discarding the value of `a1`.
+- `skip(a1, a2)` Sequence actions, discarding the value of `a2`.
+- `liftA(f, a)` Lift function `f` into applicative context `a`.
+- `liftA2(f, a, b)` Lift binary function `f` into applicative context `a`.
 
 ### Monad
 See Haskell [Monad](https://hackage.haskell.org/package/base-4.8.2.0/docs/Control-Monad.html).
 
-* `inject(m, a)` Inject value `a` into monadic context `m`.
-* `bind(m, f)` Bind function `f` to the value contained in monadic context `m`.
-* `chain(m, f)` Sequence actions, ignoring the value of the monadic context `m`.
-* `bindFlip(f, m)` `bind` with its arguments reversed.
-* `join(m)` Remove one level of monadic structure, like `concat`.
-* `liftM(f, m)` Lift a function `f` into monadic context `m`.
-* `Do(m)` Wrap a monad `m` in a special container for the purpose of chaining actions, in imitation of Haskell's "do" notation.
+- `inject(m, a)` Inject value `a` into monadic context `m`.
+- `flatMap(m, f)` Bind function `f` to the value contained in monadic context `m`.
+- `chain(m, f)` Sequence actions, ignoring the value of the monadic context `m`.
+- `bindFlip(f, m)` `bind` with its arguments reversed.
+- `join(m)` Remove one level of monadic structure, like `concat`.
+- `liftM(f, m)` Lift a function `f` into monadic context `m`.
+- `Do(m)` Wrap a monad `m` in a special container for the purpose of chaining actions, in imitation of Haskell's "do" notation.
 
 ### Foldable
 See Haskell [Foldable](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Foldable.html).
 
-* `fold(a)` Combine the elements of a structure using a monoid.
-* `foldMap(f, a)` Map `f` to each element in monoid `a`.
-* `foldr(f, z, t)` Fold function `f` over monoid `t` with accumulator `z`.
+- `fold(a)` Combine the elements of a structure using a monoid.
+- `foldMap(f, a)` Map `f` to each element in monoid `a`.
+- `foldr(f, z, t)` Fold function `f` over monoid `t` with accumulator `z`.
 
 ### Traversable
 See Haskell [Traversable](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Traversable.html).
 
-* `traverse(f, a)` Map `f` over each element in monoid `a` and collect the results of evaluating each action.
-* `mapM(f, m)` `traverse` for monads.
-* `sequence(m)` Evaluate each action in monadic structure `m` and collect the results.
+- `traverse(f, a)` Map `f` over each element in monoid `a` and collect the results of evaluating each action.
+- `mapM(f, m)` `traverse` for monads.
+- `sequence(m)` Evaluate each action in monadic structure `m` and collect the results.
 
 ### Maybe
 See Haskell [Maybe](https://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Maybe.html).
 
-* `just(a)` Insert a value into a Maybe monad, returning `Just a` or `Nothing`.
-* `maybe(n, f, m)` Apply `f` to the value in Maybe `m` or return `n` if `m` is `Nothing`.
-* `isMaybe(a)` Return true if `a` is a Maybe.
-* `isJust(m)` Return true if Maybe `m` is `Just`.
-* `isNothing(m)` Return true if Maybe `m` is `Nothing`.
-* `fromJust(m)` Extract the value from Maybe `m`, throwing an error if `m` is `Nothing`.
-* `fromMaybe(d, m)` Extract the value from Maybe `m`, returning `d` if `m` is `Nothing`.
-* `listToMaybe(as)` Return `Nothing` on an empty list or `Just a` where `a` is the first element of the list.
-* `maybeToList(m)` Return an empty list if `m` if `Nothing` or a singleton list [`a`] if `m` is `Just a`.
-* `catMaybes(as)` Return a list of all `Just` values from a list of Maybes.
-* `mapMaybe(f, as)` Map `f` (that returns a Maybe) over a list and return a list of each `Just` result.
+- `just(a)` Insert a value into a Maybe monad, returning `Just a` or `Nothing`.
+- `maybe(n, f, m)` Apply `f` to the value in Maybe `m` or return `n` if `m` is `Nothing`.
+- `isMaybe(a)` Return true if `a` is a Maybe.
+- `isJust(m)` Return true if Maybe `m` is `Just`.
+- `isNothing(m)` Return true if Maybe `m` is `Nothing`.
+- `fromJust(m)` Extract the value from Maybe `m`, throwing an error if `m` is `Nothing`.
+- `fromMaybe(d, m)` Extract the value from Maybe `m`, returning `d` if `m` is `Nothing`.
+- `listToMaybe(as)` Return `Nothing` on an empty list or `Just a` where `a` is the first element of the list.
+- `maybeToList(m)` Return an empty list if `m` if `Nothing` or a singleton list [`a`] if `m` is `Just a`.
+- `catMaybes(as)` Return a list of all `Just` values from a list of Maybes.
+- `mapMaybe(f, as)` Map `f` (that returns a Maybe) over a list and return a list of each `Just` result.
 
 ### Tuple
 See Haskell [Tuple](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Tuple.html).
 
-* `tuple(...as)` Create a new tuple from any number of values.
-* `fst(p)` Return the first element of a tuple.
-* `snd(p)` Return the second element of a tuple.
-* `curry(f, x, y)` Convert `f` taking arguments `x` and `y` into a curried function.
-* `uncurry(f, p)` Convert curried function `f` taking argument tuple pair `p` into an uncurried function.
-* `swap(p)` Swap the first two values of a tuple.
-* `isTuple(a)` Return true if `a` is a tuple.
-* `fromArrayToTuple(a)` Convert an array into a tuple.
-* `fromTupleToArray(p)` Convert a tuple into an array.
+- `tuple(...as)` Create a new tuple from any number of values.
+- `fst(p)` Return the first element of a tuple.
+- `snd(p)` Return the second element of a tuple.
+- `curry(f, x, y)` Convert `f` taking arguments `x` and `y` into a curried function.
+- `uncurry(f, p)` Convert curried function `f` taking argument tuple pair `p` into an uncurried function.
+- `swap(p)` Swap the first two values of a tuple.
+- `isTuple(a)` Return true if `a` is a tuple.
+- `fromArrayToTuple(a)` Convert an array into a tuple.
+- `fromTupleToArray(p)` Convert a tuple into an array.
 
 ### List
 See Haskell [List](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-List.html).
 
 #### Basic functions
 
-* `list(...as)` Create a new list from a series of values.
-* `listRange(start, end, f, filter)` Create a new list from `start` to `end` using step function `f` with values optionally filtered by `filter`.
-* `listFilter(start, end, filter)` Create a new list of consecutive values, filtered using `filter`.
-* `listRangeLazy(start, end)` Create a new list of consecutive values from `start` to `end`, using lazy evaluation.
-* `listRangeLazyBy(start, end, step)` Create a new list from `start` to `end` incremented by step function `step`, using lazy evaluation.
-* `listAppend(as, bs)` Append list `as` to list `bs`.
-* `cons(x, xs)` Create a new list with head `x` and tail `xs`.
-* `head(as)` Extract the first element of a list.
-* `last(as)` Extract the last element of a list.
-* `tail(as)` Extract the elements of a list after the head.
-* `init(as)` Extract all elements of a list except the last one.
-* `uncons(as)` Decompose a list into its head and tail.
-* `empty(t)` Test whether a foldable structure is empty.
-* `length(as)` Return the length of list.
-* `isList(a)` Return true if `a` is a list.
-* `fromArrayToList(a)` Convert an array into a list.
-* `fromListToArray(as)` Convert a list into an array.
-* `fromListToString(as)` Convert a list into a string.
-* `fromStringToList(as)` Convert a string into a list.
+- `list(...as)` Create a new list from a series of values.
+- `listRange(start, end, f, filter)` Create a new list from `start` to `end` using step function `f` with values optionally filtered by `filter`.
+- `listFilter(start, end, filter)` Create a new list of consecutive values, filtered using `filter`.
+- `listRangeLazy(start, end)` Create a new list of consecutive values from `start` to `end`, using lazy evaluation.
+- `listRangeLazyBy(start, end, step)` Create a new list from `start` to `end` incremented by step function `step`, using lazy evaluation.
+- `listAppend(as, bs)` Append list `as` to list `bs`.
+- `cons(x, xs)` Create a new list with head `x` and tail `xs`.
+- `head(as)` Extract the first element of a list.
+- `last(as)` Extract the last element of a list.
+- `tail(as)` Extract the elements of a list after the head.
+- `init(as)` Extract all elements of a list except the last one.
+- `uncons(as)` Decompose a list into its head and tail.
+- `empty(t)` Test whether a foldable structure is empty.
+- `length(as)` Return the length of list.
+- `isList(a)` Return true if `a` is a list.
+- `fromArrayToList(a)` Convert an array into a list.
+- `fromListToArray(as)` Convert a list into an array.
+- `fromListToString(as)` Convert a list into a string.
+- `fromStringToList(as)` Convert a string into a list.
 
 #### List transformations
 
-* `map(f, as)` Map the function `f` over the elements in list `as`.
-* `reverse(as)` Reverse the elements of a list.
-* `intersperse(sep, as)` Intersperse the separator `sep` between the elements of `as`.
-* `intercalate(xs, xss)` Intersperse the list `xs` between the lists in `xss` (a list of lists).
-* `transpose(lss)` Transpose the "rows" and "columns" of a list of lists.
+- `map(f, as)` Map the function `f` over the elements in list `as`.
+- `reverse(as)` Reverse the elements of a list.
+- `intersperse(sep, as)` Intersperse the separator `sep` between the elements of `as`.
+- `intercalate(xs, xss)` Intersperse the list `xs` between the lists in `xss` (a list of lists).
+- `transpose(lss)` Transpose the "rows" and "columns" of a list of lists.
 
 #### Reducing lists
 
-* `foldl(f, z, as)` Fold a list `as` from right to left, using function `f` and accumulator `z`.
+- `foldl(f, z, as)` Fold a list `as` from right to left, using function `f` and accumulator `z`.
 
 #### Special folds
 
-* `concat(xss)` Concatenate the elements in a list of lists.
-* `concatMap(f, as)` Map the function `f` (that returns a list) over the list `as` and concatenate the result list.
+- `concat(xss)` Concatenate the elements in a list of lists.
+- `concatMap(f, as)` Map the function `f` (that returns a list) over the list `as` and concatenate the result list.
 
 #### Building lists
 
-* `scanl(f, q, ls)` Reduce a list `ls` from right to left using function `f` and accumulator `q` and return a list of successive reduced values.
-* `scanr(f, q0, as)` Like `scanl` but scans the list `as` from right to left.
+- `scanl(f, q, ls)` Reduce a list `ls` from right to left using function `f` and accumulator `q` and return a list of successive reduced values.
+- `scanr(f, q0, as)` Like `scanl` but scans the list `as` from right to left.
 
 #### Infinite lists
 
-* `listInf(start)` Return an infinite list of consecutive values beginning with `start`.
-* `listInfBy(start, step)` Return an infinite list of values, incremented with function `step`, beginning with `start`.
-* `iterate(f, x)` Return an infinite list of repeated applications of `f` to `x`.
-* `repeat(a)` Return an infinite list in which all the values are `a`.
-* `replicate(n, x)` Return a list of length `n` in which all values are `x`.
-* `cycle(as)` Return the infinite repetition of a list.
+- `listInf(start)` Return an infinite list of consecutive values beginning with `start`.
+- `listInfBy(start, step)` Return an infinite list of values, incremented with function `step`, beginning with `start`.
+- `iterate(f, x)` Return an infinite list of repeated applications of `f` to `x`.
+- `repeat(a)` Return an infinite list in which all the values are `a`.
+- `replicate(n, x)` Return a list of length `n` in which all values are `x`.
+- `cycle(as)` Return the infinite repetition of a list.
 
 #### Sublists
 
-* `take(n, as)` Return the prefix of a list of length `n`.
-* `drop(n, as)` Return the suffix of a list after discarding `n` values.
-* `splitAt(n, as)` Return a tuple in which the first element is the prefix of a list and the second element is the remainder of the list.
-* `takeWhile(pred, as)` Return the longest prefix of a list of values that satisfy the predicate function `pred`.
-* `dropWhile(pred, as)` Drop values from a list while the predicate function `pred` returns true.
-* `span(pred, as)` Return a tuple in which the first element is the longest prefix of a list of values that satisfy the predicate function `pred` and the second element is the rest of the list.
-* `spanNot(pred, as)` Return a tuple in which the first element is the longest prefix of a list of values that do not satisfy the predicate function `pred` and the second element is the rest of the list.
-* `stripPrefix(as, bs)` Drop the prefix `as` from the list `bs`.
-* `group(as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result contains only equal values.
-* `groupBy(eq, as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result is grouped according to function `eq`.
+- `take(n, as)` Return the prefix of a list of length `n`.
+- `drop(n, as)` Return the suffix of a list after discarding `n` values.
+- `splitAt(n, as)` Return a tuple in which the first element is the prefix of a list and the second element is the remainder of the list.
+- `takeWhile(pred, as)` Return the longest prefix of a list of values that satisfy the predicate function `pred`.
+- `dropWhile(pred, as)` Drop values from a list while the predicate function `pred` returns true.
+- `span(pred, as)` Return a tuple in which the first element is the longest prefix of a list of values that satisfy the predicate function `pred` and the second element is the rest of the list.
+- `spanNot(pred, as)` Return a tuple in which the first element is the longest prefix of a list of values that do not satisfy the predicate function `pred` and the second element is the rest of the list.
+- `stripPrefix(as, bs)` Drop the prefix `as` from the list `bs`.
+- `group(as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result contains only equal values.
+- `groupBy(eq, as)` Take a list and return a list of lists such that the concatenation of the result is equal to the argument. Each sublist in the result is grouped according to function `eq`.
 
 #### Searching
 
-* `lookup(key, assocs)` Look up `key` in the association list `assocs`.
-* `filter(f, as)` Return the list of elements from `as` to satisfy the predicate function `f`.
+- `lookup(key, assocs)` Look up `key` in the association list `assocs`.
+- `filter(f, as)` Return the list of elements from `as` to satisfy the predicate function `f`.
 
 #### Indexing
 
-* `index(as, n)` Return the value in `as` at index `n`.
-* `elemIndex(a, as)` Return the index of the first value in `as` equal to `a` or `Nothing` if there is no such value.
-* `elemIndices(a, as)` Return the indices of all values in `as` equal to `a`, in ascending order.
-* `find(pred, xs)` Return the first value in `xs` that satisfies the predicate function `pred` or `Nothing` if there is no such value.
-* `findIndex(pred, xs)` Return the index of the first value in `xs` that satisfies the predicate function `pred` or `Nothing` if there is no such value.
-* `findIndices(pred, xs)` Return the indices of all values in `xs` that satisfy `pred`, in ascending order.
+- `index(as, n)` Return the value in `as` at index `n`.
+- `elemIndex(a, as)` Return the index of the first value in `as` equal to `a` or `Nothing` if there is no such value.
+- `elemIndices(a, as)` Return the indices of all values in `as` equal to `a`, in ascending order.
+- `find(pred, xs)` Return the first value in `xs` that satisfies the predicate function `pred` or `Nothing` if there is no such value.
+- `findIndex(pred, xs)` Return the index of the first value in `xs` that satisfies the predicate function `pred` or `Nothing` if there is no such value.
+- `findIndices(pred, xs)` Return the indices of all values in `xs` that satisfy `pred`, in ascending order.
 
 #### Zipping and unzipping lists
 
-* `zip(as, bs)` Take two lists and return a list of corresponding pairs.
-* `zip3(as, bs, cs)` `zip` for three lists.
-* `zipWith(f, as, bs)` Zip `as` and `bs` using function `f`.
-* `zipWith3(f, as, bs, cs)` Zip three lists using function `f`.
+- `zip(as, bs)` Take two lists and return a list of corresponding pairs.
+- `zip3(as, bs, cs)` `zip` for three lists.
+- `zipWith(f, as, bs)` Zip `as` and `bs` using function `f`.
+- `zipWith3(f, as, bs, cs)` Zip three lists using function `f`.
 
 #### "Set" operations
 
-* `nub(as)` Remove duplicate values from a list.
-* `nubBy(eq, as)` Remove duplicate values from a list, testing equality using function `eq`.
-* `deleteL(a, as)` Remove the first occurrence of `a` from `as`.
-* `deleteLBy(eq, a, as)` Remove the first occurrence of `a` from `as`, testing equality using function `eq`.
-* `deleteFirsts(as, bs)` Remove the first occurrence of each value of `as` from `bs`.
-* `deleteFirsts(eq, as, bs)` Remove the first occurrence of each value of `as` from `bs`, using function `eq` to test for equality.
+- `nub(as)` Remove duplicate values from a list.
+- `nubBy(eq, as)` Remove duplicate values from a list, testing equality using function `eq`.
+- `deleteL(a, as)` Remove the first occurrence of `a` from `as`.
+- `deleteLBy(eq, a, as)` Remove the first occurrence of `a` from `as`, testing equality using function `eq`.
+- `deleteFirsts(as, bs)` Remove the first occurrence of each value of `as` from `bs`.
+- `deleteFirsts(eq, as, bs)` Remove the first occurrence of each value of `as` from `bs`, using function `eq` to test for equality.
 
 #### Ordered lists
 
-* `sort(as)` Sort a list.
-* `sortBy(cmp, as)` Sort a list using comparison function `cmp`.
-* `mergeSort(as)` Sort a list using a merge sort algorithm.
-* `mergeSortBy(cmp, as)` Merge sort a list using comparison function `cmp`.
-* `insert(e, ls)` Insert `e` at the first position in `ls` where it is less than or equal to the next element.
-* `insertBy(cmp, e, ls)` Insert `e` at the first position in `ls` using comparison function `cmp`.
+- `sort(as)` Sort a list.
+- `sortBy(cmp, as)` Sort a list using comparison function `cmp`.
+- `mergeSort(as)` Sort a list using a merge sort algorithm.
+- `mergeSortBy(cmp, as)` Merge sort a list using comparison function `cmp`.
+- `insert(e, ls)` Insert `e` at the first position in `ls` where it is less than or equal to the next element.
+- `insertBy(cmp, e, ls)` Insert `e` at the first position in `ls` using comparison function `cmp`.
 
 ### Utility functions
 
-* `throwError(e)` Throws an error with message `e`.
-* `defines(...methods)` Defines a type class that requires implementations of `methods`.
-* `dataType(a)` Returns the data type of `a` (a synonym for `a.constructor`).
-* `type(a)` Returns the type of `a` as defined by this library or `typeof` otherwise.
-* `typeCheck(a, b)` Checks whether `a` and `b` are the same type.
+- `throwError(e)` Throws an error with message `e`.
+- `defines(...methods)` Defines a type class that requires implementations of `methods`.
+- `dataType(a)` Returns the data type of `a` (a synonym for `a.constructor`).
+- `type(a)` Returns the type of `a` as defined by this library or `typeof` otherwise.
+- `typeCheck(a, b)` Checks whether `a` and `b` are the same type.
