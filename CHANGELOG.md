@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 0.9.10
 ### Added
 - Tests for all functions
+- Coverage for all tests
 
 ### Changed
 - Formatting for tests

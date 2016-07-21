@@ -2,16 +2,19 @@
   "name": "maryamyriameliamurphies",
   "version": "0.9.9",
   "description": "A library of Haskell-style morphisms ported to ES2015 JavaScript using Babel.",
-  "main": "./distribution/index.js",
-  "directories": {
-    "test": "test"
-  },
+  "author": "Steven J. Syrek <steven.syrek@gmail.com>",
+  "license": "ISC",
+  "homepage": "https://github.com/sjsyrek/maryamyriameliamurphies.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/sjsyrek/maryamyriameliamurphies.js.git"
   },
+  "bugs": {
+    "url": "https://github.com/sjsyrek/maryamyriameliamurphies.js/issues"
+  },
   "keywords": [
     "javascript",
+    "js",
     "babel",
     "es6",
     "es2015",
@@ -20,31 +23,57 @@
     "mocha",
     "eslint"
   ],
-  "author": "Steven J. Syrek <steven.syrek@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/sjsyrek/maryamyriameliamurphies.js/issues"
+  "main": "./distribution/index.js",
+  "directories": {
+    "lib": "distribution",
+    "test": "test",
+    "example": "example"
   },
-  "homepage": "https://github.com/sjsyrek/maryamyriameliamurphies.js#readme",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "comments": false,
+          "minified": true
+        }
+      ]
+    ]
+  },
+  "nyc": {
+    "sourceMap": false,
+    "instrument": false
+  },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-core": "^6.5.1",
-    "babel-eslint": "git+https://github.com/babel/babel-eslint.git",
-    "babel-polyfill": "^6.5.0",
-    "babel-preset-es2015": "^6.5.0",
-    "eslint": "^2.4.0",
-    "eslint-config-airbnb": "^6.2.0",
-    "mocha": "^2.4.5",
-    "should": "^8.2.2"
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.10",
+    "babel-plugin-istanbul": "^1.0.3",
+    "babel-plugin-transform-runtime": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "babelify": "^7.3.0",
+    "cross-env": "^2.0.0",
+    "eslint": "^3.0.1",
+    "jsdoc": "^3.4.0",
+    "mocha": "^2.5.3",
+    "nyc": "^7.0.0",
+    "should": "^9.0.2"
   },
   "dependencies": {
-    "babel-polyfill": "^6.5.0"
+    "babel-runtime": "^6.9.2"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register ./test/index.js",
+    "clean": "rm -r distribution/*",
     "compile": "babel source --out-dir distribution",
-    "build": "npm test && npm run compile",
-    "lint": "eslint ./source/index.js",
+    "lint": "eslint source",
+    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-register",
+    "cover": "nyc --reporter html --reporter text -- npm -s test",
+    "doc": "jsdoc source -c conf.json -r -d doc",
+    "bundle": "browserify source/index.js -s maryamyriameliamurphies > bundle/maryamyriameliamurphies.js",
+    "build": "npm run clean && npm run compile && npm run bundle && npm run doc",
     "prepublish": "npm run compile"
   }
 }

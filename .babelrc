@@ -1,5 +1,14 @@
 {
-    "presets": [
-        "es2015"
-    ]
+  "env": {
+    "test": {
+      "plugins": ["istanbul"]
+    }
+  },
+  "presets": ["es2015"],
+  "plugins": [
+    ["transform-runtime", {
+      "polyfill": true,
+      "regenerator": true
+    }]
+  ]
 }
