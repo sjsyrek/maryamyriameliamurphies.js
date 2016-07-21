@@ -1,5 +1,4 @@
 # maryamyriameliamurphies.js
-[![ISC licensed](https://img.shields.io/badge/license-ISC-blue.svg)](./LICENSE.txt)
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
 
