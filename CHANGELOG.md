@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - comments better conform to JSDoc expectations
 - fixed linting tools
 - updated dependencies
+- open source license is now ISC
 
 ## 0.9.10
 ### Added
