@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
+[![Monads](https://img.shields.io/badge/monads-yes-brightgreen.svg)]()
 
 [![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
 
@@ -10,10 +11,10 @@
 **Make your own code more functional by using this library as it is or just implementing its ideas yourself**
 
 ## Now in version 1.0
-- Comprehensive HTML documentation!
+- [Comprehensive HTML documentation](http://sjsyrek.github.io/maryamyriameliamurphies.js/)!
 - Linting your mother would be proud of!
 - Fully tested—with guaranteed 100% code coverage!
-- Standalone browser bundles for free!
+- Standalone browser bundles at no extra charge!
 - Now ISC licensed!
 - Not scary!
 - Monads!
@@ -35,6 +36,8 @@
 **maryamyriameliamurphies.js** is a library of [Haskell](https://www.haskell.org)-style morphisms implemented in JavaScript using [ECMAScript 2015](http://www.ecma-international.org/ecma-262/6.0/) syntax. That is, it's a collection of pure functions designed to showcase in a more widely-used language than Haskell the ways and means of functional programming, for which the newest dialect of JavaScript has improved support. If you're interested in functional programming or even Haskell itself, but find that world intimidating, this library may be a useful conceptual bridge. The syntax I use will probably come across as unconventional, as it mirrors as closely as possible the terse, efficient style of Haskell. Eventually, however, you may find it easy enough to reason about, thanks to its relative lack of side effects and foundation in function composition. If you're curious about strange-sounding things like functors, monads, partial application, currying, and lazy evaluation, then there's something here for you.
 
 First published entirely by chance on St. Patrick's Day, 2016.
+
+##### [Complete Online API Documentation](http://sjsyrek.github.io/maryamyriameliamurphies.js/)
 
 ### How to install
 
@@ -138,7 +141,7 @@ Here's my own interpretation of maryamyriameliamurphies:
 
 ## API
 
-See the documentation for more extensive explanations and examples.
+See the [online documentation](http://sjsyrek.github.io/maryamyriameliamurphies.js/) for more extensive explanations and examples. The online docs can also be generated locally with JSDoc if you `git clone` or `npm install` this repo.
 
 ### Basic functions
 See Haskell [Data.Function](http://hackage.haskell.org/package/base-4.8.2.0/docs/Data-Function.html#v:-46-) and [Prelude](http://hackage.haskell.org/package/base-4.8.2.0/docs/Prelude.html).
