@@ -1,4 +1,6 @@
 language: node_js
 node_js:
 - node
-after_success: npm run report-coverage
+after_success:
+  - npm run report-coverage
+  - bash <(curl -s https://codecov.io/bash)
