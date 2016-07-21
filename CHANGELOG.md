@@ -2,13 +2,28 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 0.9.10
+## 1.0.0
 ### Added
-- Tests for all functions
-- Coverage for all tests
+- the library is now divided into separate ES2015 modules, according to type classes and data types
+- more comments and examples
+- comprehensive tests for every function and line of code
+- test coverage reports
+- HTML documentation with JSDoc
+- option to bundle the library with Browserify for use in the browser
 
 ### Changed
-- Formatting for tests
+- changed directory structure of library to make it more coherent
+- comments better conform to JSDoc expectations
+- fixed linting tools
+- updated dependencies
+
+## 0.9.10
+### Added
+- tests for all functions
+- coverage for all tests
+
+### Changed
+- formatting for tests
 
 ## 0.9.0
 ### Added
