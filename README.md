@@ -109,22 +109,22 @@ Requires:
 
 - [Node](https://nodejs.org/en/) - JavaScript runtime for the server
 - [npm](https://www.npmjs.com) - node package manager
-- [Babel](http://babeljs.io/) - ES2015 and later to ES5 JavaScript compiler
+- [Babel](http://babeljs.io/) - ES2015 and later to ES5 JavaScript compiler (see below)
 - [Mocha](http://mochajs.org) - testing framework
 - [Should](http://shouldjs.github.io) - assertion library
 - [ESLint](http://eslint.org) - static analysis of code for JavaScript
 - [nyc](https://github.com/istanbuljs/nyc) - a command line interface for [istanbul](https://gotwarlost.github.io/istanbul/) compatible with ES2015
-- [babelify](https://github.com/babel/babelify) - Browserify transform for Babel
 - [JSDoc](http://usejsdoc.org) - documentation utility
 
 Babel packages and plugins:
 
-- [babel-cli](http://babeljs.io/docs/usage/cli/)
-- [babel-core](http://babeljs.io/docs/usage/api/)
-- [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul)
-- [babel-plugin-transform-runtime](https://babeljs.io/docs/plugins/transform-runtime/)
-- [babel-preset-es2015](https://babeljs.io/docs/plugins/preset-es2015/)
-- [babel-register](http://babeljs.io/docs/usage/require/)
+- [babel-cli](http://babeljs.io/docs/usage/cli/) - command line interface
+- [babel-core](http://babeljs.io/docs/usage/api/) - API for Node
+- [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) - for test coverage with nyc
+- [babel-plugin-transform-runtime](https://babeljs.io/docs/plugins/transform-runtime/) - for polyfilling libraries
+- [babel-preset-es2015](https://babeljs.io/docs/plugins/preset-es2015/) - default transforms
+- [babel-register](http://babeljs.io/docs/usage/require/) - require hook for testing with Mocha
+- [babelify](https://github.com/babel/babelify) - Browserify transform
 
 ### What the name of this library means
 
