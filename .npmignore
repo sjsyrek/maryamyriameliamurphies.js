@@ -1,9 +1,0 @@
-node_modules
-source
-test
-doc
-bundle
-coverage
-.nyc_output
-*.log
-*~

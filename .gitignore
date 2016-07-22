@@ -1,9 +1,0 @@
-.DS_STORE
-node_modules
-distribution
-doc
-bundle
-coverage
-.nyc_output
-*.log
-*~
