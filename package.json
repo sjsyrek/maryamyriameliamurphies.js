@@ -1,6 +1,6 @@
 {
   "name": "maryamyriameliamurphies",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A library of Haskell-style morphisms ported to ES2015 JavaScript using Babel.",
   "author": "Steven J. Syrek <steven.syrek@gmail.com>",
   "license": "ISC",
