@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
-[![Monads](https://img.shields.io/badge/monads-yes-brightgreen.svg)]()
+[![Monads](https://img.shields.io/badge/monads-yes-brightgreen.svg)](https://wiki.haskell.org/What_a_Monad_is_not)
 
 [![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
 
@@ -113,18 +113,18 @@ Requires:
 - [Mocha](http://mochajs.org) - testing framework
 - [Should](http://shouldjs.github.io) - assertion library
 - [ESLint](http://eslint.org) - static analysis of code for JavaScript
-- [nyc](https://github.com/istanbuljs/nyc) - an interface for [istanbul](https://gotwarlost.github.io/istanbul/) compatible with ES2015
+- [nyc](https://github.com/istanbuljs/nyc) - a command line interface for [istanbul](https://gotwarlost.github.io/istanbul/) compatible with ES2015
 - [babelify](https://github.com/babel/babelify) - Browserify transform for Babel
 - [JSDoc](http://usejsdoc.org) - documentation utility
 
-Babel packages:
+Babel packages and plugins:
 
-- babel-cli
-- babel-core
-- babel-plugin-istanbul
-- babel-plugin-transform-runtime
-- babel-preset-es2015
-- babel-register
+- [babel-cli](http://babeljs.io/docs/usage/cli/)
+- [babel-core](http://babeljs.io/docs/usage/api/)
+- [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul)
+- [babel-plugin-transform-runtime](https://babeljs.io/docs/plugins/transform-runtime/)
+- [babel-preset-es2015](https://babeljs.io/docs/plugins/preset-es2015/)
+- [babel-register](http://babeljs.io/docs/usage/require/)
 
 ### What the name of this library means
 
