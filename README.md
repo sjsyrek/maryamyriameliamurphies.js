@@ -38,6 +38,8 @@
 
 First published entirely by chance on St. Patrick's Day, 2016.
 
+##### [Try it now with Tonic](https://tonicdev.com/npm/maryamyriameliamurphies)
+
 ##### [Complete Online API Documentation](http://sjsyrek.github.io/maryamyriameliamurphies.js/)
 
 ### How to install
@@ -66,13 +68,23 @@ These commands require that you have certain [npm](https://www.npmjs.com) packag
 - Open your browser's JavaScript console.
 - Test functions using the library namespace, e.g.:
 ```js
-const m = maryamyriameliamurphies; // yes, I know it's too long
-const hello = str => {
-  m.print(`Hello ${str}!`);
-  return m.just(str);
-}
+const m = require('maryamyriameliamurphies'); // yes, I know it's too long
+
+const hello = str => { return m.print(`Hello ${str}!`), m.just(str); }
+
 const str = m.just(`world`);
-m.Do(str).flatMap(hello).inject(`monad`).flatMap(hello);
+
+const sayHello = () => {
+  m.Do(str)
+   .flatMap(hello)
+   .inject(`monad`)
+   .flatMap(hello);
+}
+
+sayHello();
+
+// "Hello world!"
+// "Hello monad!"
 ```
 
 Your mileage may vary, depending on which browser you use to test. This example works in the latest version of Chrome, but ES2015 syntax is not fully supported in Safari as of this writing.

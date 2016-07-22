@@ -2,13 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.3
+### Added
+- support for testing the library on [tonicdev.com](http://semver.org/)
+
+## 1.0.2
+### Changed
+- minor edits to README
+
+## 1.0.1
+### Changed
+- tried to make README more informative/entertaining
+
 ## 1.0.0
 ### Added
 - the library is now divided into separate ES2015 modules, according to type classes and data types
 - more comments and examples
 - comprehensive tests for every function and line of code
-- test coverage reports
-- HTML documentation with JSDoc
+- test coverage reports are now available (coverage is 100%)
+- HTML documentation with JSDoc is now available
 - option to bundle the library with Browserify for use in the browser
 
 ### Changed

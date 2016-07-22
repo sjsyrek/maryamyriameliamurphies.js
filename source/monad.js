@@ -163,7 +163,7 @@ class DoBlock {
  * const plusOne = x => list(x + 1);
  * const doubleList = x => list(x * 2);
  * const put = x => {
- *    print(x);
+ *   print(x);
  *   return just(x);
  * }
  * const b1 = Do(j).flatMap(doubleJust).flatMap(minusOne);
