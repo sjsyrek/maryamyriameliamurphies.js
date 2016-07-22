@@ -1,7 +1,8 @@
 # maryamyriameliamurphies.js
-[![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/sjsyrek/maryamyriameliamurphies.js/blob/master/LICENSE.txt)
 [![Build Status](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js.svg?branch=master)](https://travis-ci.org/sjsyrek/maryamyriameliamurphies.js)
 [![Test Coverage](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/badges/coverage.svg)](https://codeclimate.com/github/sjsyrek/maryamyriameliamurphies.js/coverage)
+[![Downloads](https://img.shields.io/npm/dt/maryamyriameliamurphies.svg?maxAge=2592000)](https://www.npmjs.com/package/maryamyriameliamurphies)
 [![Monads](https://img.shields.io/badge/monads-yes-brightgreen.svg)](https://wiki.haskell.org/What_a_Monad_is_not)
 
 [![NPM](https://nodei.co/npm/maryamyriameliamurphies.png?downloads=true)](https://nodei.co/npm/maryamyriameliamurphies/)
