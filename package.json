@@ -29,6 +29,7 @@
     "test": "test",
     "example": "example"
   },
+  "engines" : { "node" : ">=6.0.0" },
   "browserify": {
     "transform": [
       [
