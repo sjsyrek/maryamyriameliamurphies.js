@@ -54,7 +54,7 @@
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-core": "^6.11.4",
-    "babel-plugin-istanbul": "^1.0.3",
+    "babel-plugin-istanbul": "^2.0.0",
     "babel-plugin-transform-runtime": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-register": "^6.9.0",
@@ -63,9 +63,9 @@
     "cross-env": "^2.0.0",
     "eslint": "^3.1.1",
     "jsdoc": "^3.4.0",
-    "mocha": "^2.5.3",
-    "nyc": "^7.0.0",
-    "should": "^9.0.2"
+    "mocha": "^3.0.2",
+    "nyc": "^8.1.0",
+    "should": "^11.1.0"
   },
   "dependencies": {
     "babel-runtime": "^6.9.2"
