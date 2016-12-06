@@ -172,8 +172,8 @@ export const listFilter = (start, end, filt) => {
  */
 export const listAppend = (xs, ys) => {
   const listAppend_ = (xs, ys) => {
-    if (isList(xs) === false ) { return error.listError(xs, listAppend); }
-    if (isList(ys) === false ) { return error.listError(ys, listAppend); }
+    if (!isList(xs)) { return error.listError(xs, listAppend); }
+    if (!isList(ys)) { return error.listError(ys, listAppend); }
     if (isEmpty(xs)) { return ys; }
     if (isEmpty(ys)) { return xs; }
     if (type(head(xs)) === type(head(ys))) { return cons(head(xs))(listAppend(tail(xs))(ys)); }
@@ -317,7 +317,7 @@ export const length = xs => {
  * @returns {boolean} `true` if the object is a `List` and `false` otherwise
  * @kind function
  */
-export const isList = a => a instanceof List ? true : false;
+export const isList = a => a instanceof List;
 
 /**
  * Check whether a `List` is empty. Returns `true` if the `List` is empty or false if it is

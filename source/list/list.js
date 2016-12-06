@@ -80,9 +80,9 @@ export class List extends Type {
   }
   // Ord
   static compare(as, bs) {
-    if (isEmpty(as) && isEmpty(bs)) { return EQ; }
-    if (isEmpty(as) && isEmpty(bs) === false) { return LT; }
-    if (isEmpty(as) === false && isEmpty(bs)) { return GT; }
+    if (isEmpty(as) && isEmpty(bs)) return EQ;
+    if (isEmpty(as) && !isEmpty(bs)) return LT;
+    if (!isEmpty(as) && isEmpty(bs)) return GT;
     if (compare(head(as), head(bs)) === EQ) { return compare(tail(as), tail(bs)); }
     return compare(head(as), head(bs));
   }

@@ -39,7 +39,7 @@ import {error} from '../error';
  */
 export const scanl = (f, q, ls) => {
   const scanl_ = (f, q, ls) => {
-    if (isList(ls) === false) { return error.listError(ls, scanl); }
+    if (!isList(ls)) { return error.listError(ls, scanl); }
     if (isEmpty(ls)) { return cons(q)(emptyList); }
     const x = head(ls);
     const xs = tail(ls);
@@ -63,7 +63,7 @@ export const scanl = (f, q, ls) => {
  */
 export const scanr = (f, q0, as) => {
   const scanr_ = (f, q0, as) => {
-    if (isList(as) === false) { return error.listError(as, scanr); }
+    if (!isList(as)) { return error.listError(as, scanr); }
     if (isEmpty(as)) { return list(q0); }
     const x = head(as);
     const xs = tail(as);

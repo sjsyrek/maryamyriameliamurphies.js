@@ -44,7 +44,7 @@ export const Nothing = new Maybe();
  * @returns {Maybe} `Just a` or `Nothing`
  * @kind function
  */
-export const just = a => a === undefined || a === null || a !== a ? Nothing : new Maybe(a);
+export const just = a => a == undefined || a !== a ? Nothing : new Maybe(a);
 
 /**
  * Take a default value, a function, and a `Maybe` value. If the `Maybe` value is `Nothing`, return
@@ -76,7 +76,7 @@ export const maybe = (n, f, m) => {
  * @returns {boolean} `true` if the object is a `Maybe` and `false` otherwise
  * @kind function
  */
-export const isMaybe = a => a instanceof Maybe ? true : false;
+export const isMaybe = a => a instanceof Maybe;
 
 /**
  * Determine whether an object is a `Just`.
@@ -87,7 +87,7 @@ export const isMaybe = a => a instanceof Maybe ? true : false;
  */
 export const isJust = m => {
   if (isMaybe(m) === false) { return error.typeError(m, isJust); }
-  return isNothing(m) ? false : true;
+  return !isNothing(m);
 }
 
 /**
@@ -99,7 +99,7 @@ export const isJust = m => {
  */
 export const isNothing = m => {
   if (isMaybe(m) === false) { return error.typeError(m, isNothing); }
-  return m === Nothing ? true : false;
+  return m === Nothing;
 }
 
 /**

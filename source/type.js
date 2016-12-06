@@ -143,8 +143,7 @@ export const typeCheck = (a, b) => {
     if (a instanceof Type && b instanceof Type) {
       return dataType(a).type(a) === dataType(b).type(b);
     }
-    if (dataType(a) === dataType(b)) { return true; }
-    return false;
-  }
+    return dataType(a) === dataType(b);
+  };
   return partial(typeCheck_, a, b);
-}
+};
