@@ -37,7 +37,7 @@
  * multiply(10)(10); // => 100
  */
 export const partial = (f, ...as) => {
-  if (as.length === 0) { return f.call(); }
+  if (!as.length) { return f.call(); }
   const a = as.shift();
   if (a === undefined) { return f; }
   const p = f.bind(f, a);
